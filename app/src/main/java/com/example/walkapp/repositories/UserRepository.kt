@@ -1,5 +1,6 @@
 package com.example.walkapp.repositories
 
+import com.example.walkapp.models.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -24,11 +25,11 @@ class UserRepository {
         }
     }
 
-    suspend fun saveUserData(userId: String, userData: Map<String, Any>) {
+    suspend fun saveUserData(userData: User) {
         try {
             db.collection("users")
-                .document(userId)
-                .set(userData)
+                .document(userData.id)
+                .set(userData.toMap())
                 .await()
         } catch (e: Exception) {
             throw e

@@ -2,6 +2,7 @@ package com.example.walkapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.walkapp.models.User
 import com.example.walkapp.repositories.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,7 @@ data class UserFormUiState(
     val recommendation: String = "",
     val walkingGoal: String = "",
     val errorWalkingGoal: String? = null,
-    val isLoading: Boolean = false,
+    val loading: Boolean = false,
     val errorSubmit: String? = null
 )
 
@@ -92,7 +93,7 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
     fun validateForm() {
         viewModelScope.launch {
             _uiState.update {
-                it.copy(isLoading = true)
+                it.copy(loading = true)
             }
             val currentState = _uiState.value
 
@@ -101,7 +102,7 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
             validateWalkingGoal(currentState.walkingGoal)
 
             _uiState.update {
-                it.copy(isLoading = false)
+                it.copy(loading = false)
             }
         }
     }
@@ -171,22 +172,22 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
     fun onSubmit(userId: String) {
         try {
             _uiState.update {
-                it.copy(isLoading = true)
+                it.copy(loading = true)
             }
             saveUserData(userId)
             _uiState.update {
-                it.copy(isLoading = false)
+                it.copy(loading = false)
             }
         } catch (e: Exception) {
             _uiState.update {
-                it.copy(isLoading = false, errorSubmit = e.message)
+                it.copy(loading = false, errorSubmit = e.message)
             }
         }
     }
 
     suspend fun loadUserData(userId: String): Map<String, Any>? {
         _uiState.update {
-            it.copy(isLoading = true)
+            it.copy(loading = true)
         }
         val userData = userRepository.getUser(userId)
         if (!userData.isNullOrEmpty()) {
@@ -208,27 +209,28 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
             }
         }
         _uiState.update {
-            it.copy(isLoading = false)
+            it.copy(loading = false)
         }
         return userData
     }
 
     private fun saveUserData(userId: String) {
-        val userData = mapOf(
-            "nickname" to _uiState.value.nickname,
-            "dateOfBirth" to _uiState.value.dateOfBirth,
-            "walksRegularly" to _uiState.value.walksRegularly as Any,
-            "walkingGoal" to _uiState.value.walkingGoal,
-            "avatarIndex" to 1
+        val userData = User(
+            id = userId,
+            nickname = _uiState.value.nickname,
+            dateOfBirth = _uiState.value.dateOfBirth,
+            walksRegularly = _uiState.value.walksRegularly,
+            walkingGoal = _uiState.value.walkingGoal,
+            avatarIndex = 1
         )
 
         viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true, errorSubmit = null)
-                userRepository.saveUserData(userId, userData)
-                _uiState.value = _uiState.value.copy(isLoading = false)
+                _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)
+                userRepository.saveUserData(userData)
+                _uiState.value = _uiState.value.copy(loading = false)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(isLoading = false, errorSubmit = e.message)
+                _uiState.value = _uiState.value.copy(loading = false, errorSubmit = e.message)
             }
         }
     }

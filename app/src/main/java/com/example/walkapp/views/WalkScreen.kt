@@ -43,9 +43,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val userLocation by locationViewModel.userLocation.collectAsState()
     val isLocationUpdating by locationViewModel.isLocationUpdating.collectAsState()
 
-    val avatarIndex = userData?.get("avatarIndex") as? Int ?: 0
-
-    LaunchedEffect(true) {
+    LaunchedEffect(userData) {
         if (authUser != null && userData == null && !loading) {
             homeViewModel.loadUserData(authUser.uid)
         }
@@ -73,7 +71,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            loading || userData == null -> CircularProgressIndicator(
+            loading -> CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center
                 )
@@ -87,7 +85,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                 MapScreenContent(
                     navController = navController,
                     userLocation = userLocation,
-                    avatarIndex = avatarIndex,
+                    avatarIndex = userData?.get("avatarIndex") as Int? ?: 0,
                     isLocationUpdating = isLocationUpdating,
                     locationViewModel = locationViewModel
                 )
