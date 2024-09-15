@@ -60,18 +60,16 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            loading -> CircularProgressIndicator(
+        if (loading || userData == null) {
+            CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center
                 )
             )
-
-            !locationPermissionState.status.isGranted -> {
+        } else {
+            if(!locationPermissionState.status.isGranted){
                 PermissionRequestUI(locationPermissionState, isLocationUpdating, locationViewModel)
-            }
-
-            else -> {
+            }else {
                 MapScreenContent(
                     navController = navController,
                     userLocation = userLocation,
@@ -80,11 +78,14 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                     locationViewModel = locationViewModel
                 )
             }
+            HamburgerMenuButton(
+                onEditClick = {
+                    navController.navigate(Screen.UserForm.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onSignOut = { onSignOut() }
+            )
         }
-
-        HamburgerMenuButton(
-            onEditClick = { navController.navigate(Screen.UserForm.route) { launchSingleTop = true } },
-            onSignOut = { onSignOut() }
-        )
     }
 }
