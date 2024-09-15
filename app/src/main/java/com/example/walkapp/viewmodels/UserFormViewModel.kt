@@ -16,10 +16,10 @@ import java.util.Locale
 data class UserFormUiState(
     val nickname: String = "",
     val errorNickname: String? = null,
-    val dateOfBirth: String = "01/01/2020",
+    val dateOfBirth: String = "01/01/2000",
     val errorDateOfBirth: String? = null,
-    val walksRegularly: Boolean = false,
-    val recommendation: String = "",
+    val walksRegularly: Boolean = true,
+    val recommendation: String = "150 minutos por semana.",
     val walkingGoal: String = "",
     val errorWalkingGoal: String? = null,
     val loading: Boolean = false,
@@ -90,20 +90,61 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         }
     }
 
-    fun validateForm() {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(loading = true)
+    fun onSubmit(userId: String) {
+        try {
+            viewModelScope.launch {
+                _uiState.update {
+                    it.copy(loading = true)
+                }
+                validateForm()
+                if (
+                    _uiState.value.errorNickname == null &&
+                    _uiState.value.errorDateOfBirth == null &&
+                    _uiState.value.errorWalkingGoal == null
+                ) {
+                    saveUserData(userId)
+                }
+                _uiState.update {
+                    it.copy(loading = false)
+                }
             }
-            val currentState = _uiState.value
-
-            validateNickname(currentState.nickname)
-            validateDateOfBirth(currentState.dateOfBirth)
-            validateWalkingGoal(currentState.walkingGoal)
-
+        } catch (e: Exception) {
             _uiState.update {
-                it.copy(loading = false)
+                it.copy(loading = false, errorSubmit = e.message)
             }
+        }
+    }
+
+    private suspend fun saveUserData(userId: String) {
+        val userData = User(
+            id = userId,
+            nickname = _uiState.value.nickname,
+            dateOfBirth = _uiState.value.dateOfBirth,
+            walksRegularly = _uiState.value.walksRegularly,
+            walkingGoal = _uiState.value.walkingGoal,
+            avatarIndex = 1
+        )
+        try {
+            _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)
+            userRepository.saveUserData(userData)
+            _uiState.value = _uiState.value.copy(loading = false)
+        } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(loading = false, errorSubmit = e.message)
+        }
+    }
+
+    private suspend fun validateForm() {
+        _uiState.update {
+            it.copy(loading = true)
+        }
+
+        val currentState = _uiState.value
+        validateNickname(currentState.nickname)
+        validateDateOfBirth(currentState.dateOfBirth)
+        validateWalkingGoal(currentState.walkingGoal)
+
+        _uiState.update {
+            it.copy(loading = false)
         }
     }
 
@@ -167,42 +208,5 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         }
 
         return age
-    }
-
-    fun onSubmit(userId: String) {
-        try {
-            _uiState.update {
-                it.copy(loading = true)
-            }
-            saveUserData(userId)
-            _uiState.update {
-                it.copy(loading = false)
-            }
-        } catch (e: Exception) {
-            _uiState.update {
-                it.copy(loading = false, errorSubmit = e.message)
-            }
-        }
-    }
-
-    private fun saveUserData(userId: String) {
-        val userData = User(
-            id = userId,
-            nickname = _uiState.value.nickname,
-            dateOfBirth = _uiState.value.dateOfBirth,
-            walksRegularly = _uiState.value.walksRegularly,
-            walkingGoal = _uiState.value.walkingGoal,
-            avatarIndex = 1
-        )
-
-        viewModelScope.launch {
-            try {
-                _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)
-                userRepository.saveUserData(userData)
-                _uiState.value = _uiState.value.copy(loading = false)
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(loading = false, errorSubmit = e.message)
-            }
-        }
     }
 }

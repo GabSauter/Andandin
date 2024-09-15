@@ -47,16 +47,14 @@ fun UserFormScreen(
     val uiState by userFormViewModel.uiState.collectAsState()
     val onErrorDismiss = { userFormViewModel.clearErrorSubmit() }
     val onSubmit = {
-        if (
-            userFormViewModel.uiState.value.errorNickname == null &&
-            userFormViewModel.uiState.value.errorDateOfBirth == null &&
-            userFormViewModel.uiState.value.errorWalkingGoal == null
+        userFormViewModel.onSubmit(authUser!!.uid)
+        if (uiState.errorNickname == null &&
+            uiState.errorDateOfBirth == null &&
+            uiState.errorWalkingGoal == null &&
+            uiState.errorSubmit == null
         ) {
-            userFormViewModel.onSubmit(authUser!!.uid)
-            if (uiState.errorSubmit == null) {
-                navController.navigate(Screen.AvatarMaker.route) {
-                    popUpTo(Screen.AvatarMaker.route) { inclusive = true }
-                }
+            navController.navigate(Screen.AvatarMaker.route) {
+                popUpTo(Screen.AvatarMaker.route) { inclusive = true }
             }
         }
     }
@@ -167,7 +165,7 @@ fun UserFormScreen(
                 ) {
                     Button(
                         onClick = {
-                            if (uiState.errorSubmit == null) onSubmit()
+                            onSubmit()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
