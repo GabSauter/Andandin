@@ -11,9 +11,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.helpers.CredentialHelper
-import com.example.walkapp.views.HomeScreen
+import com.example.walkapp.views.homescreen.HomeScreen
 import com.example.walkapp.views.LoginScreen
 import com.example.walkapp.viewmodels.AuthViewModel
+import com.example.walkapp.views.AvatarMakerScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,6 +65,14 @@ fun RootNavGraph(
             HomeScreen(
                 authUser = authUser,
                 onSignOut = { authViewModel.signOut() }
+            )
+        }
+
+        composable(Screen.AvatarMaker.route) {
+            AvatarMakerScreen(
+                navController = navController,
+                authUser = authUser,
+                passedAvatarIndex = 0
             )
         }
     }

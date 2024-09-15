@@ -1,14 +1,14 @@
 package com.example.walkapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.lifecycle.ViewModelStore
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.views.AvatarMakerScreen
-import com.example.walkapp.views.UserFormScreen
-import com.example.walkapp.views.WalkScreen
+import com.example.walkapp.views.HistoricScreen
+import com.example.walkapp.views.PeopleScreen
+import com.example.walkapp.views.userformscreen.UserFormScreen
+import com.example.walkapp.views.walkscreen.WalkScreen
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
@@ -29,18 +29,18 @@ fun HomeNavGraph(
                 onSignOut = { onSignOut() }
             )
         }
+        composable(Screen.Historic.route) {
+            HistoricScreen()
+        }
+        composable(Screen.People.route) {
+            PeopleScreen()
+        }
+
         composable(Screen.UserForm.route) {
-            UserFormScreen(
-                navController = navController,
-                authUser = authUser,
-            )
+            UserFormScreen(navController, authUser)
         }
         composable(Screen.AvatarMaker.route) {
-            AvatarMakerScreen(
-                navController = navController,
-                authUser = authUser,
-                passedAvatarIndex = null
-            )
+            AvatarMakerScreen(navController, authUser, 0)
         }
     }
 }

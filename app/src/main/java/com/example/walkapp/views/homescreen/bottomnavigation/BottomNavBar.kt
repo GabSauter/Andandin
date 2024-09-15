@@ -1,4 +1,4 @@
-package com.example.walkapp.views.components.bottomnavigation
+package com.example.walkapp.views.homescreen.bottomnavigation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,9 +16,9 @@ fun BottomNavBar(
     onItemClick: (BottomNavItems) -> Unit
 ) {
     val items = listOf(
-        BottomNavItems.Home,
-        BottomNavItems.Profile,
-        BottomNavItems.Settings
+        BottomNavItems.Historic,
+        BottomNavItems.Walk,
+        BottomNavItems.People
     )
 
     NavigationBar(

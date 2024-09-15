@@ -185,35 +185,6 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         }
     }
 
-    suspend fun loadUserData(userId: String): Map<String, Any>? {
-        _uiState.update {
-            it.copy(loading = true)
-        }
-        val userData = userRepository.getUser(userId)
-        if (!userData.isNullOrEmpty()) {
-            _uiState.update {
-                it.copy(
-                    nickname = userData["nickname"] as? String ?: "",
-                    dateOfBirth = userData["dateOfBirth"] as? String ?: "",
-                    walksRegularly = userData["walksRegularly"] as Boolean,
-                    walkingGoal = userData["walkingGoal"] as? String ?: "",
-                    errorNickname = null,
-                    errorDateOfBirth = null,
-                    errorWalkingGoal = null,
-                    errorSubmit = null
-                )
-            }
-        } else {
-            _uiState.update {
-                it.copy(errorSubmit = "Usuário não encontrado.")
-            }
-        }
-        _uiState.update {
-            it.copy(loading = false)
-        }
-        return userData
-    }
-
     private fun saveUserData(userId: String) {
         val userData = User(
             id = userId,

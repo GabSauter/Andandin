@@ -1,4 +1,4 @@
-package com.example.walkapp.views
+package com.example.walkapp.views.userformscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,10 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
-import com.example.walkapp.views.components.CustomOutlinedTextField
-import com.example.walkapp.views.components.DateTextField
 import com.example.walkapp.views.components.ErrorSnackbar
-import com.example.walkapp.views.components.NumberTextField
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.UserFormViewModel
 import com.google.firebase.auth.FirebaseUser
@@ -174,7 +171,7 @@ fun UserFormScreen(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        if (uiState.isLoading) {
+                        if (uiState.loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
                                 color = MaterialTheme.colorScheme.onPrimary

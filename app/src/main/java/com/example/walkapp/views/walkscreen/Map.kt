@@ -1,11 +1,8 @@
-package com.example.walkapp.views.components
+package com.example.walkapp.views.walkscreen
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
 import com.example.walkapp.navigation.Screen

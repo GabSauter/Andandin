@@ -6,7 +6,7 @@ import com.example.walkapp.repositories.AuthRepository
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.viewmodels.AuthViewModel
 import com.example.walkapp.viewmodels.AvatarMakerViewModel
-import com.example.walkapp.viewmodels.HomeViewModel
+import com.example.walkapp.viewmodels.WalkViewModel
 import com.example.walkapp.viewmodels.LocationViewModel
 import com.example.walkapp.viewmodels.UserFormViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -21,7 +21,7 @@ val appModule = module {
 
         viewModel { AvatarMakerViewModel(get()) }
 
-        viewModel { HomeViewModel(get()) }
+        viewModel { WalkViewModel(get()) }
 
         single {
                 val context = get<Context>()

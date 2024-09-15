@@ -1,5 +1,6 @@
 package com.example.walkapp.repositories
 
+import android.util.Log
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -8,20 +9,21 @@ import kotlinx.coroutines.tasks.await
 class UserRepository {
     private val db = Firebase.firestore
 
-    suspend fun getUser(userId: String): Map<String, Any>? {
+    suspend fun getUser(userId: String): User? {
         return try {
             val document = db.collection("users")
                 .document(userId)
                 .get()
                 .await()
 
-            if (document.exists()) {
-                document.data ?: emptyMap()
+            if (document.exists() && document.data != null) {
+                Log.d("WalkScreen UserRepository", "User data: ${User.mapToUser(userId, document.data!!)}")
+                User.mapToUser(userId, document.data!!)
             } else {
-                emptyMap()
+                User()
             }
         } catch (e: Exception) {
-            null
+            throw e
         }
     }
 

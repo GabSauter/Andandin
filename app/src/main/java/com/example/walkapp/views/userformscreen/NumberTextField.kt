@@ -1,4 +1,4 @@
-package com.example.walkapp.views.components
+package com.example.walkapp.views.userformscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
