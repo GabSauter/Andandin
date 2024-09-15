@@ -1,4 +1,4 @@
-package com.example.walkapp.views.homescreen
+package com.example.walkapp.views.walkscreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

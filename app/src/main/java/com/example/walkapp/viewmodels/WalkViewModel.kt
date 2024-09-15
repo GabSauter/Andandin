@@ -1,5 +1,6 @@
 package com.example.walkapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.walkapp.models.User
@@ -26,6 +27,7 @@ class WalkViewModel(
             _loading.value = true
             try {
                 _user.value = userRepository.getUser(userId)
+                Log.d("WalkViewModel", "User data loaded: ${_user.value}")
             } catch (e: Exception) {
                 _user.value = null
                 _error.value = "Houve um erro ao tentar carregar os dados do usuário."

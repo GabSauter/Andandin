@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -29,10 +30,18 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             if (bottomBarDestination) {
-                    BottomNavBar(
-                        navController = navController,
-                        onItemClick = { navController.navigate(it.route) }
-                    )
+                BottomNavBar(
+                    navController = navController,
+                    onItemClick = {
+                        navController.navigate(it.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             }
         }
     ) { paddingValues ->

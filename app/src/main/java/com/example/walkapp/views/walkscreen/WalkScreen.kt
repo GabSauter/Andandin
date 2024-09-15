@@ -14,7 +14,6 @@ import androidx.navigation.NavHostController
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.WalkViewModel
 import com.example.walkapp.viewmodels.LocationViewModel
-import com.example.walkapp.views.homescreen.HamburgerMenuButton
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -33,6 +32,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val isLocationUpdating by locationViewModel.isLocationUpdating.collectAsState()
 
     LaunchedEffect(userData) {
+        Log.d("WalkScreen", "WalkingScreen user data $userData")
         if (!loading && authUser != null && userData == null) {
             Log.d("WalkScreen", "Loading user data")
             walkViewModel.loadUserData(authUser.uid)

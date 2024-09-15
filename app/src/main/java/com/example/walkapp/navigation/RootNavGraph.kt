@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,11 +37,12 @@ fun RootNavGraph(
     LaunchedEffect(authUser) {
         if (authUser == null && navController.currentDestination?.route != Screen.Login.route) {
             navController.navigate(Screen.Login.route) {
-                popUpTo(Screen.Loading.route) { inclusive = true }
+                popUpTo(0) { inclusive = true }
             }
         } else if (authUser != null && navController.currentDestination?.route == Screen.Login.route) {
             navController.navigate(Graph.Home.route) {
-                popUpTo(Screen.Loading.route) { inclusive = true }
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
