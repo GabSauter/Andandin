@@ -3,6 +3,7 @@ package com.example.walkapp.views.walkscreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
 import com.example.walkapp.navigation.Screen
@@ -14,10 +15,11 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun Map(navController: NavHostController, userLocation: LatLng?, avatarIndex: Int){
+fun Map(navController: NavHostController, userLocation: LatLng?, avatarIndex: Int, pathPoints: List<LatLng>, isWalking: Boolean){
 
     val avatarDrawables = listOf(
         R.drawable.avatar1,
@@ -53,6 +55,14 @@ fun Map(navController: NavHostController, userLocation: LatLng?, avatarIndex: In
                     navController.navigate(Screen.AvatarMaker.route)
                     true
                 }
+            )
+        }
+
+        if (isWalking) {
+            Polyline(
+                points = pathPoints,
+                color = Color.Blue,
+                width = 5f
             )
         }
     }

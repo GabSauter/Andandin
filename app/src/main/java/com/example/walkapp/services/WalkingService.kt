@@ -11,6 +11,13 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.walkapp.MainActivity
 import com.example.walkapp.R
+import com.example.walkapp.helpers.LocationManager
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class WalkingService : Service() {
 
@@ -18,6 +25,15 @@ class WalkingService : Service() {
         const val CHANNEL_ID = "WalkingServiceChannel"
         const val NOTIFICATION_ID = 1
         const val ACTION_STOP = "STOP_WALKING_SERVICE"
+
+        val isTracking = MutableStateFlow(false)
+        val pathPoints = MutableStateFlow(emptyList<LatLng>())
+    }
+
+    private fun addPathPoint(location: LatLng) {
+        val points = pathPoints.value.toMutableList()
+        points.add(location)
+        pathPoints.value = points
     }
 
     override fun onCreate() {

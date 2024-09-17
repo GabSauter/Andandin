@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,10 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.walkapp.services.WalkingService
 import com.example.walkapp.viewmodels.LocationViewModel
 import com.google.android.gms.maps.model.LatLng
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun MapScreenContent(
@@ -27,34 +32,62 @@ fun MapScreenContent(
     userLocation: LatLng?,
     avatarIndex: Int,
     isLocationUpdating: Boolean,
-    locationViewModel: LocationViewModel
+    startLocationUpdates: () -> Unit,
+    pathPoints: List<LatLng>,
+    isWalking: Boolean,
+    setIsWalking: (Boolean) -> Unit,
+    clearPathPoints: () -> Unit,
+    totalDistance: Double,
+    clearTotalDistance: () -> Unit,
+    elapsedTime: Long,
+    startTimer: () -> Unit,
+    stopTimer: () -> Unit
 ) {
     val context = LocalContext.current
-    var isWalking by remember { mutableStateOf(false) }
+
+    val hours = TimeUnit.MILLISECONDS.toHours(elapsedTime)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (!isLocationUpdating) {
-            locationViewModel.startLocationUpdates()
+            startLocationUpdates()
         }
 
         Map(
             navController = navController,
             userLocation = userLocation,
-            avatarIndex = avatarIndex
+            avatarIndex = avatarIndex,
+            pathPoints = pathPoints,
+            isWalking = isWalking
         )
 
         Button(
             onClick = {
                 if (isWalking) {
                     stopWalkingService(context)
+                    clearPathPoints()
+                    clearTotalDistance()
+                    stopTimer()
                 } else {
                     startWalkingService(context)
+                    startTimer()
                 }
-                isWalking = !isWalking
+                setIsWalking(!isWalking)
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+        }
+
+        Column {
+            Text(
+                text = "Total Distance: %.2f km".format(totalDistance), // dividir por 100 para ser em km
+                fontSize = 20.sp,
+            )
+            Text(
+                text = "Time: %02d:%02d".format(hours, minutes),
+                fontSize = 18.sp,
+            )
         }
     }
 }

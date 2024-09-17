@@ -30,6 +30,10 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val locationViewModel: LocationViewModel = koinViewModel()
     val userLocation by locationViewModel.userLocation.collectAsState()
     val isLocationUpdating by locationViewModel.isLocationUpdating.collectAsState()
+    val pathPoints by locationViewModel.pathPoints.collectAsState()
+    val isWalking by locationViewModel.isWalking.collectAsState()
+    val totalDistance by locationViewModel.totalDistance.collectAsState()
+    val elapsedTime by locationViewModel.elapsedTime.collectAsState()
 
     LaunchedEffect(userData) {
         Log.d("WalkScreen", "WalkingScreen user data $userData")
@@ -75,7 +79,16 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                     userLocation = userLocation,
                     avatarIndex = 0,
                     isLocationUpdating = isLocationUpdating,
-                    locationViewModel = locationViewModel
+                    startLocationUpdates = { locationViewModel.startLocationUpdates() },
+                    pathPoints = pathPoints,
+                    isWalking = isWalking,
+                    setIsWalking = { locationViewModel.setIsWalking(it) },
+                    clearPathPoints = { locationViewModel.clearPathPoints() },
+                    totalDistance = totalDistance,
+                    clearTotalDistance = { locationViewModel.clearTotalDistance() },
+                    elapsedTime = elapsedTime,
+                    startTimer = { locationViewModel.startTimer() },
+                    stopTimer = { locationViewModel.stopTimer() }
                 )
             }
             HamburgerMenuButton(
