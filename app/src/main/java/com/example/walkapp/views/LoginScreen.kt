@@ -1,35 +1,35 @@
 package com.example.walkapp.views
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.walkapp.R
+import com.example.walkapp.helpers.CredentialHelper
 import com.example.walkapp.views.components.ErrorSnackbar
-import com.example.walkapp.ui.theme.WalkAppTheme
-import kotlinx.coroutines.delay
 
 @Composable
-fun LoginScreen(signInWithGoogle: () -> Unit, loading: Boolean, errorMessage: String?, clearErrorMessage: () -> Unit) {
-    val titleVisible = remember { mutableStateOf(false) }
-    val subtitleVisible = remember { mutableStateOf(false) }
+fun LoginScreen(
+    signInWithGoogle: (credentialHelper: CredentialHelper) -> Unit,
+    loading: Boolean,
+    errorMessage: String?,
+    clearErrorMessage: () -> Unit
+) {
+    val context = LocalContext.current
+    val credentialHelper = remember {
+        CredentialHelper(
+            context = context,
+            credentialManager = androidx.credentials.CredentialManager.create(context)
+        )
+    }
 
     Box {
         Image(
@@ -46,48 +46,20 @@ fun LoginScreen(signInWithGoogle: () -> Unit, loading: Boolean, errorMessage: St
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LaunchedEffect(Unit) {
-                titleVisible.value = true
-                delay(1000)
-                subtitleVisible.value = true
-            }
+            Text(
+                text = "Andandin",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
 
-            AnimatedVisibility(visible = titleVisible.value) {
-                Text(
-                    text = "Andandin",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.alpha(
-                        animateFloatAsState(
-                            targetValue = if (titleVisible.value) 1f else 0f,
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearOutSlowInEasing
-                            ),
-                            label = "Fade In"
-                        ).value
-                    )
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AnimatedVisibility(visible = subtitleVisible.value) {
-                Text(
-                    text = "Aventure-se caminhando!",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.alpha(
-                        animateFloatAsState(
-                            targetValue = if (subtitleVisible.value) 1f else 0f,
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearOutSlowInEasing
-                            ),
-                            label = "Fade In"
-                        ).value
-                    )
-                )
-            }
+            Text(
+                text = "Aventure-se caminhando!",
+                style = MaterialTheme.typography.titleSmall,
+            )
+
         }
 
         Box(
@@ -96,21 +68,12 @@ fun LoginScreen(signInWithGoogle: () -> Unit, loading: Boolean, errorMessage: St
                 .padding(bottom = 16.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
-            val buttonOffset = animateDpAsState(
-                targetValue = if (subtitleVisible.value) 0.dp else 60.dp,
-                animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing),
-                label = "Fade In"
-            )
-
             Button(
                 onClick = {
                     if (!loading) {
-                        signInWithGoogle()
+                        signInWithGoogle(credentialHelper)
                     }
-                },
-                modifier = Modifier
-                    .offset(y = buttonOffset.value)
-                    .animateContentSize()
+                }
             ) {
                 if (loading) {
                     CircularProgressIndicator(
@@ -138,13 +101,5 @@ fun LoginScreen(signInWithGoogle: () -> Unit, loading: Boolean, errorMessage: St
                 clearErrorMessage()
             }
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    WalkAppTheme {
-        //LoginScreen()
     }
 }

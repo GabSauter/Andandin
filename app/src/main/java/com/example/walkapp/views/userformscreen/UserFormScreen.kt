@@ -34,6 +34,9 @@ import com.example.walkapp.R
 import com.example.walkapp.views.components.ErrorSnackbar
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.UserFormViewModel
+import com.example.walkapp.views.userformscreen.components.CustomOutlinedTextField
+import com.example.walkapp.views.userformscreen.components.DateTextField
+import com.example.walkapp.views.userformscreen.components.NumberTextField
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel
 

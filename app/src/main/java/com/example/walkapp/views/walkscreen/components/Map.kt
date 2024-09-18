@@ -1,4 +1,4 @@
-package com.example.walkapp.views.walkscreen
+package com.example.walkapp.views.walkscreen.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

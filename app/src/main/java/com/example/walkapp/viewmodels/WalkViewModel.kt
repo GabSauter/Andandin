@@ -1,39 +1,33 @@
 package com.example.walkapp.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.walkapp.models.User
-import com.example.walkapp.repositories.UserRepository
+import com.example.walkapp.helpers.LocationManager
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WalkViewModel(
-    private val userRepository: UserRepository
-) : ViewModel() {
+class WalkViewModel(private val locationManager: LocationManager) : ViewModel() {
 
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user
+    private val _userLocation = MutableStateFlow<LatLng?>(null)
+    val userLocation: StateFlow<LatLng?> = _userLocation
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
-
-    fun loadUserData(userId: String) {
+    init {
         viewModelScope.launch {
-            _loading.value = true
-            try {
-                _user.value = userRepository.getUser(userId)
-                Log.d("WalkViewModel", "User data loaded: ${_user.value}")
-            } catch (e: Exception) {
-                _user.value = null
-                _error.value = "Houve um erro ao tentar carregar os dados do usuário."
-            } finally {
-                _loading.value = false
+            locationManager.locationState.collect { location ->
+                location?.let {
+                    val latLng = LatLng(it.latitude, it.longitude)
+                    _userLocation.value = latLng
+                }
             }
         }
+
+        locationManager.startLocationUpdates()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        locationManager.stopLocationUpdates()
     }
 }

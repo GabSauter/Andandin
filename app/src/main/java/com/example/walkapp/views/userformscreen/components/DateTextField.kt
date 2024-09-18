@@ -1,4 +1,4 @@
-package com.example.walkapp.views.userformscreen
+package com.example.walkapp.views.userformscreen.components
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.interaction.MutableInteractionSource

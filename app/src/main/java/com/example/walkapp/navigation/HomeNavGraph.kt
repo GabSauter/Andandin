@@ -26,7 +26,7 @@ fun HomeNavGraph(
             WalkScreen(
                 navController = navController,
                 authUser = authUser,
-                onSignOut = { onSignOut() }
+                onSignOut = onSignOut
             )
         }
         composable(Screen.Historic.route) {
