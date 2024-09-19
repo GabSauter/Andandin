@@ -21,6 +21,8 @@ object LocationManager {
     private val _locationState = MutableStateFlow<Location?>(null)
     val locationState: StateFlow<Location?> = _locationState
 
+    private var isLocationUpdatesStarted = false
+
     private val locationRequest = LocationRequest.Builder(
         Priority.PRIORITY_HIGH_ACCURACY, 10000
     ).apply {
@@ -46,12 +48,18 @@ object LocationManager {
 
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
+        if (isLocationUpdatesStarted) return
+
         Log.d("LocationManager", "Starting location updates")
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        isLocationUpdatesStarted = true
     }
 
     fun stopLocationUpdates() {
+        if (!isLocationUpdatesStarted) return
+
         Log.d("LocationManager", "Stopping location updates")
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        isLocationUpdatesStarted = false
     }
 }

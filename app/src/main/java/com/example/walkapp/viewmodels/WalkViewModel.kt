@@ -25,9 +25,4 @@ class WalkViewModel(private val locationManager: LocationManager) : ViewModel() 
 
         locationManager.startLocationUpdates()
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        locationManager.stopLocationUpdates()
-    }
 }

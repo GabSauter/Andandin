@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.walkapp.MainActivity
 import com.example.walkapp.R
+import com.example.walkapp.helpers.LocationManager
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,11 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class WalkingService : Service() {
+
+    private lateinit var locationManager: LocationManager
+    private var startTime = 0L
+    private var timerJob: Job? = null
+    private var trackingJob: Job? = null
 
     companion object {
         const val CHANNEL_ID = "WalkingServiceChannel"
@@ -63,10 +69,6 @@ class WalkingService : Service() {
         }
     }
 
-    private var startTime = 0L
-    private var timerJob: Job? = null
-    private var trackingJob: Job? = null
-
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -97,8 +99,6 @@ class WalkingService : Service() {
         notificationManager.cancel(NOTIFICATION_ID)
 
         trackingJob?.cancel()
-
-        Log.d("WalkingService", "Service destroyed")
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -142,7 +142,24 @@ class WalkingService : Service() {
     }
 
     private fun startTracking() {
+        locationManager = LocationManager
+        locationManager.initialize(this)
+        startLocationUpdates()
+
         startTimer()
+    }
+
+    private fun startLocationUpdates() {
+        locationManager.startLocationUpdates()
+
+        trackingJob = CoroutineScope(Dispatchers.Main).launch {
+            locationManager.locationState.collect { location ->
+                location?.let {
+                    val latLng = LatLng(it.latitude, it.longitude)
+                    addPathPoint(latLng)
+                }
+            }
+        }
     }
 
     private fun startTimer() {
@@ -165,7 +182,6 @@ class WalkingService : Service() {
             combine(totalDistance, elapsedTime) { distance, time ->
                 distance to time
             }.collect { (distance, time) ->
-                Log.d("WalkingService", "Observing tracking data")
                 val notification = createNotification(distance, time)
                 val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.notify(NOTIFICATION_ID, notification)

@@ -39,12 +39,6 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val totalDistance by locationViewModel.totalDistance.collectAsState()
     val elapsedTime by locationViewModel.elapsedTime.collectAsState()
 
-    LaunchedEffect(userLocation) {
-        if (isWalking && userLocation != null){
-            locationViewModel.addPathPoint(userLocation!!)
-        }
-    }
-
     LaunchedEffect(userData) {
         if (!loading && authUser != null) {
             if (userData == null) {
