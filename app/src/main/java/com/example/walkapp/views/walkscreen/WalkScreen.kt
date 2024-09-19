@@ -52,8 +52,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
         }
     }
 
-    val locationPermissionState =
-        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
     LaunchedEffect(locationPermissionState) {
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()

@@ -7,29 +7,31 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.walkapp.R
 import com.example.walkapp.navigation.Screen
 
 sealed class BottomNavItems(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val icon: Int
 ) {
     data object Historic : BottomNavItems(
         route = Screen.Historic.route,
         title = "Histórico",
-        icon = Icons.Default.DateRange
+        icon = R.drawable.ic_book
     )
 
     data object Walk : BottomNavItems(
         route = Screen.Walk.route,
         title = "Caminhar",
-        icon = Icons.Default.PlayArrow
+        icon = R.drawable.ic_walk
     )
 
     data object People : BottomNavItems(
         route = Screen.People.route,
         title = "Pessoas",
-        icon = Icons.Default.Person
+        icon = R.drawable.ic_people
     )
 }

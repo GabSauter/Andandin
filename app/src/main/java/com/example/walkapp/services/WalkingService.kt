@@ -122,9 +122,9 @@ class WalkingService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Andandin")
             .setContentText("Distancia: $formattedDistance meters\nTempo: $formattedTime")
-            .setSmallIcon(R.drawable.ic_google_logo)
+            .setSmallIcon(R.drawable.ic_walk)
             .setContentIntent(pendingNotificationIntent)
-            .addAction(R.drawable.ic_google_logo, "Parar", pendingStopIntent)
+            .addAction(R.drawable.ic_walk, "Parar caminhada", pendingStopIntent)
             .setOngoing(true)
             .build()
     }
