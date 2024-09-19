@@ -3,6 +3,7 @@ package com.example.walkapp.viewmodels
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.walkapp.services.WalkingService
 import com.google.android.gms.maps.model.LatLng
@@ -26,6 +27,7 @@ class LocationViewModel : ViewModel() {
 
     fun stopWalkingService(context: Context) {
         val intent = Intent(context, WalkingService::class.java)
+        //TODO: Salvar dados no bd
         context.stopService(intent)
     }
 

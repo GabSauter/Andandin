@@ -10,6 +10,7 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.walkapp.MainActivity
 import com.example.walkapp.R
@@ -64,6 +65,7 @@ class WalkingService : Service() {
 
     private var startTime = 0L
     private var timerJob: Job? = null
+    private var trackingJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -73,7 +75,7 @@ class WalkingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
-            stopForeground(STOP_FOREGROUND_DETACH)
+            stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
         } else {
@@ -90,10 +92,17 @@ class WalkingService : Service() {
         pathPoints.value = emptyList()
         totalDistance.value = 0.0
         stopTimer()
-        stopForeground(STOP_FOREGROUND_REMOVE)
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
+
+        trackingJob?.cancel()
+
+        Log.d("WalkingService", "Service destroyed")
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
     private fun createNotification(distance: Double, time: Long): Notification {
         val stopIntent = Intent(this, WalkingService::class.java).apply {
             action = ACTION_STOP
@@ -111,11 +120,11 @@ class WalkingService : Service() {
         val formattedDistance = String.format(Locale.getDefault(), "%.2f", distance)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Walking App")
-            .setContentText("Distance: $formattedDistance meters, Time: $formattedTime")
+            .setContentTitle("Andandin")
+            .setContentText("Distancia: $formattedDistance meters\nTempo: $formattedTime")
             .setSmallIcon(R.drawable.ic_google_logo)
             .setContentIntent(pendingNotificationIntent)
-            .addAction(R.drawable.ic_google_logo, "Stop", pendingStopIntent)
+            .addAction(R.drawable.ic_google_logo, "Parar", pendingStopIntent)
             .setOngoing(true)
             .build()
     }
@@ -152,10 +161,11 @@ class WalkingService : Service() {
     }
 
     private fun observeTrackingData() {
-        CoroutineScope(Dispatchers.Main).launch {
+        trackingJob = CoroutineScope(Dispatchers.Main).launch {
             combine(totalDistance, elapsedTime) { distance, time ->
                 distance to time
             }.collect { (distance, time) ->
+                Log.d("WalkingService", "Observing tracking data")
                 val notification = createNotification(distance, time)
                 val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.notify(NOTIFICATION_ID, notification)

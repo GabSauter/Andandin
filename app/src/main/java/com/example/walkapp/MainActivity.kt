@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.example.walkapp.navigation.RootNavGraph
-import com.example.walkapp.ui.theme.WalkAppTheme
+import com.example.walkapp.ui.theme.AppTheme
 import org.koin.compose.KoinContext
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WalkAppTheme {
+            AppTheme {
                 KoinContext{
                     val navController = rememberNavController()
                     RootNavGraph(navController = navController)
