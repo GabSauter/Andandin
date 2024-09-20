@@ -2,6 +2,7 @@ package com.example.walkapp.repositories
 
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
@@ -54,6 +55,24 @@ class UserRepository {
             db.collection("users")
                 .document(userId)
                 .update("avatarIndex", avatarIndex)
+                .await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long) {
+        try {
+            val walkingData = mapOf(
+                "totalDistance" to totalDistance,
+                "elapsedTime" to elapsedTime,
+                "timestamp" to FieldValue.serverTimestamp()
+            )
+
+            db.collection("users")
+                .document(userId)
+                .collection("walkingData")
+                .add(walkingData)
                 .await()
         } catch (e: Exception) {
             throw e

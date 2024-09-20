@@ -5,11 +5,15 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.services.WalkingService
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import java.util.Locale
 
-class LocationViewModel : ViewModel() {
+class LocationViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     val isTracking: StateFlow<Boolean> = WalkingService.isTracking
     val pathPoints: StateFlow<List<LatLng>> = WalkingService.pathPoints
@@ -25,13 +29,24 @@ class LocationViewModel : ViewModel() {
         }
     }
 
-    fun stopWalkingService(context: Context) {
+    fun stopWalkingService(context: Context, userId: String) {
         val intent = Intent(context, WalkingService::class.java)
-        //TODO: Salvar dados no bd
+        saveWalkingData(userId)
         context.stopService(intent)
     }
 
-    fun addPathPoint(location: LatLng) {
-        WalkingService.addPathPoint(location)
+    private fun saveWalkingData(userId: String){
+        viewModelScope.launch {
+            try {
+                //val formattedDistance = String.format(Locale.getDefault(), "%.2f", totalDistance.value).toDouble()
+                userRepository.saveWalkingData(
+                    userId = userId,
+                    totalDistance = totalDistance.value,
+                    elapsedTime = elapsedTime.value,
+                )
+            } catch (e: Exception) {
+                // Handle error if needed
+            }
+        }
     }
 }

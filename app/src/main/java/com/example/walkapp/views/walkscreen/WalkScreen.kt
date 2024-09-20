@@ -81,7 +81,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                     totalDistance = totalDistance,
                     elapsedTime = elapsedTime,
                     startWalkingService = { context -> locationViewModel.startWalkingService(context) },
-                    stopWalkingService = { context -> locationViewModel.stopWalkingService(context) }
+                    stopWalkingService = { context -> locationViewModel.stopWalkingService(context, userData!!.id) }
                 )
             }
             HamburgerMenuButton(

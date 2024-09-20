@@ -1,6 +1,7 @@
 package com.example.walkapp.views.walkscreen.components
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,8 +62,8 @@ fun Map(navController: NavHostController, userLocation: LatLng?, avatarIndex: In
         if (isWalking) {
             Polyline(
                 points = pathPoints,
-                color = Color.Blue,
-                width = 5f
+                color = MaterialTheme.colorScheme.primary,
+                width = 10f
             )
         }
     }

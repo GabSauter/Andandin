@@ -32,6 +32,5 @@ val appModule = module {
                 LocationManager
         }
 
-        viewModel { LocationViewModel() }
-
+        viewModel { LocationViewModel(get()) }
 }
