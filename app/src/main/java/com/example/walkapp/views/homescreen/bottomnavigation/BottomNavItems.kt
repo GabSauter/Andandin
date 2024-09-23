@@ -1,15 +1,7 @@
 package com.example.walkapp.views.homescreen.bottomnavigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.walkapp.R
+import com.example.walkapp.navigation.Graph
 import com.example.walkapp.navigation.Screen
 
 sealed class BottomNavItems(
@@ -18,7 +10,7 @@ sealed class BottomNavItems(
     val icon: Int
 ) {
     data object Historic : BottomNavItems(
-        route = Screen.Historic.route,
+        route = Graph.Historic.route,
         title = "Histórico",
         icon = R.drawable.ic_book
     )

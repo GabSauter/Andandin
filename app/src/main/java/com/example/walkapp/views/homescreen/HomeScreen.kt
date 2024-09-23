@@ -12,6 +12,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.walkapp.navigation.Graph
 import com.example.walkapp.navigation.HomeNavGraph
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.HomeViewModel
@@ -26,12 +27,7 @@ fun HomeScreen(
     authUser: FirebaseUser?,
     onSignOut: () -> Unit
 ) {
-    val bottomBarScreens = listOf(
-        Screen.Historic,
-        Screen.Walk,
-        Screen.People
-    )
-    val showBottomBar = shouldShowBottomBar(navController, bottomBarScreens)
+    val showBottomBar = shouldShowBottomBar(navController)
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
@@ -64,9 +60,13 @@ fun HomeScreen(
 
 @Composable
 private fun shouldShowBottomBar(
-    navController: NavHostController,
-    screens: List<Screen>
+    navController: NavHostController
 ): Boolean {
+    val bottomBarScreens = listOf(
+        Graph.Historic.route,
+        Screen.Walk.route,
+        Screen.People.route
+    )
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
-    return screens.any { it.route == currentDestination?.route }
+    return bottomBarScreens.any { it == currentDestination?.route }
 }

@@ -4,9 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.walkapp.views.AvatarMakerScreen
-import com.example.walkapp.views.HistoricScreen
-import com.example.walkapp.views.PeopleScreen
+import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
+import com.example.walkapp.views.historicscreen.HistoricScreen
+import com.example.walkapp.views.peoplescreen.PeopleScreen
+import com.example.walkapp.views.roothistoricscreen.RootHistoricScreen
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen
 import com.google.firebase.auth.FirebaseUser
@@ -29,8 +30,8 @@ fun HomeNavGraph(
                 onSignOut = onSignOut
             )
         }
-        composable(Screen.Historic.route) {
-            HistoricScreen()
+        composable(Graph.Historic.route) {
+            RootHistoricScreen(authUser = authUser)
         }
         composable(Screen.People.route) {
             PeopleScreen()

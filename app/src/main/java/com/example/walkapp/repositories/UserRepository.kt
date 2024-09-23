@@ -1,8 +1,12 @@
 package com.example.walkapp.repositories
 
+import android.util.Log
 import com.example.walkapp.models.User
+import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
@@ -75,6 +79,45 @@ class UserRepository {
                 .add(walkingData)
                 .await()
         } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
+        try {
+            var query = db.collection("users")
+                .document(userId)
+                .collection("walkingData")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
+
+            if (lastDocument != null) {
+                query = query.startAfter(lastDocument)
+            }
+
+            val querySnapshot = query.get().await()
+
+            if (querySnapshot.isEmpty) {
+                return Pair(emptyList(), null)
+            }
+
+            val walkHistoryItems = querySnapshot.documents.mapNotNull { document ->
+                val totalDistance = document.getDouble("totalDistance") ?: 0.0
+                val elapsedTime = document.getLong("elapsedTime") ?: 0L
+                val timestamp = document.getTimestamp("timestamp")?.toDate()?.toString() ?: ""
+
+                WalkHistoryItem(
+                    timestamp = timestamp,
+                    distance = totalDistance.toString(),
+                    elapsedTimeMs = elapsedTime
+                )
+            }
+
+            val lastVisibleDocument = querySnapshot.documents.lastOrNull()
+
+            return Pair(walkHistoryItems, lastVisibleDocument)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error fetching walk history", e)
             throw e
         }
     }

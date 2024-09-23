@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.views.homescreen.HomeScreen
-import com.example.walkapp.views.LoginScreen
+import com.example.walkapp.views.loginscreen.LoginScreen
 import com.example.walkapp.viewmodels.AuthViewModel
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel

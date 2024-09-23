@@ -1,4 +1,4 @@
-package com.example.walkapp.views
+package com.example.walkapp.views.loginscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
