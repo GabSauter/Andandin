@@ -80,7 +80,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                     isWalking = isWalking,
                     totalDistance = totalDistance,
                     elapsedTime = elapsedTime,
-                    startWalkingService = { context -> locationViewModel.startWalkingService(context) },
+                    startWalkingService = { context -> locationViewModel.startWalkingService(context, userData!!.id) },
                     stopWalkingService = { context -> locationViewModel.stopWalkingService(context, userData!!.id) }
                 )
             }

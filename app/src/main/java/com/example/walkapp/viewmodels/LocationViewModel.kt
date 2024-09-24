@@ -20,8 +20,9 @@ class LocationViewModel(private val userRepository: UserRepository) : ViewModel(
     val totalDistance: StateFlow<Double> = WalkingService.totalDistance
     val elapsedTime: StateFlow<Long> = WalkingService.elapsedTime
 
-    fun startWalkingService(context: Context) {
+    fun startWalkingService(context: Context, userId: String) {
         val intent = Intent(context, WalkingService::class.java)
+        intent.putExtra("userId", userId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
@@ -30,23 +31,14 @@ class LocationViewModel(private val userRepository: UserRepository) : ViewModel(
     }
 
     fun stopWalkingService(context: Context, userId: String) {
-        val intent = Intent(context, WalkingService::class.java)
-        saveWalkingData(userId)
-        context.stopService(intent)
-    }
-
-    private fun saveWalkingData(userId: String){
-        viewModelScope.launch {
-            try {
-                //val formattedDistance = String.format(Locale.getDefault(), "%.2f", totalDistance.value).toDouble()
-                userRepository.saveWalkingData(
-                    userId = userId,
-                    totalDistance = totalDistance.value,
-                    elapsedTime = elapsedTime.value,
-                )
-            } catch (e: Exception) {
-                // Handle error if needed
-            }
+        val intent = Intent(context, WalkingService::class.java).apply {
+            action = WalkingService.ACTION_STOP
+        }
+        intent.putExtra("userId", userId)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
         }
     }
 }

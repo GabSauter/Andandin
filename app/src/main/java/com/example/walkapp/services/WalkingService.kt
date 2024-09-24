@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.example.walkapp.MainActivity
 import com.example.walkapp.R
 import com.example.walkapp.helpers.LocationManager
+import com.example.walkapp.repositories.UserRepository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,14 +24,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.util.Locale
 
 class WalkingService : Service() {
+
+    private val userRepository: UserRepository by inject()
 
     private lateinit var locationManager: LocationManager
     private var startTime = 0L
     private var timerJob: Job? = null
     private var trackingJob: Job? = null
+    private var userId: String? = null
 
     companion object {
         const val CHANNEL_ID = "WalkingServiceChannel"
@@ -76,9 +81,14 @@ class WalkingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        userId = intent?.getStringExtra("userId") ?: userId
         if (intent?.action == ACTION_STOP) {
             stopForeground(STOP_FOREGROUND_REMOVE)
-            stopSelf()
+            userId?.let {
+                saveWalkingData(it, totalDistance.value, elapsedTime.value) {
+                    stopSelf()
+                }
+            } ?: stopSelf()
             return START_NOT_STICKY
         } else {
             startForeground(NOTIFICATION_ID, createNotification(0.0, 0L))
@@ -90,6 +100,7 @@ class WalkingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         isTracking.value = false
         pathPoints.value = emptyList()
         totalDistance.value = 0.0
@@ -101,11 +112,31 @@ class WalkingService : Service() {
         trackingJob?.cancel()
     }
 
+    private fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long, onComplete: () -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                userRepository.saveWalkingData(
+                    userId = userId,
+                    totalDistance = totalDistance,
+                    elapsedTime = elapsedTime,
+                )
+                Log.d("WalkingService", "Walking data saved successfully")
+                Log.d("WalkingService", "Total Distance: $totalDistance meters")
+            } catch (e: Exception) {
+                Log.e("WalkingService", "Failed to save walking data", e)
+            } finally {
+                onComplete()
+                Log.d("WalkingService", "Walking service stopped")
+            }
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createNotification(distance: Double, time: Long): Notification {
         val stopIntent = Intent(this, WalkingService::class.java).apply {
             action = ACTION_STOP
+            putExtra("userId", userId)
         }
         val pendingStopIntent = PendingIntent.getService(
             this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
