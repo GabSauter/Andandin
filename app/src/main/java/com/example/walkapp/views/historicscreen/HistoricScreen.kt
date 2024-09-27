@@ -37,7 +37,7 @@ fun HistoricScreen(user: FirebaseUser?) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(walkHistoric.size) { index ->
