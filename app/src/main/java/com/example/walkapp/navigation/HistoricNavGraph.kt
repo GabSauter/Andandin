@@ -27,7 +27,9 @@ fun HistoricNavGraph(
             HistoricScreen(authUser)
         }
         composable(Screen.Performance.route) {
-            PerformanceScreen()
+            if (authUser != null) {
+                PerformanceScreen(authUser.uid)
+            }
         }
         composable(Screen.Badges.route) {
             BadgesScreen()
