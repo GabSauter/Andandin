@@ -93,20 +93,20 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
     }
 
     private fun mergeDataWithLast7Days(originalData: List<DistanceDay>): List<DistanceDay> {
-        val last7Days = getLast7Days()  // Get the last 7 days
-        val originalDataMap = originalData.associateBy { it.day }  // Convert original data to a map for quick lookup
+        val last7Days = getLast7Days()
+        val originalDataMap = originalData.associateBy { it.day }
 
         return last7Days.map { day ->
-            originalDataMap[day] ?: DistanceDay(0, day)  // If day exists, use it; otherwise, create a new entry with distance 0
+            originalDataMap[day] ?: DistanceDay(0, day)
         }
     }
 
     private fun mergeDataWithLast12Months(originalData: List<DistanceMonth>): List<DistanceMonth> {
-        val last12Months = getLast12Months()  // Get the last 12 months
-        val originalDataMap = originalData.associateBy { it.month }  // Convert original data to a map for quick lookup
+        val last12Months = getLast12Months()
+        val originalDataMap = originalData.associateBy { it.month }
 
         return last12Months.map { month ->
-            originalDataMap[month] ?: DistanceMonth(0, month)  // If month exists, use it; otherwise, create a new entry with distance 0
+            originalDataMap[month] ?: DistanceMonth(0, month)
         }
     }
 }

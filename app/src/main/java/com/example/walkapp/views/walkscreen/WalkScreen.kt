@@ -60,7 +60,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (loading || userData == null) {
+        if (loading || userData == null || userLocation == null) {
             CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center

@@ -1,14 +1,21 @@
 package com.example.walkapp.repositories
 
 import android.util.Log
+import com.example.walkapp.models.DistanceDay
+import com.example.walkapp.models.DistanceMonth
+import com.example.walkapp.models.Performance
 import com.example.walkapp.models.User
 import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class UserRepository {
     private val db = Firebase.firestore
@@ -67,17 +74,81 @@ class UserRepository {
 
     suspend fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long) {
         try {
-            val walkingData = mapOf(
-                "totalDistance" to totalDistance,
-                "elapsedTime" to elapsedTime,
-                "timestamp" to FieldValue.serverTimestamp()
-            )
+            val calendar = Calendar.getInstance()
 
-            db.collection("users")
-                .document(userId)
-                .collection("walkingData")
-                .add(walkingData)
-                .await()
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val todayString = dateFormat.format(calendar.time)
+            val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
+            val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+            val currentMonth = monthFormat.format(calendar.time)
+
+            val userRef = db.collection("users").document(userId)
+            val walkingDataRef = userRef.collection("walkingData").document()
+            val performanceDataRef = userRef.collection("performanceData").document("performance")
+
+            db.runTransaction { transaction ->
+
+                val snapshot = transaction.get(performanceDataRef)
+                val performanceData = snapshot.data ?: emptyMap<String, Any>()
+
+                val performance = if (performanceData.isNotEmpty()) {
+                    Performance.mapToPerformance(performanceData)
+                } else {
+                    Performance(
+                        distanceTotal = 0.0,
+                        distanceToday = 0.0,
+                        distanceWeek = 0.0,
+                        distanceLast7Days = emptyList(),
+                        distanceLast12Months = emptyList()
+                    )
+                }
+
+                val newDistanceToday = performance.distanceToday + totalDistance
+                val newDistanceTotal = performance.distanceTotal + totalDistance
+                val newDistanceWeek = performance.distanceWeek + totalDistance
+
+                val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
+                val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
+                if (todayEntry != null) {
+                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance.toDouble() + totalDistance)
+                    updatedDistanceLast7Days[updatedDistanceLast7Days.indexOf(todayEntry)] = updatedTodayEntry
+                } else {
+                    updatedDistanceLast7Days.add(DistanceDay(distance = totalDistance, day = todayString))
+                }
+
+                if (updatedDistanceLast7Days.size > 7) {
+                    updatedDistanceLast7Days.removeAt(0)
+                }
+
+                val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
+                val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
+                if (monthEntry != null) {
+                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance.toDouble() + totalDistance)
+                    updatedDistanceLast12Months[updatedDistanceLast12Months.indexOf(monthEntry)] = updatedMonthEntry
+                } else {
+                    updatedDistanceLast12Months.add(DistanceMonth(distance = totalDistance, month = currentMonth))
+                }
+
+                val updatedPerformance = Performance(
+                    distanceTotal = newDistanceTotal,
+                    distanceToday = newDistanceToday,
+                    distanceWeek = newDistanceWeek,
+                    distanceLast7Days = updatedDistanceLast7Days,
+                    distanceLast12Months = updatedDistanceLast12Months
+                )
+
+                transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
+
+                val walkingData = mapOf(
+                    "totalDistance" to totalDistance,
+                    "elapsedTime" to elapsedTime,
+                    "timestamp" to FieldValue.serverTimestamp()
+                )
+                transaction.set(walkingDataRef, walkingData)
+
+                null
+            }.await()
+
         } catch (e: Exception) {
             throw e
         }
