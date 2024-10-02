@@ -96,16 +96,12 @@ class UserRepository {
                 } else {
                     Performance(
                         distanceTotal = 0.0,
-                        distanceToday = 0.0,
-                        distanceWeek = 0.0,
                         distanceLast7Days = emptyList(),
                         distanceLast12Months = emptyList()
                     )
                 }
 
-                val newDistanceToday = performance.distanceToday + totalDistance
                 val newDistanceTotal = performance.distanceTotal + totalDistance
-                val newDistanceWeek = performance.distanceWeek + totalDistance
 
                 val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
                 val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
@@ -131,8 +127,6 @@ class UserRepository {
 
                 val updatedPerformance = Performance(
                     distanceTotal = newDistanceTotal,
-                    distanceToday = newDistanceToday,
-                    distanceWeek = newDistanceWeek,
                     distanceLast7Days = updatedDistanceLast7Days,
                     distanceLast12Months = updatedDistanceLast12Months
                 )

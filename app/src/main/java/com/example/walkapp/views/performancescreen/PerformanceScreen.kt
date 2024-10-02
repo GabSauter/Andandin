@@ -55,9 +55,7 @@ fun PerformanceScreen(userId: String) {
         }
     }else{
         if(error != null){
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                Text(text = error!!)
-            }
+            Text(text = error!!)
         }else{
             val last7Days = performanceViewModel.getLast7Days()
             val last12Months = performanceViewModel.getLast12Months()

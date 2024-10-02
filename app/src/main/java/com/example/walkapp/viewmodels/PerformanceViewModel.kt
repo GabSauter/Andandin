@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -46,14 +44,14 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
                     _performanceUiState.update {
                         it.copy(
                             distanceTotal = performanceData.distanceTotal,
-                            distanceToday = performanceData.distanceToday,
-                            distanceWeek = performanceData.distanceWeek
                         )
                     }
                     val performance7LastDays = mergeDataWithLast7Days(performanceData.distanceLast7Days)
                     val performance12LastMonths =mergeDataWithLast12Months(performanceData.distanceLast12Months)
                     _performanceUiState.update {
                         it.copy(
+                            distanceToday = performance7LastDays.firstOrNull()?.distance ?: .0,
+                            distanceWeek = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
                             distanceLast7Days = performance7LastDays,
                             distanceLast12Months = performance12LastMonths
                         )
@@ -61,6 +59,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
                 }
                 _error.value = null
             } catch (e: Exception) {
+                Log.e("PerformanceViewModel", "Error loading performance data", e)
                 _error.value = "Houve um erro ao tentar carregar os dados de performance."
             }finally {
                 _loading.value = false
@@ -97,7 +96,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.day }
 
         return last7Days.map { day ->
-            originalDataMap[day] ?: DistanceDay(0, day)
+            originalDataMap[day] ?: DistanceDay(0.0, day)
         }
     }
 
@@ -106,7 +105,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.month }
 
         return last12Months.map { month ->
-            originalDataMap[month] ?: DistanceMonth(0, month)
+            originalDataMap[month] ?: DistanceMonth(0.0, month)
         }
     }
 }
