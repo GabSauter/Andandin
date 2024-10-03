@@ -1,6 +1,5 @@
 package com.example.walkapp.views.performancescreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -35,8 +34,6 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import org.koin.androidx.compose.koinViewModel
-import java.text.DateFormatSymbols
-import java.util.Locale
 
 @Composable
 fun PerformanceScreen(userId: String) {
@@ -84,8 +81,8 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
             }
             Spacer(modifier = Modifier.padding(8.dp))
             Text(text = "Total: ${performanceData.distanceTotal}m")
-            Text(text = "Hoje: ${performanceData.distanceToday}m")
-            Text(text = "Esta semana: ${performanceData.distanceWeek}m")
+            Text(text = "Hoje: ${performanceData.sumOfDistanceToday}m")
+            Text(text = "Esta semana: ${performanceData.sumOfDistanceLast7Days}m")
         }
 
         item{
@@ -98,9 +95,9 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
                 )
             }
 
-            if(performanceData.distanceLast7Days.isNotEmpty()){
+            if(performanceData.distancesOfLast7Days.isNotEmpty()){
                 BarChartWithStaticData(
-                    y = performanceData.distanceLast7Days.map { it.distance },
+                    y = performanceData.distancesOfLast7Days.map { it.distance },
                     x = { _, x, _ ->
                         last7Days[(x.toInt() % 7)]
                     }
@@ -117,9 +114,9 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            if(performanceData.distanceLast7Days.isNotEmpty()){
+            if(performanceData.distancesOfLast7Days.isNotEmpty()){
                 BarChartWithStaticData(
-                    y = performanceData.distanceLast12Months.map { it.distance },
+                    y = performanceData.distancesOfLast12Months.map { it.distance },
                     x = { _, x, _ ->
                         last12Months[(x.toInt() % 12)]
                     }

@@ -17,10 +17,10 @@ import java.util.Locale
 
 data class PerformanceUiState(
     val distanceTotal: Double = .0,
-    val distanceToday: Double = .0,
-    val distanceWeek: Double = .0,
-    val distanceLast7Days: List<DistanceDay> = emptyList(),
-    val distanceLast12Months: List<DistanceMonth> = emptyList()
+    val sumOfDistanceToday: Double = .0,
+    val sumOfDistanceLast7Days: Double = .0,
+    val distancesOfLast7Days: List<DistanceDay> = emptyList(),
+    val distancesOfLast12Months: List<DistanceMonth> = emptyList()
 )
 
 class PerformanceViewModel(private val performanceRepository: PerformanceRepository): ViewModel() {
@@ -50,10 +50,10 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
                     val performance12LastMonths =mergeDataWithLast12Months(performanceData.distanceLast12Months)
                     _performanceUiState.update {
                         it.copy(
-                            distanceToday = performance7LastDays.firstOrNull()?.distance ?: .0,
-                            distanceWeek = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
-                            distanceLast7Days = performance7LastDays,
-                            distanceLast12Months = performance12LastMonths
+                            sumOfDistanceToday = performance7LastDays.firstOrNull()?.distance ?: .0,
+                            sumOfDistanceLast7Days = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
+                            distancesOfLast7Days = performance7LastDays,
+                            distancesOfLast12Months = performance12LastMonths
                         )
                     }
                 }

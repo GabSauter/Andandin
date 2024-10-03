@@ -79,6 +79,7 @@ class UserRepository {
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val todayString = dateFormat.format(calendar.time)
             val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
+            Log.d("UserRepository", "Current week: $currentWeek")
             val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
             val currentMonth = monthFormat.format(calendar.time)
 
@@ -106,7 +107,7 @@ class UserRepository {
                 val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
                 val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
                 if (todayEntry != null) {
-                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance.toDouble() + totalDistance)
+                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance + totalDistance)
                     updatedDistanceLast7Days[updatedDistanceLast7Days.indexOf(todayEntry)] = updatedTodayEntry
                 } else {
                     updatedDistanceLast7Days.add(DistanceDay(distance = totalDistance, day = todayString))
