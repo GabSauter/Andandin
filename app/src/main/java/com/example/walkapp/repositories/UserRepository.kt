@@ -8,7 +8,6 @@ import com.example.walkapp.models.User
 import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
@@ -72,7 +71,7 @@ class UserRepository {
         }
     }
 
-    suspend fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long) {
+    suspend fun saveWalkingData(userId: String, distance: Double, elapsedTime: Long) {
         try {
             val calendar = Calendar.getInstance()
 
@@ -102,15 +101,15 @@ class UserRepository {
                     )
                 }
 
-                val newDistanceTotal = performance.distanceTotal + totalDistance
+                val newDistanceTotal = performance.distanceTotal + distance
 
                 val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
                 val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
                 if (todayEntry != null) {
-                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance + totalDistance)
+                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance + distance)
                     updatedDistanceLast7Days[updatedDistanceLast7Days.indexOf(todayEntry)] = updatedTodayEntry
                 } else {
-                    updatedDistanceLast7Days.add(DistanceDay(distance = totalDistance, day = todayString))
+                    updatedDistanceLast7Days.add(DistanceDay(distance = distance, day = todayString))
                 }
 
                 if (updatedDistanceLast7Days.size > 7) {
@@ -120,10 +119,10 @@ class UserRepository {
                 val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
                 val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
                 if (monthEntry != null) {
-                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance + totalDistance)
+                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance + distance)
                     updatedDistanceLast12Months[updatedDistanceLast12Months.indexOf(monthEntry)] = updatedMonthEntry
                 } else {
-                    updatedDistanceLast12Months.add(DistanceMonth(distance = totalDistance, month = currentMonth))
+                    updatedDistanceLast12Months.add(DistanceMonth(distance = distance, month = currentMonth))
                 }
 
                 val updatedPerformance = Performance(
@@ -135,9 +134,9 @@ class UserRepository {
                 transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
 
                 val walkingData = mapOf(
-                    "totalDistance" to totalDistance,
-                    "elapsedTime" to elapsedTime,
-                    "timestamp" to FieldValue.serverTimestamp()
+                    "distance" to distance,
+                    "time" to elapsedTime,
+                    "date" to todayString
                 )
                 transaction.set(walkingDataRef, walkingData)
 
@@ -151,10 +150,11 @@ class UserRepository {
 
     suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
         try {
+
             var query = db.collection("users")
                 .document(userId)
                 .collection("walkingData")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .limit(limit)
 
             if (lastDocument != null) {
@@ -168,16 +168,18 @@ class UserRepository {
             }
 
             val walkHistoryItems = querySnapshot.documents.mapNotNull { document ->
-                val totalDistance = document.getDouble("totalDistance") ?: 0.0
-                val elapsedTime = document.getLong("elapsedTime") ?: 0L
-                val timestamp = document.getTimestamp("timestamp")?.toDate()?.toString() ?: ""
+                val distance = document.getDouble("distance") ?: 0.0
+                val elapsedTime = document.getLong("time") ?: 0L
+                val date = document.getString("date").toString()
 
                 WalkHistoryItem(
-                    timestamp = timestamp,
-                    distance = totalDistance.toString(),
-                    elapsedTimeMs = elapsedTime
+                    date = date,
+                    distance = distance,
+                    time = elapsedTime
                 )
             }
+
+            Log.d("UserRepository", "Walk history items: $walkHistoryItems")
 
             val lastVisibleDocument = querySnapshot.documents.lastOrNull()
 

@@ -117,7 +117,7 @@ class WalkingService : Service() {
             try {
                 userRepository.saveWalkingData(
                     userId = userId,
-                    totalDistance = totalDistance,
+                    distance = totalDistance,
                     elapsedTime = elapsedTime,
                 )
                 Log.d("WalkingService", "Walking data saved successfully")

@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -14,11 +15,14 @@ import androidx.compose.ui.unit.sp
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun HistoricScreen(user: FirebaseUser?) {
     val historicViewModel = koinViewModel<HistoricViewModel>()
-    val walkHistoric = historicViewModel.walkHistory.collectAsState().value
+    val walkHistoric by historicViewModel.walkHistory.collectAsState()
 
     LaunchedEffect(walkHistoric) {
         if(walkHistoric == null && user != null){
@@ -40,10 +44,10 @@ fun HistoricScreen(user: FirebaseUser?) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(walkHistoric.size) { index ->
-                WalkHistoryCard(walkHistoric[index])
+            items(walkHistoric!!.size) { index ->
+                WalkHistoryCard(walkHistoric!![index])
 
-                if (index == walkHistoric.size - 1) {
+                if (index == walkHistoric!!.size - 1) {
                     historicViewModel.loadWalkHistory(user?.uid ?: "")
                 }
             }
@@ -53,23 +57,23 @@ fun HistoricScreen(user: FirebaseUser?) {
 
 @Composable
 fun WalkHistoryCard(item: WalkHistoryItem) {
-    val distanceInKm = item.distance.removeSuffix(" km").toDoubleOrNull() ?: 0.0
-    val elapsedTimeInHours = convertElapsedTimeToHours(item.elapsedTimeMs)
+    val distanceInKm = item.distance
+    val elapsedTimeInHours = convertElapsedTimeToHours(item.time)
     val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
         )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Timestamp: ${item.timestamp}",
+                text = "Dia: ${item.date}",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -77,20 +81,20 @@ fun WalkHistoryCard(item: WalkHistoryItem) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Distance: ${item.distance}",
+                text = "Distância: : %.2f km".format(item.distance),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp
                 )
             )
             Text(
-                text = "Elapsed Time: ${formatElapsedTime(item.elapsedTimeMs)}",
+                text = "Tempo: ${formatElapsedTime(item.time)}",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Velocity: %.2f km/h".format(velocity),
+                text = "Velocidade: %.2f km/h".format(velocity),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
@@ -104,6 +108,19 @@ fun convertElapsedTimeToHours(elapsedTimeMs: Long): Double {
     return elapsedTimeMs / (1000.0 * 60.0 * 60.0)
 }
 
+fun formatTimestamp(timestamp: String): String {
+    val inputFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    return try {
+        val date = inputFormat.parse(timestamp)
+        outputFormat.format(date)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+        "Invalid date"
+    }
+}
+
 fun formatElapsedTime(elapsedTimeMs: Long): String {
     val totalSeconds = elapsedTimeMs / 1000
     val hours = totalSeconds / 3600
@@ -114,7 +131,7 @@ fun formatElapsedTime(elapsedTimeMs: Long): String {
 }
 
 data class WalkHistoryItem(
-    val timestamp: String,
-    val distance: String,
-    val elapsedTimeMs: Long
+    val date: String,
+    val distance: Double,
+    val time: Long
 )
