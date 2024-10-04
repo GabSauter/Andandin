@@ -120,7 +120,7 @@ class UserRepository {
                 val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
                 val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
                 if (monthEntry != null) {
-                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance.toDouble() + totalDistance)
+                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance + totalDistance)
                     updatedDistanceLast12Months[updatedDistanceLast12Months.indexOf(monthEntry)] = updatedMonthEntry
                 } else {
                     updatedDistanceLast12Months.add(DistanceMonth(distance = totalDistance, month = currentMonth))

@@ -75,7 +75,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                 MapScreenContent(
                     navController = navController,
                     userLocation = userLocation,
-                    avatarIndex = userData?.avatarIndex ?: 0,
+                    avatarIndex = userData!!.avatarIndex,
                     pathPoints = pathPoints,
                     isWalking = isWalking,
                     totalDistance = totalDistance,

@@ -1,9 +1,169 @@
 package com.example.walkapp.views.badgesscreen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import com.example.walkapp.R
 
 @Composable
-fun BadgesScreen(){
-    Text("Página de Medalhas")
+fun BadgesScreen(badges: List<Badge>) {
+    var selectedBadge by remember { mutableStateOf<Badge?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(badges.size) { index ->
+                BadgeItem(badge = badges[index], onClick = { selectedBadge = it })
+            }
+        }
+    }
+
+    selectedBadge?.let { badge ->
+        BadgeDialog(badge = badge, onDismiss = { selectedBadge = null })
+    }
+}
+
+@Composable
+fun BadgeItem(badge: Badge, onClick: (Badge) -> Unit) {
+    val painter = painterResource(id = badge.imageRes)
+    val colorMatrix =
+        if (badge.isUnlocked) ColorMatrix() else ColorMatrix().apply { setToSaturation(0f) }
+
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = badge.description,
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.colorMatrix(colorMatrix),
+            modifier = Modifier
+                .size(80.dp, 120.dp)
+                .padding(8.dp)
+                .clickable { onClick(badge) }
+        )
+    }
+}
+
+@Composable
+fun BadgeDialog(badge: Badge, onDismiss: () -> Unit) {
+    val colorMatrix =
+        if (badge.isUnlocked) ColorMatrix() else ColorMatrix().apply { setToSaturation(0f) }
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 2.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = badge.imageRes),
+                    contentDescription = badge.description,
+                    colorFilter = ColorFilter.colorMatrix(colorMatrix),
+                    modifier = Modifier
+                        .size(250.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = badge.description,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { onDismiss() }) {
+                    Text(text = "Fechar")
+                }
+            }
+        }
+    }
+}
+
+data class Badge(
+    val imageRes: Int,
+    val description: String,
+    val isUnlocked: Boolean
+)
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBadgesScreen() {
+    val badges = listOf(
+        Badge(
+            imageRes = R.drawable.medalha1,
+            description = "Achieved by walking 5km in total",
+            isUnlocked = true
+        ),
+        Badge(
+            imageRes = R.drawable.medalha2,
+            description = "Achieved by walking 10km in total",
+            isUnlocked = false
+        ),
+        Badge(
+            imageRes = R.drawable.medalha3,
+            description = "Achieved by walking 15km in total",
+            isUnlocked = false
+        ),
+        Badge(
+            imageRes = R.drawable.medalha4,
+            description = "Achieved by walking 20km in total",
+            isUnlocked = false
+        ),
+        Badge(
+            imageRes = R.drawable.medalha5,
+            description = "Achieved by walking 30km in total",
+            isUnlocked = false
+        ),
+    )
+    BadgesScreen(badges = badges)
 }

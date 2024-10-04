@@ -18,7 +18,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -41,13 +43,15 @@ fun AvatarMakerScreen(
 ) {
     val avatarMakerViewModel: AvatarMakerViewModel = koinViewModel()
 
-    if(passedAvatarIndex != null){
-        avatarMakerViewModel.setAvatarIndex(passedAvatarIndex)
+    LaunchedEffect(passedAvatarIndex) {
+        passedAvatarIndex?.let {
+            avatarMakerViewModel.setAvatarIndex(it)
+        }
     }
 
-    val avatarIndex = avatarMakerViewModel.avatarIndex.collectAsState().value
-    val errorSubmit = avatarMakerViewModel.error.collectAsState().value
-    val loading = avatarMakerViewModel.loading.collectAsState().value
+    val avatarIndex by avatarMakerViewModel.avatarIndex.collectAsState()
+    val errorSubmit by avatarMakerViewModel.error.collectAsState()
+    val loading by avatarMakerViewModel.loading.collectAsState()
     val onSubmit = {
         avatarMakerViewModel.saveAvatarIndex(authUser!!.uid)
         if (avatarMakerViewModel.error.value == null) {

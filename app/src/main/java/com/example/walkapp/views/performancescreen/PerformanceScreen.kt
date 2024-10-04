@@ -88,7 +88,7 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
         item{
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Dias (m/dia)",
+                    text = "Distâncias de Caminhadas (metros/dia)",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.align(Alignment.Center)
@@ -108,7 +108,7 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
         item {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Meses (m/mês)",
+                    text = "Distâncias de Caminhadas (metros/mês)",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.align(Alignment.Center)
