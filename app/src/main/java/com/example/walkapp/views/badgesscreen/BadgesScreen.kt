@@ -39,7 +39,18 @@ import androidx.compose.ui.window.Dialog
 import com.example.walkapp.R
 
 @Composable
-fun BadgesScreen(badges: List<Badge>) {
+fun BadgesScreen() {
+    val badges = listOf(
+        Badge(imageRes = R.drawable.medalha0, description = "Alcançado por caminhar uma distancia de 1 km", isUnlocked = true),
+        Badge(imageRes = R.drawable.medalha1, description = "Alcançado por caminhar uma distancia de 5 km", isUnlocked = true),
+        Badge(imageRes = R.drawable.medalha2, description = "Alcançado por caminhar uma distancia de 10 km", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha3, description = "Alcançado por caminhar uma distancia de 25 km", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha4, description = "Alcançado por caminhar uma distancia de 50 km", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha5, description = "Alcançado por caminhar uma distancia de 100 km", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha_bronze_km_dia, description = "Alcançado por caminhar uma distancia de 4 km no mesmo dia", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha_prata_km_dia, description = "Alcançado por caminhar uma distancia de 8 km no mesmo dia", isUnlocked = false),
+        Badge(imageRes = R.drawable.medalha_ouro_km_dia, description = "Alcançado por caminhar uma distancia de 16 km no mesmo dia", isUnlocked = false),
+    )
     var selectedBadge by remember { mutableStateOf<Badge?>(null) }
 
     Column(
@@ -138,32 +149,5 @@ data class Badge(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBadgesScreen() {
-    val badges = listOf(
-        Badge(
-            imageRes = R.drawable.medalha1,
-            description = "Achieved by walking 5km in total",
-            isUnlocked = true
-        ),
-        Badge(
-            imageRes = R.drawable.medalha2,
-            description = "Achieved by walking 10km in total",
-            isUnlocked = false
-        ),
-        Badge(
-            imageRes = R.drawable.medalha3,
-            description = "Achieved by walking 15km in total",
-            isUnlocked = false
-        ),
-        Badge(
-            imageRes = R.drawable.medalha4,
-            description = "Achieved by walking 20km in total",
-            isUnlocked = false
-        ),
-        Badge(
-            imageRes = R.drawable.medalha5,
-            description = "Achieved by walking 30km in total",
-            isUnlocked = false
-        ),
-    )
-    BadgesScreen(badges = badges)
+    BadgesScreen()
 }

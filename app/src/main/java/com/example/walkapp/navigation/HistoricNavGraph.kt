@@ -34,15 +34,7 @@ fun HistoricNavGraph(
             }
         }
         composable(Screen.Badges.route) {
-            BadgesScreen(
-                listOf(
-                    Badge(imageRes = R.drawable.medalha1, description = "Achieved by walking 5km in total", isUnlocked = true),
-                    Badge(imageRes = R.drawable.medalha2, description = "Achieved by walking 10km in total", isUnlocked = false),
-                    Badge(imageRes = R.drawable.medalha3, description = "Achieved by walking 15km in total", isUnlocked = false),
-                    Badge(imageRes = R.drawable.medalha4, description = "Achieved by walking 20km in total", isUnlocked = false),
-                    Badge(imageRes = R.drawable.medalha5, description = "Achieved by walking 30km in total", isUnlocked = false),
-                )
-            )
+            BadgesScreen()
         }
     }
 }
