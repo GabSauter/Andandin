@@ -7,9 +7,11 @@ import com.example.walkapp.models.Performance
 import com.example.walkapp.models.User
 import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.Transaction
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -71,14 +73,13 @@ class UserRepository {
         }
     }
 
-    suspend fun saveWalkingData(userId: String, distance: Double, elapsedTime: Long) {
+    suspend fun completeWalk(userId: String, distance: Double, elapsedTime: Long) {
         try {
             val calendar = Calendar.getInstance()
 
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val todayString = dateFormat.format(calendar.time)
             val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
-            Log.d("UserRepository", "Current week: $currentWeek")
             val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
             val currentMonth = monthFormat.format(calendar.time)
 
@@ -87,70 +88,91 @@ class UserRepository {
             val performanceDataRef = userRef.collection("performanceData").document("performance")
 
             db.runTransaction { transaction ->
-
-                val snapshot = transaction.get(performanceDataRef)
-                val performanceData = snapshot.data ?: emptyMap<String, Any>()
-
-                val performance = if (performanceData.isNotEmpty()) {
-                    Performance.mapToPerformance(performanceData)
-                } else {
-                    Performance(
-                        distanceTotal = 0.0,
-                        distanceLast7Days = emptyList(),
-                        distanceLast12Months = emptyList()
-                    )
-                }
-
-                val newDistanceTotal = performance.distanceTotal + distance
-
-                val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
-                val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
-                if (todayEntry != null) {
-                    val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance + distance)
-                    updatedDistanceLast7Days[updatedDistanceLast7Days.indexOf(todayEntry)] = updatedTodayEntry
-                } else {
-                    updatedDistanceLast7Days.add(DistanceDay(distance = distance, day = todayString))
-                }
-
-                if (updatedDistanceLast7Days.size > 7) {
-                    updatedDistanceLast7Days.removeAt(0)
-                }
-
-                val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
-                val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
-                if (monthEntry != null) {
-                    val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance + distance)
-                    updatedDistanceLast12Months[updatedDistanceLast12Months.indexOf(monthEntry)] = updatedMonthEntry
-                } else {
-                    updatedDistanceLast12Months.add(DistanceMonth(distance = distance, month = currentMonth))
-                }
-
-                val updatedPerformance = Performance(
-                    distanceTotal = newDistanceTotal,
-                    distanceLast7Days = updatedDistanceLast7Days,
-                    distanceLast12Months = updatedDistanceLast12Months
-                )
-
-                transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
-
-                val walkingData = mapOf(
-                    "distance" to distance,
-                    "time" to elapsedTime,
-                    "date" to todayString
-                )
-                transaction.set(walkingDataRef, walkingData)
-
+                val performance = getPerformanceData(transaction, performanceDataRef)
+                setPerformanceData(transaction, performanceDataRef, performance, distance, todayString, currentMonth)
+                setWalkingData(transaction, walkingDataRef, distance, elapsedTime, todayString)
                 null
             }.await()
-
         } catch (e: Exception) {
             throw e
         }
     }
 
+    private fun getPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference): Performance {
+        val snapshot = transaction.get(performanceDataRef)
+        val performanceData = snapshot.data ?: emptyMap<String, Any>()
+
+        return if (performanceData.isNotEmpty()) {
+            Performance.mapToPerformance(performanceData)
+        } else {
+            Performance(
+                distanceTotal = 0.0,
+                distanceLast7Days = emptyList(),
+                distanceLast12Months = emptyList()
+            )
+        }
+    }
+
+    private fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Double, todayString: String, currentMonth: String){
+        val newDistanceTotal = performance.distanceTotal + distance
+        val updatedDistanceLast7Days = updateDistanceLast7Days(performance, distance, todayString)
+        val updatedDistanceLast12Months = updateDistanceLast12Months(performance, distance, currentMonth)
+
+        val updatedPerformance = Performance(
+            distanceTotal = newDistanceTotal,
+            distanceLast7Days = updatedDistanceLast7Days,
+            distanceLast12Months = updatedDistanceLast12Months
+        )
+
+        transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
+    }
+
+    private fun updateDistanceLast7Days(performance: Performance, distance: Double, todayString: String): List<DistanceDay> {
+        val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
+        val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
+        if (todayEntry != null) {
+            val updatedTodayEntry = todayEntry.copy(distance = todayEntry.distance + distance)
+            updatedDistanceLast7Days[updatedDistanceLast7Days.indexOf(todayEntry)] = updatedTodayEntry
+        } else {
+            updatedDistanceLast7Days.add(DistanceDay(distance = distance, day = todayString))
+        }
+        if (updatedDistanceLast7Days.size > 7) {
+            updatedDistanceLast7Days.removeAt(0)
+        }
+
+        return updatedDistanceLast7Days
+    }
+
+    private fun updateDistanceLast12Months(performance: Performance, distance: Double, currentMonth: String): List<DistanceMonth> {
+        val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
+        val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
+        if (monthEntry != null) {
+            val updatedMonthEntry = monthEntry.copy(distance = monthEntry.distance + distance)
+            updatedDistanceLast12Months[updatedDistanceLast12Months.indexOf(monthEntry)] =
+                updatedMonthEntry
+        } else {
+            updatedDistanceLast12Months.add(
+                DistanceMonth(
+                    distance = distance,
+                    month = currentMonth
+                )
+            )
+        }
+
+        return updatedDistanceLast12Months
+    }
+
+    private fun setWalkingData(transaction: Transaction, walkingDataRef: DocumentReference, distance: Double, elapsedTime: Long, todayString: String){
+        val walkingData = mapOf(
+            "distance" to distance,
+            "time" to elapsedTime,
+            "date" to todayString
+        )
+        transaction.set(walkingDataRef, walkingData)
+    }
+
     suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
         try {
-
             var query = db.collection("users")
                 .document(userId)
                 .collection("walkingData")
@@ -162,7 +184,6 @@ class UserRepository {
             }
 
             val querySnapshot = query.get().await()
-
             if (querySnapshot.isEmpty) {
                 return Pair(emptyList(), null)
             }
@@ -178,11 +199,7 @@ class UserRepository {
                     time = elapsedTime
                 )
             }
-
-            Log.d("UserRepository", "Walk history items: $walkHistoryItems")
-
             val lastVisibleDocument = querySnapshot.documents.lastOrNull()
-
             return Pair(walkHistoryItems, lastVisibleDocument)
         } catch (e: Exception) {
             Log.e("UserRepository", "Error fetching walk history", e)

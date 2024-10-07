@@ -115,7 +115,7 @@ class WalkingService : Service() {
     private fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long, onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                userRepository.saveWalkingData(
+                userRepository.completeWalk(
                     userId = userId,
                     distance = totalDistance,
                     elapsedTime = elapsedTime,

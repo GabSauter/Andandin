@@ -1,6 +1,6 @@
 package com.example.walkapp.models
 
-//TODO: Não precisa da distacia de hoje, pois ela já está no distanceLast7Days, da para adicionar um que mostra o tempo total de caminhada hoje e na semana, por causa da OMS
+//TODO: Da para adicionar um que mostra o tempo total de caminhada hoje e na semana, por causa da OMS
 class Performance(
     val distanceTotal: Double,
     val distanceLast7Days: List<DistanceDay>,
