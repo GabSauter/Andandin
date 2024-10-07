@@ -3,6 +3,7 @@ package com.example.walkapp.views.badgesscreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,43 +41,67 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.walkapp.R
+import com.example.walkapp.viewmodels.BadgeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BadgesScreen() {
-    val badges = listOf(
-        Badge(imageRes = R.drawable.medalha0, description = "Alcançado por caminhar uma distancia de 1 km", isUnlocked = true),
-        Badge(imageRes = R.drawable.medalha1, description = "Alcançado por caminhar uma distancia de 5 km", isUnlocked = true),
-        Badge(imageRes = R.drawable.medalha2, description = "Alcançado por caminhar uma distancia de 10 km", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha3, description = "Alcançado por caminhar uma distancia de 25 km", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha4, description = "Alcançado por caminhar uma distancia de 50 km", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha5, description = "Alcançado por caminhar uma distancia de 100 km", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha_bronze_km_dia, description = "Alcançado por caminhar uma distancia de 4 km no mesmo dia", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha_prata_km_dia, description = "Alcançado por caminhar uma distancia de 8 km no mesmo dia", isUnlocked = false),
-        Badge(imageRes = R.drawable.medalha_ouro_km_dia, description = "Alcançado por caminhar uma distancia de 16 km no mesmo dia", isUnlocked = false),
-    )
-    var selectedBadge by remember { mutableStateOf<Badge?>(null) }
+fun BadgesScreen(userId: String) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(badges.size) { index ->
-                BadgeItem(badge = badges[index], onClick = { selectedBadge = it })
-            }
-        }
+    val badgeViewModel = koinViewModel<BadgeViewModel>()
+    val badgesData by badgeViewModel.badges.collectAsState()
+    val loading by badgeViewModel.loading.collectAsState()
+    val error by badgeViewModel.error.collectAsState()
+
+    LaunchedEffect(Unit){
+        badgeViewModel.getBadges(userId)
     }
 
-    selectedBadge?.let { badge ->
-        BadgeDialog(badge = badge, onDismiss = { selectedBadge = null })
+    if(badgesData == null && loading){
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if(error != null){
+        Text("Houve um erro ao carregar as medalhas")
+    } else{
+        val badges = listOf(
+            Badge(imageRes = R.drawable.medalha0, description = "Alcançado por caminhar uma distancia de 1 km", isUnlocked = badgesData?.badge1 ?: false),
+            Badge(imageRes = R.drawable.medalha1, description = "Alcançado por caminhar uma distancia de 5 km", isUnlocked = badgesData?.badge2 ?: false),
+            Badge(imageRes = R.drawable.medalha2, description = "Alcançado por caminhar uma distancia de 10 km", isUnlocked = badgesData?.badge3 ?: false),
+            Badge(imageRes = R.drawable.medalha3, description = "Alcançado por caminhar uma distancia de 25 km", isUnlocked = badgesData?.badge4 ?: false),
+            Badge(imageRes = R.drawable.medalha4, description = "Alcançado por caminhar uma distancia de 50 km", isUnlocked = badgesData?.badge5 ?: false),
+            Badge(imageRes = R.drawable.medalha5, description = "Alcançado por caminhar uma distancia de 100 km", isUnlocked = badgesData?.badge6 ?: false),
+            Badge(imageRes = R.drawable.medalha_bronze_km_dia, description = "Alcançado por caminhar uma distancia de 4 km no mesmo dia", isUnlocked = badgesData?.badge7 ?: false),
+            Badge(imageRes = R.drawable.medalha_prata_km_dia, description = "Alcançado por caminhar uma distancia de 8 km no mesmo dia", isUnlocked = badgesData?.badge8 ?: false),
+            Badge(imageRes = R.drawable.medalha_ouro_km_dia, description = "Alcançado por caminhar uma distancia de 16 km no mesmo dia", isUnlocked = badgesData?.badge9 ?: false),
+        )
+
+        var selectedBadge by remember { mutableStateOf<Badge?>(null) }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(badges.size) { index ->
+                    BadgeItem(badge = badges[index], onClick = { selectedBadge = it })
+                }
+            }
+        }
+
+        selectedBadge?.let { badge ->
+            BadgeDialog(badge = badge, onDismiss = { selectedBadge = null })
+        }
     }
 }
 
@@ -145,9 +173,3 @@ data class Badge(
     val description: String,
     val isUnlocked: Boolean
 )
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewBadgesScreen() {
-    BadgesScreen()
-}

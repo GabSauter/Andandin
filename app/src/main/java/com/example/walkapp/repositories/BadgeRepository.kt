@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 class BadgeRepository {
     private val db = Firebase.firestore
 
-    suspend fun getBadges(userId: String): List<Int> {
+    suspend fun getBadges(userId: String): Map<String, Any> {
         try{
             val badgeRef = db.collection("users")
                 .document(userId).collection("badgeData")
@@ -16,9 +16,9 @@ class BadgeRepository {
 
             val snapshot = badgeRef.get().await()
             return if(snapshot.exists()){
-                snapshot.get("badges") as List<Int>
+                snapshot.data ?: emptyMap()
             }else{
-                mutableListOf(0,0,0,0,0,0,0,0,0)
+                emptyMap()
             }
         }catch (e: Exception){
             Log.e("UserRepository", "Error getting badges", e)

@@ -34,7 +34,9 @@ fun HistoricNavGraph(
             }
         }
         composable(Screen.Badges.route) {
-            BadgesScreen()
+            if (authUser != null) {
+                BadgesScreen(authUser.uid)
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.walkapp.repositories
 
 import android.util.Log
-import com.example.walkapp.models.Badge
+import com.example.walkapp.models.Badges
 import com.example.walkapp.models.DistanceDay
 import com.example.walkapp.models.DistanceMonth
 import com.example.walkapp.models.Performance
@@ -176,7 +176,7 @@ class UserRepository {
         transaction.set(walkingDataRef, walkingData)
     }
 
-    private fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Double, newDistanceTotal: Double, badgeData: Badge) {
+    private fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Double, newDistanceTotal: Double, badgeData: Badges) {
         //Total distance Badges:
         if(newDistanceTotal >= 1.000) { //distancia de 1 km
             badgeData.badge1 = true
@@ -212,11 +212,11 @@ class UserRepository {
         transaction.set(badgeRef, badgeData, SetOptions.merge())
     }
 
-    private fun getBadgeData(transaction: Transaction, badgeRef: DocumentReference): Badge {
+    private fun getBadgeData(transaction: Transaction, badgeRef: DocumentReference): Badges {
         val snapshot = transaction.get(badgeRef)
         val badgeData = snapshot.data ?: emptyMap<String, Any>()
         if(badgeData.isEmpty()) {
-            return Badge(
+            return Badges(
                 badge1 = false,
                 badge2 = false,
                 badge3 = false,
@@ -228,7 +228,7 @@ class UserRepository {
                 badge9 = false
             )
         }
-        val badges = Badge.mapToBadge(badgeData as Map<String, Any>)
+        val badges = Badges.mapToBadge(badgeData as Map<String, Any>)
         return badges
     }
 

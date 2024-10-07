@@ -3,10 +3,12 @@ package com.example.walkapp.di
 import android.content.Context
 import com.example.walkapp.helpers.LocationManager
 import com.example.walkapp.repositories.AuthRepository
+import com.example.walkapp.repositories.BadgeRepository
 import com.example.walkapp.repositories.PerformanceRepository
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.viewmodels.AuthViewModel
 import com.example.walkapp.viewmodels.AvatarMakerViewModel
+import com.example.walkapp.viewmodels.BadgeViewModel
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.viewmodels.HomeViewModel
 import com.example.walkapp.viewmodels.WalkViewModel
@@ -41,4 +43,7 @@ val appModule = module {
 
         single { PerformanceRepository() }
         viewModel { PerformanceViewModel(get()) }
+
+        single { BadgeRepository() }
+        viewModel { BadgeViewModel(get()) }
 }

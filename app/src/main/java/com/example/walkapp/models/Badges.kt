@@ -1,6 +1,6 @@
 package com.example.walkapp.models
 
-class Badge(
+class Badges(
     var badge1: Boolean?,
     var badge2: Boolean?,
     var badge3: Boolean?,
@@ -26,8 +26,8 @@ class Badge(
     }
 
     companion object{
-        fun mapToBadge(data: Map<String, Any>): Badge{
-            return Badge(
+        fun mapToBadge(data: Map<String, Any>): Badges{
+            return Badges(
                 badge1 = data["badge1"] as Boolean?,
                 badge2 = data["badge2"] as Boolean?,
                 badge3 = data["badge3"] as Boolean?,
