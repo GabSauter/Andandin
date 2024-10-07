@@ -37,7 +37,6 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         viewModelScope.launch {
             try {
                 _loading.value = true
-                Log.d("PerformanceViewModel", "Chama a função getPerformanceData")
                 val performanceData = performanceRepository.getPerformanceData(userId)
                 Log.d("PerformanceViewModel", "loadPerformanceData: $performanceData")
                 if (performanceData != null) {

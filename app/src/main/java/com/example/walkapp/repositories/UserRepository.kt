@@ -1,6 +1,7 @@
 package com.example.walkapp.repositories
 
 import android.util.Log
+import com.example.walkapp.models.Badge
 import com.example.walkapp.models.DistanceDay
 import com.example.walkapp.models.DistanceMonth
 import com.example.walkapp.models.Performance
@@ -86,11 +87,16 @@ class UserRepository {
             val userRef = db.collection("users").document(userId)
             val walkingDataRef = userRef.collection("walkingData").document()
             val performanceDataRef = userRef.collection("performanceData").document("performance")
+            val badgesRef = userRef.collection("badgeData").document("badge")
 
             db.runTransaction { transaction ->
                 val performance = getPerformanceData(transaction, performanceDataRef)
-                setPerformanceData(transaction, performanceDataRef, performance, distance, todayString, currentMonth)
+                val badgeData = getBadgeData(transaction, badgesRef)
+
+                val newDistanceTotal = performance.distanceTotal + distance
+                setPerformanceData(transaction, performanceDataRef, performance, distance, newDistanceTotal, todayString, currentMonth)
                 setWalkingData(transaction, walkingDataRef, distance, elapsedTime, todayString)
+                setBadges(transaction, badgesRef, distance, newDistanceTotal, badgeData)
                 null
             }.await()
         } catch (e: Exception) {
@@ -113,13 +119,12 @@ class UserRepository {
         }
     }
 
-    private fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Double, todayString: String, currentMonth: String){
-        val newDistanceTotal = performance.distanceTotal + distance
+    private fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Double, newDistance: Double, todayString: String, currentMonth: String){
         val updatedDistanceLast7Days = updateDistanceLast7Days(performance, distance, todayString)
         val updatedDistanceLast12Months = updateDistanceLast12Months(performance, distance, currentMonth)
 
         val updatedPerformance = Performance(
-            distanceTotal = newDistanceTotal,
+            distanceTotal = newDistance,
             distanceLast7Days = updatedDistanceLast7Days,
             distanceLast12Months = updatedDistanceLast12Months
         )
@@ -169,6 +174,62 @@ class UserRepository {
             "date" to todayString
         )
         transaction.set(walkingDataRef, walkingData)
+    }
+
+    private fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Double, newDistanceTotal: Double, badgeData: Badge) {
+        //Total distance Badges:
+        if(newDistanceTotal >= 1.000) { //distancia de 1 km
+            badgeData.badge1 = true
+        }
+        if(newDistanceTotal >= 5.000) {//distancia de 5 km
+            badgeData.badge2 = true
+        }
+
+        if(newDistanceTotal >= 10.000) {//distancia de 10 km
+            badgeData.badge3 = true
+        }
+        if(newDistanceTotal >= 25.000) {//distancia de 25 km
+            badgeData.badge4 = true
+        }
+        if(newDistanceTotal >= 50.000) {//distancia de 50 km
+            badgeData.badge5 = true
+        }
+        if(newDistanceTotal >= 100.000) {//distancia de 100 km
+            badgeData.badge6 = true
+        }
+
+        //One walk Badges:
+        if(distance >= 4.000) {//distancia de 4 km no mesmo dia
+            badgeData.badge7 = true
+        }
+        if(distance >= 8.000) {//distancia de 8 km no mesmo dia
+            badgeData.badge8 = true
+        }
+        if(distance >= 16.000) {//distancia de 16 km no mesmo dia
+            badgeData.badge9 = true
+        }
+
+        transaction.set(badgeRef, badgeData, SetOptions.merge())
+    }
+
+    private fun getBadgeData(transaction: Transaction, badgeRef: DocumentReference): Badge {
+        val snapshot = transaction.get(badgeRef)
+        val badgeData = snapshot.data ?: emptyMap<String, Any>()
+        if(badgeData.isEmpty()) {
+            return Badge(
+                badge1 = false,
+                badge2 = false,
+                badge3 = false,
+                badge4 = false,
+                badge5 = false,
+                badge6 = false,
+                badge7 = false,
+                badge8 = false,
+                badge9 = false
+            )
+        }
+        val badges = Badge.mapToBadge(badgeData as Map<String, Any>)
+        return badges
     }
 
     suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
