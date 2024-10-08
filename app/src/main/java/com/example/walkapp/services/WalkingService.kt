@@ -16,6 +16,7 @@ import com.example.walkapp.MainActivity
 import com.example.walkapp.R
 import com.example.walkapp.helpers.LocationManager
 import com.example.walkapp.repositories.UserRepository
+import com.example.walkapp.repositories.WalkRepository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,7 @@ import java.util.Locale
 
 class WalkingService : Service() {
 
-    private val userRepository: UserRepository by inject()
+    private val walkRepository: WalkRepository by inject()
 
     private lateinit var locationManager: LocationManager
     private var startTime = 0L
@@ -115,7 +116,7 @@ class WalkingService : Service() {
     private fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long, onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                userRepository.completeWalk(
+                walkRepository.completeWalk(
                     userId = userId,
                     distance = totalDistance,
                     elapsedTime = elapsedTime,

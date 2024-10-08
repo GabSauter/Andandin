@@ -42,6 +42,8 @@ fun MapScreenContent(
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
+        //ProgressIndicator
+
         Map(
             navController = navController,
             userLocation = userLocation,

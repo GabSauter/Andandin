@@ -3,14 +3,14 @@ package com.example.walkapp.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.walkapp.repositories.UserRepository
+import com.example.walkapp.repositories.WalkRepository
 import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HistoricViewModel(private val userRepository: UserRepository): ViewModel() {
+class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel() {
     private val _walkHistory = MutableStateFlow<List<WalkHistoryItem>?>(null)
     val walkHistory: StateFlow<List<WalkHistoryItem>?> = _walkHistory
 
@@ -30,7 +30,7 @@ class HistoricViewModel(private val userRepository: UserRepository): ViewModel()
 
         viewModelScope.launch {
             try {
-                val (history, newLastDocument) = userRepository.getWalkHistory(userId, 4, lastDocument)
+                val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 4, lastDocument)
                 Log.d("HistoricViewModel", "History: $history")
                 Log.d("HistoricViewModel", "New Last Document: $newLastDocument")
 

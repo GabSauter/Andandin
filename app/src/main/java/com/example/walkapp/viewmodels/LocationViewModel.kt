@@ -13,8 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class LocationViewModel(private val userRepository: UserRepository) : ViewModel() {
-
+class LocationViewModel : ViewModel() {
     val isTracking: StateFlow<Boolean> = WalkingService.isTracking
     val pathPoints: StateFlow<List<LatLng>> = WalkingService.pathPoints
     val totalDistance: StateFlow<Double> = WalkingService.totalDistance
