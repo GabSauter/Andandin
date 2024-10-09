@@ -1,6 +1,5 @@
 package com.example.walkapp.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.walkapp.repositories.WalkRepository
@@ -30,9 +29,7 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
 
         viewModelScope.launch {
             try {
-                val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 4, lastDocument)
-                Log.d("HistoricViewModel", "History: $history")
-                Log.d("HistoricViewModel", "New Last Document: $newLastDocument")
+                val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 8, lastDocument)
 
                 if (history.isNotEmpty()) {
                     lastDocument = newLastDocument
@@ -48,6 +45,7 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
                 }
             } catch (e: Exception) {
                 _error.value = e.message
+                _walkHistory.value = emptyList()
             } finally {
                 isFetching = false
             }

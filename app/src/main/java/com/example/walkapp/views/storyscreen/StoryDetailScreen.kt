@@ -33,7 +33,7 @@ fun StoryDetailScreen(title: String, text: String, navController: NavController)
         )
 
         Button(onClick = { navController.popBackStack() }) {
-            Text(text = "Close")
+            Text(text = "Fechar")
         }
     }
 }

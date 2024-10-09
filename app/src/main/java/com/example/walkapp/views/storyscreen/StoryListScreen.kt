@@ -50,7 +50,7 @@ fun StoryListScreen(stories: List<Story>, currentLevel: Int, navController: NavC
         }
 
         Text(
-            text = "Stories",
+            text = "Histórias",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -101,13 +101,13 @@ fun StoryCard(story: Story, currentLevel: Int, onClick: () -> Unit) {
                 )
                 if (isLocked) {
                     Text(
-                        text = "Unlocks at level ${story.requiredLevel}",
+                        text = "Desbloqueia no nível ${story.requiredLevel}",
                         fontSize = 14.sp,
                         color = Color.Red
                     )
                 } else {
                     Text(
-                        text = "Unlocked",
+                        text = "Desbloqueado",
                         fontSize = 14.sp,
                         color = Color.Green
                     )

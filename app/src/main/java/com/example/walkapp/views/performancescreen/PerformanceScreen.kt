@@ -51,8 +51,30 @@ fun PerformanceScreen(userId: String) {
             CircularProgressIndicator()
         }
     }else{
-        if(error != null){
-            Text(text = error!!)
+        if(error != null) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = error!!,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }else if(performanceData.distanceTotal == 0.0){
+            Box(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Caminhe para acompanhar suas estatísticas.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }else{
             val last7Days = performanceViewModel.getLast7Days()
             val last12Months = performanceViewModel.getLast12Months()
