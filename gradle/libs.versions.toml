@@ -30,6 +30,7 @@ playServicesAuthVersion = "20.6.0"
 playServicesMaps = "19.0.0"
 secretsGradlePlugin = "2.0.1"
 playServicesLocation = "21.3.0"
+storage = "1.4.2"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -72,6 +73,7 @@ play-services-auth-v2060 = { module = "com.google.android.gms:play-services-auth
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,7 @@
 package com.example.walkapp.views.walkscreen
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -123,7 +124,11 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                         progress = { level!!.progressPercentage.toFloat() / 100 },
                         modifier = Modifier
                             .padding(8.dp)
-                            .height(8.dp),
+                            .height(8.dp)
+                            .clickable {
+                                Log.d("WalkScreen", "Ir para página de história")
+                                navController.navigate(Screen.StoryList.route)
+                            },
                         color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     )
