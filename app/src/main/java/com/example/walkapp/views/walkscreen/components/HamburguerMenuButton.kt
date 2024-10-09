@@ -1,8 +1,6 @@
 package com.example.walkapp.views.walkscreen.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -25,37 +23,31 @@ fun HamburgerMenuButton(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier.align(Alignment.TopEnd)
-        ){
-            IconButton(
-                onClick = { expanded = true },
-            ) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Menu")
-            }
+    Column {
+        IconButton(
+            onClick = { expanded = true },
+        ) {
+            Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+        }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        onEditClick()
-                    },
-                    text = { Text("Editar dados") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        onSignOut()
-                    },
-                    text = { Text("Logout") }
-                )
-            }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onEditClick()
+                },
+                text = { Text("Editar dados") }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onSignOut()
+                },
+                text = { Text("Logout") }
+            )
         }
     }
 }

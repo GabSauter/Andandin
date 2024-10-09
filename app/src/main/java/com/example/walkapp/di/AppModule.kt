@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.walkapp.helpers.LocationManager
 import com.example.walkapp.repositories.AuthRepository
 import com.example.walkapp.repositories.BadgeRepository
+import com.example.walkapp.repositories.LevelRepository
 import com.example.walkapp.repositories.PerformanceRepository
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.repositories.WalkRepository
@@ -28,7 +29,8 @@ val appModule = module {
 
         viewModel { AvatarMakerViewModel(get()) }
 
-        viewModel { HomeViewModel(get()) }
+        single { LevelRepository(get()) }
+        viewModel { HomeViewModel(get(), get()) }
 
         viewModel { WalkViewModel(get()) }
 

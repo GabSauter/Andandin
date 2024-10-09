@@ -3,6 +3,7 @@ package com.example.walkapp.views.walkscreen.components
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
+import com.example.walkapp.models.Level
 import com.google.android.gms.maps.model.LatLng
 import java.util.concurrent.TimeUnit
 
@@ -42,8 +45,6 @@ fun MapScreenContent(
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        //ProgressIndicator
-
         Map(
             navController = navController,
             userLocation = userLocation,

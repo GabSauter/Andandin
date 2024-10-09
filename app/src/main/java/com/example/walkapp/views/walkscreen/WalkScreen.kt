@@ -1,14 +1,24 @@
 package com.example.walkapp.views.walkscreen
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.HomeViewModel
@@ -27,8 +37,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSignOut: () -> Unit) {
     val homeViewModel: HomeViewModel = koinViewModel()
-    val loading by homeViewModel.loading.collectAsState()
+    val loadingUserData by homeViewModel.loadingUserData.collectAsState()
     val userData by homeViewModel.user.collectAsState()
+    val level by homeViewModel.level.collectAsState()
+    val loadingLevel by homeViewModel.loadingLevel.collectAsState()
 
     val walkViewModel: WalkViewModel = koinViewModel()
     val userLocation by walkViewModel.userLocation.collectAsState()
@@ -40,7 +52,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val elapsedTime by locationViewModel.elapsedTime.collectAsState()
 
     LaunchedEffect(userData) {
-        if (!loading && authUser != null) {
+        if (!loadingUserData && authUser != null) {
             if (userData == null) {
                 homeViewModel.loadUserData(authUser.uid)
             } else if (userData!!.isEmpty()) {
@@ -52,6 +64,12 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
         }
     }
 
+    LaunchedEffect(isWalking) {
+        if (!isWalking && authUser != null) {
+            homeViewModel.getLevel(authUser.uid)
+        }
+    }
+
     val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
     LaunchedEffect(locationPermissionState) {
         if (!locationPermissionState.status.isGranted) {
@@ -60,7 +78,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (loading || userData == null || userLocation == null) {
+        if (loadingUserData || userData == null || userLocation == null) {
             CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center
@@ -81,17 +99,44 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                     totalDistance = totalDistance,
                     elapsedTime = elapsedTime,
                     startWalkingService = { context -> locationViewModel.startWalkingService(context, userData!!.id) },
-                    stopWalkingService = { context -> locationViewModel.stopWalkingService(context, userData!!.id) }
+                    stopWalkingService = { context ->
+                        run {
+                            locationViewModel.stopWalkingService(
+                                context,
+                                userData!!.id
+                            )
+                        }
+                    }
                 )
             }
-            HamburgerMenuButton(
-                onEditClick = {
-                    navController.navigate(Screen.UserForm.route) {
-                        launchSingleTop = true
-                    }
-                },
-                onSignOut = onSignOut
-            )
+
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                if(!loadingLevel || level != null){
+                    Text(text = "Nv: ${level!!.level}")
+                    LinearProgressIndicator(
+                        progress = { level!!.progressPercentage.toFloat() / 100 },
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(8.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+                HamburgerMenuButton(
+                    onEditClick = {
+                        navController.navigate(Screen.UserForm.route) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onSignOut = onSignOut
+                )
+            }
         }
     }
 }
