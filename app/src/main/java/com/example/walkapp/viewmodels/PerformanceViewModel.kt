@@ -16,9 +16,9 @@ import java.util.Calendar
 import java.util.Locale
 
 data class PerformanceUiState(
-    val distanceTotal: Double = .0,
-    val sumOfDistanceToday: Double = .0,
-    val sumOfDistanceLast7Days: Double = .0,
+    val distanceTotal: Int = 0,
+    val sumOfDistanceToday: Int = 0,
+    val sumOfDistanceLast7Days: Int = 0,
     val distancesOfLast7Days: List<DistanceDay> = emptyList(),
     val distancesOfLast12Months: List<DistanceMonth> = emptyList()
 )
@@ -49,7 +49,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
                     val performance12LastMonths = mergeDataWithLast12Months(performanceData.distanceLast12Months)
                     _performanceUiState.update {
                         it.copy(
-                            sumOfDistanceToday = performance7LastDays.firstOrNull()?.distance ?: .0,
+                            sumOfDistanceToday = performance7LastDays.firstOrNull()?.distance ?: 0,
                             sumOfDistanceLast7Days = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
                             distancesOfLast7Days = performance7LastDays,
                             distancesOfLast12Months = performance12LastMonths
@@ -123,7 +123,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.day }
 
         return last7Days.map { day ->
-            originalDataMap[day] ?: DistanceDay(0.0, day)
+            originalDataMap[day] ?: DistanceDay(0, day)
         }
     }
 
@@ -132,7 +132,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.day }
 
         return last7Days.map { day ->
-            originalDataMap[day] ?: DistanceDay(0.0, day)
+            originalDataMap[day] ?: DistanceDay(0, day)
         }
     }
 
@@ -141,7 +141,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.month }
 
         return last12Months.map { month ->
-            originalDataMap[month] ?: DistanceMonth(0.0, month)
+            originalDataMap[month] ?: DistanceMonth(0, month)
         }
     }
 
@@ -150,7 +150,7 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         val originalDataMap = originalData.associateBy { it.day }
 
         return last7Days.map { day ->
-            originalDataMap[day] ?: DistanceDay(0.0, day)
+            originalDataMap[day] ?: DistanceDay(0, day)
         }
     }
 }

@@ -42,14 +42,14 @@ class PerformanceRepository {
             Performance.mapToPerformance(performanceData)
         } else {
             Performance(
-                distanceTotal = 0.0,
+                distanceTotal = 0,
                 distanceLast7Days = emptyList(),
                 distanceLast12Months = emptyList()
             )
         }
     }
 
-    fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Double, newDistance: Double, todayString: String, currentMonth: String){
+    fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Int, newDistance: Int, todayString: String, currentMonth: String){
         val updatedDistanceLast7Days = updateDistanceLast7Days(performance, distance, todayString)
         val updatedDistanceLast12Months = updateDistanceLast12Months(performance, distance, currentMonth)
 
@@ -62,7 +62,7 @@ class PerformanceRepository {
         transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
     }
 
-    private fun updateDistanceLast7Days(performance: Performance, distance: Double, todayString: String): List<DistanceDay> {
+    private fun updateDistanceLast7Days(performance: Performance, distance: Int, todayString: String): List<DistanceDay> {
         val updatedDistanceLast7Days = performance.distanceLast7Days.toMutableList()
         val todayEntry = updatedDistanceLast7Days.find { it.day == todayString }
         if (todayEntry != null) {
@@ -78,7 +78,7 @@ class PerformanceRepository {
         return updatedDistanceLast7Days
     }
 
-    private fun updateDistanceLast12Months(performance: Performance, distance: Double, currentMonth: String): List<DistanceMonth> {
+    private fun updateDistanceLast12Months(performance: Performance, distance: Int, currentMonth: String): List<DistanceMonth> {
         val updatedDistanceLast12Months = performance.distanceLast12Months.toMutableList()
         val monthEntry = updatedDistanceLast12Months.find { it.month == currentMonth }
         if (monthEntry != null) {

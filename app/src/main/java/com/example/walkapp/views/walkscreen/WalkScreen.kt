@@ -118,7 +118,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                if(!loadingLevel || level != null){
+                if(!loadingLevel && level != null){
                     Text(text = "Nv: ${level!!.level}")
                     LinearProgressIndicator(
                         progress = { level!!.progressPercentage.toFloat() / 100 },

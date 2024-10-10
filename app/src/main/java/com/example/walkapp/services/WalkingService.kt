@@ -45,7 +45,7 @@ class WalkingService : Service() {
 
         val isTracking = MutableStateFlow(false)
         val pathPoints = MutableStateFlow(emptyList<LatLng>())
-        val totalDistance = MutableStateFlow(0.0)
+        val totalDistance = MutableStateFlow(0)
         val elapsedTime = MutableStateFlow(0L)
 
         fun addPathPoint(location: LatLng) {
@@ -56,7 +56,7 @@ class WalkingService : Service() {
             if (points.size > 1) {
                 val previousPoint = points[points.size - 2]
                 val newDistance = calculateDistance(previousPoint, location)
-                totalDistance.value += newDistance
+                totalDistance.value += newDistance.toInt()
             }
         }
 
@@ -92,7 +92,7 @@ class WalkingService : Service() {
             } ?: stopSelf()
             return START_NOT_STICKY
         } else {
-            startForeground(NOTIFICATION_ID, createNotification(0.0, 0L))
+            startForeground(NOTIFICATION_ID, createNotification(0, 0L))
             isTracking.value = true
             observeTrackingData()
         }
@@ -104,7 +104,7 @@ class WalkingService : Service() {
 
         isTracking.value = false
         pathPoints.value = emptyList()
-        totalDistance.value = 0.0
+        totalDistance.value = 0
         stopTimer()
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -113,7 +113,7 @@ class WalkingService : Service() {
         trackingJob?.cancel()
     }
 
-    private fun saveWalkingData(userId: String, totalDistance: Double, elapsedTime: Long, onComplete: () -> Unit) {
+    private fun saveWalkingData(userId: String, totalDistance: Int, elapsedTime: Long, onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 walkRepository.completeWalk(
@@ -134,7 +134,7 @@ class WalkingService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun createNotification(distance: Double, time: Long): Notification {
+    private fun createNotification(distance: Int, time: Long): Notification {
         val stopIntent = Intent(this, WalkingService::class.java).apply {
             action = ACTION_STOP
             putExtra("userId", userId)
@@ -149,7 +149,7 @@ class WalkingService : Service() {
         )
 
         val formattedTime = formatElapsedTime(time)
-        val formattedDistance = String.format(Locale.getDefault(), "%.2f", distance)
+        val formattedDistance = distance.toString()
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Andandin")

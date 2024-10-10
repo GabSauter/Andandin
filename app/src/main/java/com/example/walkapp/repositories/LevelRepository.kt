@@ -16,11 +16,11 @@ class LevelRepository(private val performanceRepository: PerformanceRepository) 
         }
     }
 
-    private fun calculateLevel(distanceWalked: Double): Level {
+    private fun calculateLevel(distanceWalked: Int): Level {
         val c = 10.0
         val d = 1.5
 
-        val currentLevel = floor(c * (ln(distanceWalked + 1).pow(d))).toInt()
+        val currentLevel = floor(c * (ln((distanceWalked + 1).toDouble()).pow(d))).toInt()
         val currentLevelDistance = exp((currentLevel / c).pow(1 / d)) - 1
 
         val nextLevel = currentLevel + 1

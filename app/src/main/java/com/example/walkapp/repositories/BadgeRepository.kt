@@ -30,36 +30,36 @@ class BadgeRepository {
         }
     }
 
-    fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Double, newDistanceTotal: Double, badgeData: Badges) {
+    fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Int, newDistanceTotal: Int, badgeData: Badges) {
         //Total distance Badges:
-        if(newDistanceTotal >= 1.000) { //distancia de 1 km
+        if(newDistanceTotal >= 1000) { //distancia de 1 km
             badgeData.badge1 = true
         }
-        if(newDistanceTotal >= 5.000) {//distancia de 5 km
+        if(newDistanceTotal >= 5000) {//distancia de 5 km
             badgeData.badge2 = true
         }
 
-        if(newDistanceTotal >= 10.000) {//distancia de 10 km
+        if(newDistanceTotal >= 10000) {//distancia de 10 km
             badgeData.badge3 = true
         }
-        if(newDistanceTotal >= 25.000) {//distancia de 25 km
+        if(newDistanceTotal >= 25000) {//distancia de 25 km
             badgeData.badge4 = true
         }
-        if(newDistanceTotal >= 50.000) {//distancia de 50 km
+        if(newDistanceTotal >= 50000) {//distancia de 50 km
             badgeData.badge5 = true
         }
-        if(newDistanceTotal >= 100.000) {//distancia de 100 km
+        if(newDistanceTotal >= 100000) {//distancia de 100 km
             badgeData.badge6 = true
         }
 
         //One walk Badges:
-        if(distance >= 4.000) {//distancia de 4 km no mesmo dia
+        if(distance >= 4000) {//distancia de 4 km no mesmo dia
             badgeData.badge7 = true
         }
-        if(distance >= 8.000) {//distancia de 8 km no mesmo dia
+        if(distance >= 8000) {//distancia de 8 km no mesmo dia
             badgeData.badge8 = true
         }
-        if(distance >= 16.000) {//distancia de 16 km no mesmo dia
+        if(distance >= 16000) {//distancia de 16 km no mesmo dia
             badgeData.badge9 = true
         }
 

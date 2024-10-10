@@ -49,18 +49,6 @@ fun HistoricScreen(user: FirebaseUser?) {
         ) {
             CircularProgressIndicator()
         }
-    } else if (filteredWalks.isNullOrEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Nenhuma caminhada encontrada.",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
     } else {
         LazyColumn(
             modifier = Modifier
@@ -78,11 +66,22 @@ fun HistoricScreen(user: FirebaseUser?) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(filteredWalks.size) { index ->
-                WalkHistoryCard(filteredWalks[index])
+            if(filteredWalks.isNullOrEmpty()){
+                item{
+                    Text(
+                        text = "Nenhuma caminhada encontrada.",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }else{
+                items(filteredWalks.size) { index ->
+                    WalkHistoryCard(filteredWalks[index])
 
-                if (index == walkHistoric!!.size - 1) {
-                    historicViewModel.loadWalkHistory(user?.uid ?: "")
+                    if (index == walkHistoric!!.size - 1) {
+                        historicViewModel.loadWalkHistory(user?.uid ?: "")
+                    }
                 }
             }
         }
@@ -107,7 +106,7 @@ fun TopButtons(selectedIndex: Int, onSelectionChanged: (Int) -> Unit) {
 
 @Composable
 fun WalkHistoryCard(item: WalkHistoryItem) {
-    val distanceInKm = item.distance
+    val distanceInKm = item.distance / 1000
     val elapsedTimeInHours = convertElapsedTimeToHours(item.time)
     val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
     Column(
@@ -125,7 +124,7 @@ fun WalkHistoryCard(item: WalkHistoryItem) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Distância: %.2f km".format(item.distance),
+            text = "Distância: ${item.distance} m",
         )
         Text(
             text = "Tempo: ${formatElapsedTime(item.time)}",

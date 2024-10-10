@@ -16,7 +16,7 @@ import java.util.Locale
 class LocationViewModel : ViewModel() {
     val isTracking: StateFlow<Boolean> = WalkingService.isTracking
     val pathPoints: StateFlow<List<LatLng>> = WalkingService.pathPoints
-    val totalDistance: StateFlow<Double> = WalkingService.totalDistance
+    val totalDistance: StateFlow<Int> = WalkingService.totalDistance
     val elapsedTime: StateFlow<Long> = WalkingService.elapsedTime
 
     fun startWalkingService(context: Context, userId: String) {

@@ -36,7 +36,7 @@ fun MapScreenContent(
     userLocation: LatLng?,
     isWalking: Boolean,
     pathPoints: List<LatLng>,
-    totalDistance: Double,
+    totalDistance: Int,
     elapsedTime: Long,
     avatarIndex: Int,
     startWalkingService: (Context) -> Unit,
@@ -105,7 +105,7 @@ fun WalkControlButton(
 }
 
 @Composable
-fun WalkInfo(totalDistance: Double, elapsedTime: Long, isWalking: Boolean) {
+fun WalkInfo(totalDistance: Int, elapsedTime: Long, isWalking: Boolean) {
     if (isWalking) {
         val hours = TimeUnit.MILLISECONDS.toHours(elapsedTime)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60
@@ -114,7 +114,7 @@ fun WalkInfo(totalDistance: Double, elapsedTime: Long, isWalking: Boolean) {
         val velocity = if (elapsedTime > 0) (totalDistance / elapsedTime) * 3.6 else 0.0
 
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Distância: %.2f m".format(totalDistance))
+            Text(text = "Distância: $totalDistance m")
             Text(text = "Tempo: %02d:%02d:%02d".format(hours, minutes, seconds))
             Text(text = "Velocidade: %.2f km/h".format(velocity))
         }

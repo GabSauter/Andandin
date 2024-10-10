@@ -16,7 +16,7 @@ import java.util.Locale
 class WalkRepository(private val perfomanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
     private val db = Firebase.firestore
 
-    suspend fun completeWalk(userId: String, distance: Double, elapsedTime: Long) {
+    suspend fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
         try {
             val calendar = Calendar.getInstance()
 
@@ -46,10 +46,10 @@ class WalkRepository(private val perfomanceRepository: PerformanceRepository, pr
         }
     }
 
-    private fun setWalkingData(transaction: Transaction, walkingDataRef: DocumentReference, distance: Double, elapsedTime: Long, todayString: String){
+    private fun setWalkingData(transaction: Transaction, walkingDataRef: DocumentReference, distance: Int, elapsedTime: Long, todayString: String){
         val walkingData = mapOf(
-            "distance" to distance,
-            "time" to elapsedTime,
+            "distance" to distance, // Metros
+            "time" to elapsedTime, // Milliseconds
             "date" to todayString
         )
         transaction.set(walkingDataRef, walkingData)

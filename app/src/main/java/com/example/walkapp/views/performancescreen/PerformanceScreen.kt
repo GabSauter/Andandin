@@ -63,7 +63,7 @@ fun PerformanceScreen(userId: String) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-        }else if(performanceData.distanceTotal == 0.0){
+        }else if(performanceData.distanceTotal == 0){
             Box(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 contentAlignment = Alignment.Center
