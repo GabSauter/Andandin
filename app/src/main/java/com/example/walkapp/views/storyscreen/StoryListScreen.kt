@@ -14,21 +14,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.walkapp.models.Story
 import com.example.walkapp.navigation.Screen
 
@@ -37,24 +39,37 @@ fun StoryListScreen(stories: List<Story>, currentLevel: Int, navController: NavC
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
-        IconButton(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.padding(bottom = 16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back"
-            )
-        }
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .weight(.4f)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
 
-        Text(
-            text = "Histórias",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+            Spacer(modifier = Modifier.weight(.6f))
+
+            Text(
+                text = "Histórias",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize()
@@ -65,7 +80,7 @@ fun StoryListScreen(stories: List<Story>, currentLevel: Int, navController: NavC
                         navController.navigate(Screen.StoryDetail.createRoute(story.title, story.text))
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
             }
         }
     }
@@ -83,7 +98,7 @@ fun StoryCard(story: Story, currentLevel: Int, onClick: () -> Unit) {
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isLocked) Color.Gray else Color.White
+            containerColor = if (isLocked) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Row(
@@ -96,20 +111,17 @@ fun StoryCard(story: Story, currentLevel: Int, onClick: () -> Unit) {
             Column {
                 Text(
                     text = story.title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium
                 )
                 if (isLocked) {
                     Text(
                         text = "Desbloqueia no nível ${story.requiredLevel}",
-                        fontSize = 14.sp,
-                        color = Color.Red
+                        style = MaterialTheme.typography.bodySmall
                     )
                 } else {
                     Text(
                         text = "Desbloqueado",
-                        fontSize = 14.sp,
-                        color = Color.Green
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
@@ -118,9 +130,22 @@ fun StoryCard(story: Story, currentLevel: Int, onClick: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "Locked",
-                    tint = Color.Red
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StoryListScreenPreview(){
+    val stories = listOf(
+        Story("Story 1", "This is the text of story 1", 1),
+        Story("Story 2", "This is the text of story 2", 3),
+        Story("Story 3", "This is the text of story 3", 5),
+        Story("Story 4", "This is the text of story 4", 7)
+    )
+    val currentLevel = 4
+    StoryListScreen(stories = stories, currentLevel = currentLevel, navController = rememberNavController())
 }
