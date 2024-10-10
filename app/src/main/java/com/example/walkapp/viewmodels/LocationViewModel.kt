@@ -18,6 +18,7 @@ class LocationViewModel : ViewModel() {
     val pathPoints: StateFlow<List<LatLng>> = WalkingService.pathPoints
     val totalDistance: StateFlow<Int> = WalkingService.totalDistance
     val elapsedTime: StateFlow<Long> = WalkingService.elapsedTime
+    val loading: StateFlow<Boolean> = WalkingService.loading
 
     fun startWalkingService(context: Context, userId: String) {
         val intent = Intent(context, WalkingService::class.java)

@@ -1,6 +1,7 @@
 package com.example.walkapp.views.walkscreen
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
     val isWalking by locationViewModel.isTracking.collectAsState()
     val totalDistance by locationViewModel.totalDistance.collectAsState()
     val elapsedTime by locationViewModel.elapsedTime.collectAsState()
+    val loading by locationViewModel.loading.collectAsState()
 
     LaunchedEffect(userData) {
         if (!loadingUserData && authUser != null) {
@@ -107,16 +109,19 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                                 userData!!.id
                             )
                         }
-                    }
+                    },
+                    loading = loading
                 )
             }
 
             Row(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.medium)
+                    .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 if(!loadingLevel && level != null){
                     Text(text = "Nv: ${level!!.level}")
@@ -126,7 +131,6 @@ fun WalkScreen(navController: NavHostController, authUser: FirebaseUser?, onSign
                             .padding(8.dp)
                             .height(8.dp)
                             .clickable {
-                                Log.d("WalkScreen", "Ir para página de história")
                                 navController.navigate(Screen.StoryList.route)
                             },
                         color = MaterialTheme.colorScheme.primary,

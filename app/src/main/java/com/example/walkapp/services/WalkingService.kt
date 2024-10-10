@@ -47,6 +47,7 @@ class WalkingService : Service() {
         val pathPoints = MutableStateFlow(emptyList<LatLng>())
         val totalDistance = MutableStateFlow(0)
         val elapsedTime = MutableStateFlow(0L)
+        val loading = MutableStateFlow(false)
 
         fun addPathPoint(location: LatLng) {
             val points = pathPoints.value.toMutableList()
@@ -116,6 +117,7 @@ class WalkingService : Service() {
     private fun saveWalkingData(userId: String, totalDistance: Int, elapsedTime: Long, onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                loading.value = true
                 walkRepository.completeWalk(
                     userId = userId,
                     distance = totalDistance,
@@ -126,6 +128,7 @@ class WalkingService : Service() {
             } catch (e: Exception) {
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
+                loading.value = false
                 onComplete()
                 Log.d("WalkingService", "Walking service stopped")
             }

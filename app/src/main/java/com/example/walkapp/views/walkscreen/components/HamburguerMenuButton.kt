@@ -1,6 +1,8 @@
 package com.example.walkapp.views.walkscreen.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -15,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun HamburgerMenuButton(
@@ -25,6 +28,7 @@ fun HamburgerMenuButton(
 
     Column {
         IconButton(
+            modifier = Modifier.requiredSize(48.dp),
             onClick = { expanded = true },
         ) {
             Icon(Icons.Default.MoreVert, contentDescription = "Menu")

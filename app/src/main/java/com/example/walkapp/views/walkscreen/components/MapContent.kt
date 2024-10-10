@@ -1,6 +1,7 @@
 package com.example.walkapp.views.walkscreen.components
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,12 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +43,8 @@ fun MapScreenContent(
     elapsedTime: Long,
     avatarIndex: Int,
     startWalkingService: (Context) -> Unit,
-    stopWalkingService: (Context) -> Unit
+    stopWalkingService: (Context) -> Unit,
+    loading: Boolean
 ) {
     val context = LocalContext.current
 
@@ -63,6 +67,7 @@ fun MapScreenContent(
                     stopWalkingService = stopWalkingService
                 )
             },
+            loading = loading,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 
@@ -85,22 +90,38 @@ fun MapScreenContent(
 fun WalkControlButton(
     isWalking: Boolean,
     onWalkToggle: () -> Unit,
+    loading: Boolean,
     modifier: Modifier
 ) {
-    Button(
-        onClick = onWalkToggle,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isWalking) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-            contentColor = if (isWalking) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
-        )
-    ) {
-        Icon(
-            painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
-            contentDescription = if (isWalking) "Parar caminhada" else "Começar caminhada"
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+    if(isWalking && loading){
+        Button(
+            onClick = {},
+            modifier = modifier,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary
+            )
+        ){
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onTertiary,
+            )
+        }
+    }else{
+        Button(
+            onClick = onWalkToggle,
+            modifier = modifier,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isWalking) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                contentColor = if (isWalking) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            Icon(
+                painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
+                contentDescription = if (isWalking) "Parar caminhada" else "Começar caminhada"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+        }
     }
 }
 
