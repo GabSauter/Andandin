@@ -8,6 +8,9 @@ import com.example.walkapp.repositories.LeaderboardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class LeaderboardViewModel(private val leaderboardRepository: LeaderboardRepository) : ViewModel() {
 
@@ -23,8 +26,11 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
     private val _leaderboard = MutableStateFlow<List<LeaderboardUser>>(emptyList())
     val leaderboard: StateFlow<List<LeaderboardUser>> = _leaderboard
 
-    suspend fun getLeaderboardForMonth(monthAndYear: String) {
+    suspend fun getLeaderboardForMonth() {
         viewModelScope.launch {
+            val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val monthAndYear = dateFormat.format(calendar.time)
             try {
                 val leaderboardUser =
                     leaderboardRepository.getLeaderboardForMonth(monthAndYear)
@@ -51,8 +57,11 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
 //        }
 //    }
 
-    fun getUserLeaderboard(userId: String, monthAndYear: String) {
+    fun getUserLeaderboard(userId: String) {
         viewModelScope.launch {
+            val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val monthAndYear = dateFormat.format(calendar.time)
             try {
                 val leaderboardUser =
                     leaderboardRepository.getUserLeaderboard(userId, monthAndYear)

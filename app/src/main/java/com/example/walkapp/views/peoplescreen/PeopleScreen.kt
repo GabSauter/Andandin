@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import com.example.walkapp.views.leaderboardscreen.LeaderboardView
 
 @Composable
-fun PeopleScreen() {
+fun PeopleScreen(userId: String) {
     Box {
         Text(text = "People Screen")
     }
-    LeaderboardView()
+    LeaderboardView(userId)
 }

@@ -4,12 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,7 +40,7 @@ import com.example.walkapp.viewmodels.LeaderboardViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LeaderboardView() {
+fun LeaderboardView(userId: String) {
     var selectedFilter by remember { mutableIntStateOf(0) }
 
     val leaderboardViewModel = koinViewModel<LeaderboardViewModel>()
@@ -56,14 +54,14 @@ fun LeaderboardView() {
 
     LaunchedEffect(selectedFilter) {
         if (selectedFilter == 0) {
-            leaderboardViewModel.getLeaderboardForMonth("10/2024")
+            leaderboardViewModel.getLeaderboardForMonth()
         } else {
             //leaderboardViewModel.getLeaderboardForMonthInGroup("10/2024", "your-group-id")
         }
     }
 
     LaunchedEffect(userLeaderboard) {
-        leaderboardViewModel.getUserLeaderboard("kuA4kId4hENAB9O8oI8jZkX0S9B3", "10/2024")
+        leaderboardViewModel.getUserLeaderboard(userId)
     }
 
     Box(
@@ -163,6 +161,6 @@ fun LeaderboardItem(leaderboardUser: LeaderboardUser, modifier: Modifier = Modif
 @Composable
 fun LeaderboardPreview() {
     MaterialTheme {
-        LeaderboardView()
+        LeaderboardView("userId")
     }
 }

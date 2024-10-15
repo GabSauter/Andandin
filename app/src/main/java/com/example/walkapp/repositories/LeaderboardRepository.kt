@@ -3,6 +3,7 @@ package com.example.walkapp.repositories
 import android.util.Log
 import com.example.walkapp.models.LeaderboardUser
 import com.example.walkapp.models.LeaderboardUser.Companion.emptyLeaderboardUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -68,24 +69,12 @@ class LeaderboardRepository {
                 .get()
                 .await()
 
-            if (querySnapshot == null || !querySnapshot.exists() || querySnapshot.data == null) {
+            if (querySnapshot == null || !querySnapshot.exists() || querySnapshot.data == null || monthAndYear != querySnapshot.data!!["monthAndYear"]) {
                 return emptyLeaderboardUser()
             }
             return LeaderboardUser.mapToLeaderboardUser(querySnapshot.data!!)
         } catch (e: Exception) {
             Log.e("LeaderboardRepository", "Error getting user leaderboard", e)
-            throw e
-        }
-    }
-
-    suspend fun setUserLeaderboard(userId: String, leaderboardUser: LeaderboardUser) {
-        try {
-            db.collection("leaderboards")
-                .document(userId)
-                .set(leaderboardUser.toMap(), SetOptions.merge())
-                .await()
-        } catch (e: Exception) {
-            Log.e("LeaderboardRepository", "Error setting user leaderboard", e)
             throw e
         }
     }

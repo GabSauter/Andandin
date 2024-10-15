@@ -24,15 +24,15 @@ class LeaderboardUser(
             if(data["group"] != null){
                 return LeaderboardUser(
                     nickname = data["nickname"] as String,
-                    distance = data["distance"] as Double,
+                    distance = (data["distance"] as Long).toDouble(),
                     monthAndYear = data["monthAndYear"] as String,
-                    avatarIndex = data["avatarIndex"] as Int,
+                    avatarIndex = (data["avatarIndex"] as Long).toInt(),
                     group = data["group"] as String
                 )
             }else{
                 return LeaderboardUser(
                     nickname = data["nickname"] as String,
-                    distance = data["distance"] as Double,
+                    distance = (data["distance"] as Long).toDouble(),
                     monthAndYear = data["monthAndYear"] as String,
                     avatarIndex = (data["avatarIndex"] as Long).toInt()
                 )
@@ -43,17 +43,17 @@ class LeaderboardUser(
             if(data["group"] != null){
                 return LeaderboardUser(
                     nickname = data["nickname"] as String,
-                    distance = data["distance"] as Double,
+                    distance = (data["distance"] as Long).toDouble(),
                     monthAndYear = data["monthAndYear"] as String,
-                    avatarIndex = data["avatarIndex"] as Int,
+                    avatarIndex = (data["avatarIndex"] as Long).toInt(),
                     group = data["group"] as String
                 )
             }else{
                 return LeaderboardUser(
                     nickname = data["nickname"] as String,
-                    distance = data["distance"] as Double,
+                    distance = (data["distance"] as Long).toDouble(),
                     monthAndYear = data["monthAndYear"] as String,
-                    avatarIndex = data["avatarIndex"] as Int
+                    avatarIndex = (data["avatarIndex"]as Long).toInt()
                 )
             }
         }
