@@ -36,7 +36,7 @@ fun HomeNavGraph(
             RootHistoricScreen(authUser = authUser)
         }
         composable(Screen.People.route) {
-            PeopleScreen(authUser!!.uid)
+            PeopleScreen(authUser)
         }
         composable(Screen.UserForm.route) {
             UserFormScreen(navController, authUser)

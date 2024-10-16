@@ -40,7 +40,7 @@ import com.example.walkapp.viewmodels.LeaderboardViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LeaderboardView(userId: String) {
+fun LeaderboardScreen(userId: String) {
     var selectedFilter by remember { mutableIntStateOf(0) }
 
     val leaderboardViewModel = koinViewModel<LeaderboardViewModel>()
@@ -161,6 +161,6 @@ fun LeaderboardItem(leaderboardUser: LeaderboardUser, modifier: Modifier = Modif
 @Composable
 fun LeaderboardPreview() {
     MaterialTheme {
-        LeaderboardView("userId")
+        LeaderboardScreen("userId")
     }
 }

@@ -4,6 +4,7 @@ sealed class Graph(val route: String) {
     data object Root: Graph(route = "root_graph")
     data object Home: Graph(route = "home_graph")
     data object Historic: Graph(route = "historic_graph")
+    data object People: Graph(route = "people_graph")
 }
 
 sealed class Screen(val route: String) {
@@ -24,4 +25,8 @@ sealed class Screen(val route: String) {
             return "storyDetail/$title/$text"
         }
     }
+
+    data object EnterGroup: Screen(route = "enter_group_screen")
+    data object Group: Screen(route = "group_screen")
+    data object Leaderboard: Screen(route = "leaderboard_screen")
 }
