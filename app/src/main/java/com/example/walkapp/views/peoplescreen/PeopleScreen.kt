@@ -11,13 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.walkapp.models.User
 import com.example.walkapp.navigation.PeopleNavGraph
 import com.example.walkapp.navigation.Screen
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun PeopleScreen(authUser: FirebaseUser?, navController: NavHostController = rememberNavController()) {
-    val tabItems = listOf(TabNavItems.Leaderboard, TabNavItems.Group)
+fun PeopleScreen(authUser: FirebaseUser?, userData: User, navController: NavHostController = rememberNavController()) {
+    val tabItems = listOf(TabNavItems.Leaderboard, TabNavItems.EnterGroup)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     Column {
@@ -42,7 +43,7 @@ fun PeopleScreen(authUser: FirebaseUser?, navController: NavHostController = rem
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            PeopleNavGraph(navController = navController, authUser = authUser)
+            PeopleNavGraph(navController = navController, authUser = authUser, userData = userData)
         }
     }
 }
@@ -56,8 +57,8 @@ sealed class TabNavItems(
         title = "Ranking"
     )
 
-    data object Group : TabNavItems(
-        route = Screen.Group.route,
+    data object EnterGroup : TabNavItems(
+        route = Screen.EnterGroup.route,
         title = "Grupo"
     )
 }

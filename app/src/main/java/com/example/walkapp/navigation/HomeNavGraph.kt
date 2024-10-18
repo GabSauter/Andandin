@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.models.Story
+import com.example.walkapp.models.User
 import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
@@ -36,7 +37,7 @@ fun HomeNavGraph(
             RootHistoricScreen(authUser = authUser)
         }
         composable(Screen.People.route) {
-            PeopleScreen(authUser)
+            PeopleScreen(authUser, User(id = authUser?.uid.toString(), nickname = authUser?.displayName.toString(), avatarIndex = 0))
         }
         composable(Screen.UserForm.route) {
             UserFormScreen(navController, authUser)

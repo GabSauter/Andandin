@@ -14,22 +14,28 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.navigation.Screen
-
+import com.example.walkapp.viewmodels.GroupViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EnterGroupScreen(
     navController: NavHostController,
     userId: String,
+    userData: com.example.walkapp.models.User,
 ) {
-    var groupName =""
-    var groupPassword = ""
+    val groupViewModel = koinViewModel<GroupViewModel>()
+    val loading by groupViewModel.loading.collectAsState()
+    val error by groupViewModel.error.collectAsState()
+    val groupName by groupViewModel.groupName.collectAsState()
+    val groupPassword by groupViewModel.groupPassword.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -41,7 +47,7 @@ fun EnterGroupScreen(
         item{
             OutlinedTextField(
                 value = groupName,
-                onValueChange = { groupName = it },
+                onValueChange = { groupViewModel.updateGroupName(it) },
                 label = { Text("Nome do grupo") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -50,7 +56,7 @@ fun EnterGroupScreen(
 
             OutlinedTextField(
                 value = groupPassword,
-                onValueChange = { groupPassword = it },
+                onValueChange = { groupViewModel.updateGroupPassword(it) },
                 label = { Text("Senha") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
@@ -59,7 +65,8 @@ fun EnterGroupScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /*onEnterGroup(groupName, groupPassword)*/
+                onClick = {
+                    groupViewModel.joinGroup(groupName, groupPassword, userId, userData = userData)
                     navController.navigate(Screen.Group.route)
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -70,7 +77,10 @@ fun EnterGroupScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = { /*onCreateGroup()*/ },
+                onClick = {
+                    groupViewModel.createGroup(groupName, groupPassword, userId, userData = userData)
+                    navController.navigate(Screen.Group.route)
+                          },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Criar Grupo")

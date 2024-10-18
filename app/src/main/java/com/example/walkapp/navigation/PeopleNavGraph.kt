@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser
 fun PeopleNavGraph(
     authUser: FirebaseUser?,
     navController: NavHostController,
+    userData: com.example.walkapp.models.User
 ) {
     NavHost(
         navController = navController,
@@ -28,7 +29,7 @@ fun PeopleNavGraph(
         }
         composable(Screen.EnterGroup.route) {
             if (authUser != null) {
-                EnterGroupScreen(navController, authUser.uid)
+                EnterGroupScreen(navController, authUser.uid, userData)
             }
         }
         composable(Screen.Group.route) {
