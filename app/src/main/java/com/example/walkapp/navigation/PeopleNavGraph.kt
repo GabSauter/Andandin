@@ -5,7 +5,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.walkapp.views.groupscreen.EnterGroupScreen
+import com.example.walkapp.views.entergroupscreen.EnterGroupScreen
 import com.example.walkapp.views.groupscreen.GroupScreen
 import com.example.walkapp.views.groupscreen.User
 import com.example.walkapp.views.leaderboardscreen.LeaderboardScreen
@@ -35,8 +35,16 @@ fun PeopleNavGraph(
         composable(Screen.Group.route) {
             if (authUser != null) {
                 val dummyUsers = listOf(
-                    User(avatar = painterResource(android.R.drawable.ic_menu_camera), name = "John Doe", distanceWalked = "10 km"),
-                    User(avatar = painterResource(android.R.drawable.ic_menu_camera), name = "Jane Smith", distanceWalked = "15 km")
+                    User(
+                        avatar = painterResource(android.R.drawable.ic_menu_camera),
+                        name = "John Doe",
+                        distanceWalked = "10 km"
+                    ),
+                    User(
+                        avatar = painterResource(android.R.drawable.ic_menu_camera),
+                        name = "Jane Smith",
+                        distanceWalked = "15 km"
+                    )
                 )
 
                 GroupScreen(

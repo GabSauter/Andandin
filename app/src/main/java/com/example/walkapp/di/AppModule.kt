@@ -13,6 +13,7 @@ import com.example.walkapp.repositories.WalkRepository
 import com.example.walkapp.viewmodels.AuthViewModel
 import com.example.walkapp.viewmodels.AvatarMakerViewModel
 import com.example.walkapp.viewmodels.BadgeViewModel
+import com.example.walkapp.viewmodels.EnterGroupViewModel
 import com.example.walkapp.viewmodels.GroupViewModel
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.viewmodels.HomeViewModel
@@ -61,4 +62,6 @@ val appModule = module {
 
         single { GroupRepository() }
         viewModel { GroupViewModel(get()) }
+
+        viewModel { EnterGroupViewModel(get()) }
 }

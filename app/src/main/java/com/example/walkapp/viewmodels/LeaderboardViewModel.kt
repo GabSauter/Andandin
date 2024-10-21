@@ -27,16 +27,16 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
     val leaderboard: StateFlow<List<LeaderboardUser>> = _leaderboard
 
     suspend fun getLeaderboardForMonth() {
+        val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val monthAndYear = dateFormat.format(calendar.time)
         viewModelScope.launch {
-            val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
-            val calendar = Calendar.getInstance()
-            val monthAndYear = dateFormat.format(calendar.time)
             try {
                 val leaderboardUser =
                     leaderboardRepository.getLeaderboardForMonth(monthAndYear)
                 Log.d("LeaderboardViewModel", "Leaderboard: $leaderboardUser")
                 _leaderboard.value = leaderboardUser
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _error.value = "Houve um erro ao obter o ranking do mês."
             }
         }
@@ -58,10 +58,10 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
 //    }
 
     fun getUserLeaderboard(userId: String) {
+        val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val monthAndYear = dateFormat.format(calendar.time)
         viewModelScope.launch {
-            val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
-            val calendar = Calendar.getInstance()
-            val monthAndYear = dateFormat.format(calendar.time)
             try {
                 val leaderboardUser =
                     leaderboardRepository.getUserLeaderboard(userId, monthAndYear)

@@ -13,35 +13,46 @@ import kotlinx.coroutines.tasks.await
 class GroupRepository {
     private val db = Firebase.firestore
 
-    suspend fun createGroup(userId: String, group: Group, userData: User){
-        try{
-            val groupSnapshot = db.collection("groups").document(group.name).get().await()
-            if(groupSnapshot.exists()){
+    suspend fun createGroup(userId: String, group: Group, userData: User) {
+        try {
+            val groupDocRef = db.collection("groups").document(group.name)
+            val groupSnapshot = groupDocRef.get().await()
+
+            if (groupSnapshot.exists()) {
                 throw GroupNameAlreadyExistsException()
-            }else{
-                db.collection("groups").document(group.name).set(group.toMap()).await()
-                db.collection("groups").document(group.name).collection("users").document(userId)
-                    .set(mapOf("nickname" to userData.nickname, "avatarIndex" to userData.avatarIndex)).await()
-                db.collection("users").document(userId)
-                    .set(mapOf("group" to group.name), SetOptions.merge()).await()
+            } else {
+                val batch = db.batch()
+                batch.set(groupDocRef, group.toMap())
+                batch.set(groupDocRef.collection("users").document(userId),
+                    mapOf("nickname" to userData.nickname, "avatarIndex" to userData.avatarIndex))
+                batch.set(db.collection("users").document(userId),
+                    mapOf("group" to group.name), SetOptions.merge())
+                batch.commit().await()
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             throw e
         }
     }
 
-    suspend fun joinGroup(userId: String, group: Group, userData: User){
-        try{
+    suspend fun joinGroup(userId: String, group: Group, userData: User) {
+        try {
             val groupSnapshot = db.collection("groups").document(group.name).get().await()
-            if(!groupSnapshot.exists()){
+            if (!groupSnapshot.exists()) {
                 throw GroupDoesNotExistException()
             }
-            if(groupSnapshot["password"] != group.password){
+            if (groupSnapshot["password"] != group.password) {
                 throw IncorrectGroupNameOrPasswordException()
             }
-            db.collection("groups").document(group.name).collection("users").document(userId)
-                .set(mapOf("nickname" to userData.nickname, "avatarIndex" to userData.avatarIndex)).await()
-        }catch (e: Exception){
+
+            val batch = db.batch()
+            val userInGroupRef = db.collection("groups").document(group.name)
+                .collection("users").document(userId)
+            batch.set(userInGroupRef, mapOf("nickname" to userData.nickname, "avatarIndex" to userData.avatarIndex))
+
+            val userRef = db.collection("users").document(userId)
+            batch.set(userRef, mapOf("group" to group.name), SetOptions.merge())
+            batch.commit().await()
+        } catch (e: Exception) {
             throw e
         }
     }

@@ -36,6 +36,10 @@ class GroupViewModel(private val groupRepository: GroupRepository): ViewModel() 
 
     fun createGroup(name: String, password: String, userId: String, userData: User) {
         try{
+            if(name.isEmpty() || password.isEmpty()){
+                _error.value = "Preencha todos os campos"
+                return
+            }
             val group = Group(name, password)
             viewModelScope.launch{
                 groupRepository.createGroup(userId, group, userData)
