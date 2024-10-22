@@ -61,7 +61,7 @@ val appModule = module {
         viewModel { LeaderboardViewModel(get()) }
 
         single { GroupRepository() }
-        viewModel { GroupViewModel(get()) }
+        viewModel { GroupViewModel(get(), get()) }
 
         viewModel { EnterGroupViewModel(get()) }
 }

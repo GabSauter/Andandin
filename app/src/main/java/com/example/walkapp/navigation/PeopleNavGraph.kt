@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.views.entergroupscreen.EnterGroupScreen
 import com.example.walkapp.views.groupscreen.GroupScreen
-import com.example.walkapp.views.groupscreen.User
 import com.example.walkapp.views.leaderboardscreen.LeaderboardScreen
 import com.google.firebase.auth.FirebaseUser
 
@@ -34,24 +33,7 @@ fun PeopleNavGraph(
         }
         composable(Screen.Group.route) {
             if (authUser != null) {
-                val dummyUsers = listOf(
-                    User(
-                        avatar = painterResource(android.R.drawable.ic_menu_camera),
-                        name = "John Doe",
-                        distanceWalked = "10 km"
-                    ),
-                    User(
-                        avatar = painterResource(android.R.drawable.ic_menu_camera),
-                        name = "Jane Smith",
-                        distanceWalked = "15 km"
-                    )
-                )
-
-                GroupScreen(
-                    groupName = "Morning Walkers",
-                    users = dummyUsers,
-                    onLeaveGroup = {}
-                )
+                GroupScreen(authUser.uid)
             }
         }
     }
