@@ -3,7 +3,6 @@ package com.example.walkapp.views.groupscreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -41,17 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.GroupUser
 import com.example.walkapp.models.GroupUserWalk
+import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.GroupViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun GroupScreen(userId: String) {
+fun GroupScreen(userId: String, navController: NavController) {
 
     val groupViewModel: GroupViewModel = koinViewModel(parameters = {
         parametersOf(userId)
@@ -80,21 +79,22 @@ fun GroupScreen(userId: String) {
             topBar = {
                 Row (
                     modifier = Modifier
-                        .padding(8.dp)
                         .fillMaxWidth()
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
                         .clickable { showUserList = true },
                     verticalAlignment = Alignment.CenterVertically,
                 ){
                     Text(
                         text = group!!.name,
                         style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .weight(1f)
                     )
                     Column {
                         IconButton(onClick = { showDropdown = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Mais opções")
+                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Mais opções", tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
 
                         DropdownMenu(
@@ -106,7 +106,7 @@ fun GroupScreen(userId: String) {
                                 onClick = {
                                     groupViewModel.leaveGroup(userId)
                                     showDropdown = false
-                                    //navegar para tela de enterGroup
+                                    navController.navigate(Screen.EnterGroup.route)
                                 }
                             )
                         }
@@ -162,7 +162,7 @@ fun UserCard(groupUserWalk: GroupUserWalk) {
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(text = groupUserWalk.nickname, fontWeight = FontWeight.Bold)
-            Text(text = "Caminhou: ${groupUserWalk.distanceWalked}m")
+            Text(text = "Caminhou: ${groupUserWalk.distanceWalked}m",)
         }
     }
 
@@ -174,8 +174,8 @@ fun UserListDialog(users: List<GroupUser>, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text("Membros Do Grupo") },
         text = {
-            Column {
-                users.forEach { user ->
+            LazyColumn {
+                items(users) { user ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(avatarOptions[user.avatarIndex]),
@@ -191,14 +191,8 @@ fun UserListDialog(users: List<GroupUser>, onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text("Fechar")
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GroupScreenPreview() {
-    GroupScreen("123")
 }

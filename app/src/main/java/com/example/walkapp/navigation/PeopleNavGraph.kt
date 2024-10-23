@@ -33,7 +33,7 @@ fun PeopleNavGraph(
         }
         composable(Screen.Group.route) {
             if (authUser != null) {
-                GroupScreen(authUser.uid)
+                GroupScreen(authUser.uid, navController)
             }
         }
     }

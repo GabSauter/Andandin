@@ -8,13 +8,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.Transaction
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 class PerformanceRepository {
     private val db = Firebase.firestore
 
-    suspend fun getPerformanceData(userId: String): Performance? {
+    suspend fun getPerformanceData(userId: String): Performance {
         try {
             val document = db.collection("users")
                 .document(userId)
@@ -24,9 +25,12 @@ class PerformanceRepository {
                 .await()
 
             if (!document.exists() || document.data == null) {
-                return null
+                return Performance(
+                    distanceTotal = 0,
+                    distanceLast7Days = emptyList(),
+                    distanceLast12Months = emptyList()
+                )
             }
-            Log.d("PerformanceRepository", "Document data: ${document.data}")
             return Performance.mapToPerformance(document.data!!)
         } catch (e: Exception) {
             Log.e("PerformanceRepository", "Error getting performance data", e)
@@ -34,7 +38,7 @@ class PerformanceRepository {
         }
     }
 
-    fun getPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference): Performance {
+    fun getPerformanceDataBatch(transaction: Transaction, performanceDataRef: DocumentReference): Performance {
         val snapshot = transaction.get(performanceDataRef)
         val performanceData = snapshot.data ?: emptyMap<String, Any>()
 
@@ -49,7 +53,7 @@ class PerformanceRepository {
         }
     }
 
-    fun setPerformanceData(transaction: Transaction, performanceDataRef: DocumentReference, performance: Performance, distance: Int, newDistance: Int, todayString: String, currentMonth: String){
+    fun setPerformanceDataBatch(batch: WriteBatch, performanceDataRef: DocumentReference, performance: Performance, distance: Int, newDistance: Int, todayString: String, currentMonth: String){
         val updatedDistanceLast7Days = updateDistanceLast7Days(performance, distance, todayString)
         val updatedDistanceLast12Months = updateDistanceLast12Months(performance, distance, currentMonth)
 
@@ -59,7 +63,7 @@ class PerformanceRepository {
             distanceLast12Months = updatedDistanceLast12Months
         )
 
-        transaction.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
+        batch.set(performanceDataRef, updatedPerformance.toMap(), SetOptions.merge())
     }
 
     private fun updateDistanceLast7Days(performance: Performance, distance: Int, todayString: String): List<DistanceDay> {

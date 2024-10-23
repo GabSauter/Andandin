@@ -5,24 +5,49 @@ import com.example.walkapp.models.Badges
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.Transaction
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 class BadgeRepository {
     private val db = Firebase.firestore
 
-    suspend fun getBadges(userId: String): Map<String, Any> {
+    suspend fun getBadges(userId: String): Badges {
         try{
             val badgeRef = db.collection("users")
                 .document(userId).collection("badgeData")
                 .document("badge")
 
             val snapshot = badgeRef.get().await()
-            return if(snapshot.exists()){
-                snapshot.data ?: emptyMap()
+            if(snapshot.exists()){
+                val badgeData = snapshot.data ?: emptyMap<String, Any>()
+                if(badgeData.isEmpty()) {
+                    return Badges(
+                        badge1 = false,
+                        badge2 = false,
+                        badge3 = false,
+                        badge4 = false,
+                        badge5 = false,
+                        badge6 = false,
+                        badge7 = false,
+                        badge8 = false,
+                        badge9 = false
+                    )
+                }
+                val badges = Badges.mapToBadge(badgeData as Map<String, Any>)
+                return badges
             }else{
-                emptyMap()
+                return Badges(
+                    badge1 = false,
+                    badge2 = false,
+                    badge3 = false,
+                    badge4 = false,
+                    badge5 = false,
+                    badge6 = false,
+                    badge7 = false,
+                    badge8 = false,
+                    badge9 = false
+                )
             }
         }catch (e: Exception){
             Log.e("UserRepository", "Error getting badges", e)
@@ -30,7 +55,7 @@ class BadgeRepository {
         }
     }
 
-    fun setBadges(transaction: Transaction, badgeRef: DocumentReference, distance: Int, newDistanceTotal: Int, badgeData: Badges) {
+    fun setBadgesBatch(batch: WriteBatch, badgeRef: DocumentReference, distance: Int, newDistanceTotal: Int, badgeData: Badges) {
         //Total distance Badges:
         if(newDistanceTotal >= 1000) { //distancia de 1 km
             badgeData.badge1 = true
@@ -63,26 +88,6 @@ class BadgeRepository {
             badgeData.badge9 = true
         }
 
-        transaction.set(badgeRef, badgeData, SetOptions.merge())
-    }
-
-    fun getBadgeData(transaction: Transaction, badgeRef: DocumentReference): Badges {
-        val snapshot = transaction.get(badgeRef)
-        val badgeData = snapshot.data ?: emptyMap<String, Any>()
-        if(badgeData.isEmpty()) {
-            return Badges(
-                badge1 = false,
-                badge2 = false,
-                badge3 = false,
-                badge4 = false,
-                badge5 = false,
-                badge6 = false,
-                badge7 = false,
-                badge8 = false,
-                badge9 = false
-            )
-        }
-        val badges = Badges.mapToBadge(badgeData as Map<String, Any>)
-        return badges
+        batch.set(badgeRef, badgeData, SetOptions.merge())
     }
 }

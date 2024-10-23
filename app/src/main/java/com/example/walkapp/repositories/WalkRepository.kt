@@ -7,22 +7,21 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class WalkRepository(private val perfomanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
+class WalkRepository(private val performanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
     private val db = Firebase.firestore
 
     suspend fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
         try {
             val calendar = Calendar.getInstance()
-
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val todayString = dateFormat.format(calendar.time)
-            val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
             val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
             val currentMonth = monthFormat.format(calendar.time)
 
@@ -31,28 +30,50 @@ class WalkRepository(private val perfomanceRepository: PerformanceRepository, pr
             val performanceDataRef = userRef.collection("performanceData").document("performance")
             val badgesRef = userRef.collection("badgeData").document("badge")
 
-            db.runTransaction { transaction ->
-                val performance = perfomanceRepository.getPerformanceData(transaction, performanceDataRef)
-                val badgeData = badgeRepository.getBadgeData(transaction, badgesRef)
+            val performance = performanceRepository.getPerformanceData(userId)
+            val badgeData = badgeRepository.getBadges(userId)
 
-                val newDistanceTotal = performance.distanceTotal + distance
-                perfomanceRepository.setPerformanceData(transaction, performanceDataRef, performance, distance, newDistanceTotal, todayString, currentMonth)
-                setWalkingData(transaction, walkingDataRef, distance, elapsedTime, todayString)
-                badgeRepository.setBadges(transaction, badgesRef, distance, newDistanceTotal, badgeData)
-                null
-            }.await()
+            val newDistanceTotal = performance.distanceTotal + distance
+
+            val batch = db.batch()
+
+            performanceRepository.setPerformanceDataBatch(
+                batch,
+                performanceDataRef,
+                performance,
+                distance,
+                newDistanceTotal,
+                todayString,
+                currentMonth
+            )
+            setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayString)
+            badgeRepository.setBadgesBatch(batch, badgesRef, distance, newDistanceTotal, badgeData)
+            batch.commit().await()
+
         } catch (e: Exception) {
+            Log.e("WalkRepository", "Error: ${e.message}", e)
             throw e
         }
     }
 
-    private fun setWalkingData(transaction: Transaction, walkingDataRef: DocumentReference, distance: Int, elapsedTime: Long, todayString: String){
-        val walkingData = mapOf(
-            "distance" to distance, // Metros
-            "time" to elapsedTime, // Milliseconds
-            "date" to todayString
-        )
-        transaction.set(walkingDataRef, walkingData)
+    private fun setWalkingDataBatch(
+        batch: WriteBatch,
+        walkingDataRef: DocumentReference,
+        distance: Int,
+        elapsedTime: Long,
+        todayString: String
+    ) {
+        try{
+            val walkingData = mapOf(
+                "distance" to distance, // Metros
+                "time" to elapsedTime, // Milliseconds
+                "date" to todayString
+            )
+            batch.set(walkingDataRef, walkingData)
+        }catch (e: Exception){
+            Log.e("WalkRepository", "Error: ${e.message}", e)
+            throw e
+        }
     }
 
     suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
@@ -86,7 +107,7 @@ class WalkRepository(private val perfomanceRepository: PerformanceRepository, pr
             val lastVisibleDocument = querySnapshot.documents.lastOrNull()
             return Pair(walkHistoryItems, lastVisibleDocument)
         } catch (e: Exception) {
-            Log.e("UserRepository", "Error fetching walk history", e)
+            Log.e("WalkRepository", "Error fetching walk history", e)
             throw e
         }
     }

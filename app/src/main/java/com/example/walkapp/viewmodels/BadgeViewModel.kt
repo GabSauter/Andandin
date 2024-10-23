@@ -22,7 +22,7 @@ class BadgeViewModel(private val badgeRepository: BadgeRepository): ViewModel() 
         try{
             _loading.value = true
             viewModelScope.launch {
-                _badges.value = Badges.mapToBadge(badgeRepository.getBadges(userId))
+                _badges.value = badgeRepository.getBadges(userId)
             }
         }catch(e: Exception){
             _error.value = "Houve um erro ao carregar as medalhas"

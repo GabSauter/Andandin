@@ -91,6 +91,7 @@ class WalkingService : Service() {
                     stopSelf()
                 }
             } ?: stopSelf()
+            stopTimer()
             return START_NOT_STICKY
         } else {
             startForeground(NOTIFICATION_ID, createNotification(0, 0L))
@@ -101,12 +102,11 @@ class WalkingService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         isTracking.value = false
         pathPoints.value = emptyList()
         totalDistance.value = 0
-        stopTimer()
+
+        super.onDestroy()
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(NOTIFICATION_ID)
@@ -114,25 +114,36 @@ class WalkingService : Service() {
         trackingJob?.cancel()
     }
 
-    private fun saveWalkingData(userId: String, totalDistance: Int, elapsedTime: Long, onComplete: () -> Unit) {
+    private fun saveWalkingData(
+        userId: String,
+        distance: Int,
+        elapsedTime: Long,
+        onComplete: () -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 loading.value = true
+//                if(distance > 10 && elapsedTime > 10000) {
                 walkRepository.completeWalk(
                     userId = userId,
-                    distance = totalDistance,
+                    distance = distance,
                     elapsedTime = elapsedTime,
                 )
-                Log.d("WalkingService", "Walking data saved successfully")
-                Log.d("WalkingService", "Total Distance: $totalDistance meters")
+//                }else{
+                //colocar alguma coisa dizendo que não salvou, pois precisa caminhar pelo menos 10m e 10s
+//                }
             } catch (e: Exception) {
+                //colocar alguma coisa dizendo que não salvou, pois houve um erro
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
                 loading.value = false
                 onComplete()
-                Log.d("WalkingService", "Walking service stopped")
             }
         }
+    }
+
+    private fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
+
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -148,7 +159,10 @@ class WalkingService : Service() {
 
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingNotificationIntent = PendingIntent.getActivity(
-            this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            this,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val formattedTime = formatElapsedTime(time)
@@ -218,7 +232,8 @@ class WalkingService : Service() {
                 distance to time
             }.collect { (distance, time) ->
                 val notification = createNotification(distance, time)
-                val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                val notificationManager =
+                    getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.notify(NOTIFICATION_ID, notification)
             }
         }
