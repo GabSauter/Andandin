@@ -9,6 +9,7 @@ import com.example.walkapp.models.GroupUserWalk
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -137,8 +138,8 @@ class GroupRepository {
             var query = db.collection("groups")
                 .document(groupName)
                 .collection("userWalks")
-                .orderBy("date")
-                .limit(10)
+                .orderBy("date", Query.Direction.DESCENDING)
+                .limit(8)
 
             if (lastDocument != null) {
                 query = query.startAfter(lastDocument)

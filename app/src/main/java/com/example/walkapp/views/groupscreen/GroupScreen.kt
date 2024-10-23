@@ -1,7 +1,9 @@
 package com.example.walkapp.views.groupscreen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,20 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,11 +47,9 @@ import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.GroupUser
 import com.example.walkapp.models.GroupUserWalk
 import com.example.walkapp.viewmodels.GroupViewModel
-import com.example.walkapp.views.historicscreen.WalkHistoryCard
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(userId: String) {
 
@@ -72,36 +69,49 @@ fun GroupScreen(userId: String) {
 
     if(loading || group == null){
         Box(modifier = Modifier.fillMaxSize()){
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier.align(
+                    Alignment.Center
+                )
+            )
         }
     }else{
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = group!!.name,
-                            modifier = Modifier.clickable { showUserList = true }
-                        )
-                    },
-                    actions = {
+                Row (
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clickable { showUserList = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                ){
+                    Text(
+                        text = group!!.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .weight(1f)
+                    )
+                    Column {
                         IconButton(onClick = { showDropdown = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                            Icon(Icons.Default.MoreVert, contentDescription = "Mais opções")
                         }
+
                         DropdownMenu(
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Leave Group") },
+                                text = { Text("Sair do grupo") },
                                 onClick = {
                                     groupViewModel.leaveGroup(userId)
                                     showDropdown = false
+                                    //navegar para tela de enterGroup
                                 }
                             )
                         }
                     }
-                )
+                }
             }
         ) { paddingValues ->
             if (showUserList) {
@@ -112,7 +122,8 @@ fun GroupScreen(userId: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                reverseLayout = true
             ) {
                 if(groupUsersWalks.isEmpty()){
                     item{
@@ -126,7 +137,7 @@ fun GroupScreen(userId: String) {
                 }else{
                     items(groupUsersWalks.size) { index ->
                         UserCard(groupUsersWalks[index])
-
+                        HorizontalDivider()
                         if (index == groupUsersWalks.size - 1) {
                             groupViewModel.loadUserWalks(userId)
                         }
@@ -139,33 +150,29 @@ fun GroupScreen(userId: String) {
 
 @Composable
 fun UserCard(groupUserWalk: GroupUserWalk) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Image(
-                painter = painterResource(avatarOptions[groupUserWalk.avatarIndex]),
-                contentDescription = "${groupUserWalk.nickname}'s Avatar",
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(text = groupUserWalk.nickname, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = "Caminhou: ${groupUserWalk.distanceWalked}m")
-            }
+        Image(
+            painter = painterResource(avatarOptions[groupUserWalk.avatarIndex]),
+            contentDescription = "${groupUserWalk.nickname}'s Avatar",
+            modifier = Modifier.size(32.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(text = groupUserWalk.nickname, fontWeight = FontWeight.Bold)
+            Text(text = "Caminhou: ${groupUserWalk.distanceWalked}m")
         }
     }
+
 }
 
 @Composable
 fun UserListDialog(users: List<GroupUser>, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Group Members") },
+        title = { Text("Membros Do Grupo") },
         text = {
             Column {
                 users.forEach { user ->
