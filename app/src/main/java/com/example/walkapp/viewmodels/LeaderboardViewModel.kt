@@ -20,8 +20,8 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-//    private val _leaderboardInGroup = MutableStateFlow<List<LeaderboardUser>>(emptyList())
-//    val leaderboardInGroup: StateFlow<List<LeaderboardUser>> = _leaderboardInGroup
+    private val _leaderboardInGroup = MutableStateFlow<List<LeaderboardUser>>(emptyList())
+    val leaderboardInGroup: StateFlow<List<LeaderboardUser>> = _leaderboardInGroup
 
     private val _leaderboard = MutableStateFlow<List<LeaderboardUser>>(emptyList())
     val leaderboard: StateFlow<List<LeaderboardUser>> = _leaderboard
@@ -42,20 +42,20 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
         }
     }
 
-//    fun getLeaderboardForMonthInGroup(
-//        monthAndYear: String,
-//        group: String? = null
-//    ) {
-//        viewModelScope.launch {
-//            try {
-//                val leaderboardUser =
-//                    leaderboardRepository.getLeaderboardForMonthInGroup(monthAndYear, group)
-//                _leaderboardInGroup.value = leaderboardUser
-//            } catch (e: Exception) {
-//                _error.value = "Houve um erro ao obter o ranking do mês."
-//            }
-//        }
-//    }
+    fun getLeaderboardForMonthInGroup(
+        monthAndYear: String,
+        userId: String
+    ) {
+        viewModelScope.launch {
+            try {
+                val leaderboardUser =
+                    leaderboardRepository.getLeaderboardForMonthInGroup(monthAndYear, userId)
+                _leaderboardInGroup.value = leaderboardUser
+            } catch (e: Exception) {
+                _error.value = "Houve um erro ao obter o ranking do mês."
+            }
+        }
+    }
 
     fun getUserLeaderboard(userId: String) {
         val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())

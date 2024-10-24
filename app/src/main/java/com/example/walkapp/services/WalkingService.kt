@@ -142,10 +142,6 @@ class WalkingService : Service() {
         }
     }
 
-    private fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
-
-    }
-
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createNotification(distance: Int, time: Long): Notification {

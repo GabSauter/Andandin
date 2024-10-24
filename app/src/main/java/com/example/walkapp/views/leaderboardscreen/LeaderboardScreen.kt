@@ -39,6 +39,9 @@ import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.LeaderboardUser
 import com.example.walkapp.viewmodels.LeaderboardViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun LeaderboardScreen(userId: String) {
@@ -46,18 +49,20 @@ fun LeaderboardScreen(userId: String) {
 
     val leaderboardViewModel = koinViewModel<LeaderboardViewModel>()
     val leaderboard by leaderboardViewModel.leaderboard.collectAsState()
-    //val leaderboardInGroup by leaderboardViewModel.leaderboardInGroup.collectAsState()
+    val leaderboardInGroup by leaderboardViewModel.leaderboardInGroup.collectAsState()
     val userLeaderboard by leaderboardViewModel.user.collectAsState()
     val error by leaderboardViewModel.error.collectAsState()
 
-    //val currentLeaderboard = if (selectedFilter == 0) leaderboard else leaderboardInGroup
-    val currentLeaderboard = leaderboard
+    val currentLeaderboard = if (selectedFilter == 0) leaderboard else leaderboardInGroup
 
     LaunchedEffect(selectedFilter) {
         if (selectedFilter == 0) {
             leaderboardViewModel.getLeaderboardForMonth()
         } else {
-            //leaderboardViewModel.getLeaderboardForMonthInGroup("10/2024", "your-group-id")
+            val calendar: Calendar = Calendar.getInstance()
+            val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+            val currentMonth = monthFormat.format(calendar.time)
+            leaderboardViewModel.getLeaderboardForMonthInGroup(currentMonth, userId)
         }
     }
 

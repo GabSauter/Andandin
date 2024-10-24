@@ -3,10 +3,8 @@ package com.example.walkapp.repositories
 import android.util.Log
 import com.example.walkapp.models.LeaderboardUser
 import com.example.walkapp.models.LeaderboardUser.Companion.emptyLeaderboardUser
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class LeaderboardRepository {
@@ -39,12 +37,21 @@ class LeaderboardRepository {
 
     suspend fun getLeaderboardForMonthInGroup(
         monthAndYear: String,
-        group: String? = null
+        userId: String
     ): List<LeaderboardUser> {
         try {
+            val userSnapshot = db.collection("users")
+                .document(userId)
+                .get()
+                .await()
+
+            if (userSnapshot == null || !userSnapshot.exists() || userSnapshot["group"] == null) {
+                return emptyList()
+            }
+
             val querySnapshot = db.collection("leaderboards")
                 .whereEqualTo("monthAndYear", monthAndYear)
-                .whereEqualTo("group", group)
+                .whereEqualTo("group", userSnapshot["group"])
                 .orderBy("distance", Query.Direction.DESCENDING)
                 .limit(10)
                 .get()
