@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.walkapp.R
+import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.LeaderboardUser
 import com.example.walkapp.viewmodels.LeaderboardViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -95,10 +96,17 @@ fun LeaderboardScreen(userId: String) {
                     LeaderboardItem(userLeaderboard)
                 }
             }
-            LeaderboardItem(
-                leaderboardUser = userLeaderboard,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer))
+            {
+                LeaderboardItem(
+                    leaderboardUser = userLeaderboard,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -124,24 +132,14 @@ fun LeaderboardItem(leaderboardUser: LeaderboardUser, modifier: Modifier = Modif
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .padding(16.dp),
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val avatarOptions = listOf(
-            R.drawable.avatar1,
-            R.drawable.avatar2,
-            R.drawable.avatar3,
-            R.drawable.avatar4,
-            R.drawable.avatar5
-        )
         Image(
             painter = painterResource(id = avatarOptions[leaderboardUser.avatarIndex]),
             contentDescription = "Avatar",
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+                .size(36.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(

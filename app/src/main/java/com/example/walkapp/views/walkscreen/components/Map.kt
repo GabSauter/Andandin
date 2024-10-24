@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
+import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.navigation.Screen
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -22,12 +22,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun Map(navController: NavHostController, userLocation: LatLng?, avatarIndex: Int, pathPoints: List<LatLng>, isWalking: Boolean){
 
-    val avatarDrawables = listOf(
-        R.drawable.avatar1,
-        R.drawable.avatar2,
-        R.drawable.avatar3
-    )
-    val avatarDrawable = avatarDrawables.getOrNull(avatarIndex) ?: R.drawable.avatar1
+    val avatarDrawable = avatarOptions.getOrNull(avatarIndex) ?: R.drawable.avatar1
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
