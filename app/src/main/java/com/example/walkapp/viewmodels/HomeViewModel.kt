@@ -36,7 +36,7 @@ class HomeViewModel(
             _loadingUserData.value = true
             try {
                 _user.value = userRepository.getUser(userId)
-                Log.d("WalkViewModel", "User data loaded: ${_user.value}")
+                _level.value = levelRepository.calculateLevel(user.value!!.xp)
             } catch (e: Exception) {
                 _user.value = null
                 _error.value = "Houve um erro ao tentar carregar os dados do usuário."
@@ -46,17 +46,17 @@ class HomeViewModel(
         }
     }
 
-    fun getLevel(userId: String) {
-        viewModelScope.launch {
-            try {
-                _loadingLevel.value = true
-                val level = levelRepository.getLevel(userId)
-                _level.value = level
-            } catch (e: Exception) {
-                _error.value = "Houve um erro ao tentar carregar o nível."
-            }finally {
-                _loadingLevel.value = false
-            }
-        }
-    }
+//    fun getLevel(userId: String) {
+//        viewModelScope.launch {
+//            try {
+//                _loadingLevel.value = true
+//                val level = levelRepository.getLevel(userId)
+//                _level.value = level
+//            } catch (e: Exception) {
+//                _error.value = "Houve um erro ao tentar carregar o nível."
+//            }finally {
+//                _loadingLevel.value = false
+//            }
+//        }
+//    }
 }

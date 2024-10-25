@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
 import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
+import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
 import com.example.walkapp.views.roothistoricscreen.RootHistoricScreen
@@ -27,17 +28,35 @@ fun HomeNavGraph(
         startDestination = Screen.Walk.route
     ) {
         composable(Screen.Walk.route) {
-            WalkScreen(
-                navController = navController,
-                authUser = authUser,
-                onSignOut = onSignOut
-            )
+            if (authUser != null) {
+                WalkScreen(
+                    navController = navController,
+                    authUserId = authUser.uid,
+                    onSignOut = onSignOut
+                )
+            }
         }
         composable(Graph.Historic.route) {
-            RootHistoricScreen(authUser = authUser)
+            if (authUser != null) {
+                RootHistoricScreen(authUserId = authUser.uid)
+            }
+        }
+        composable(Screen.Historic.route) {
+            if (authUser != null) {
+                HistoricScreen(authUserId = authUser.uid)
+            }
         }
         composable(Screen.People.route) {
-            PeopleScreen(authUser, User(id = authUser?.uid.toString(), nickname = authUser?.displayName.toString(), avatarIndex = 0))
+            if (authUser != null) {
+                PeopleScreen(
+                    authUser,
+                    User(
+                        id = authUser.uid,
+                        nickname = authUser.displayName.toString(),
+                        avatarIndex = 0
+                    )
+                )
+            }
         }
         composable(Screen.UserForm.route) {
             UserFormScreen(navController, authUser)
@@ -53,7 +72,11 @@ fun HomeNavGraph(
                 Story("Story 4", "This is the text of story 4", 7)
             )
             val currentLevel = 4
-            StoryListScreen(stories = stories, currentLevel = currentLevel, navController = navController)
+            StoryListScreen(
+                stories = stories,
+                currentLevel = currentLevel,
+                navController = navController
+            )
         }
         composable("storyDetail/{title}/{text}") { backStackEntry ->
             val title = backStackEntry.arguments?.getString("title") ?: ""

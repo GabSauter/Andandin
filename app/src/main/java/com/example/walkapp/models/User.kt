@@ -3,16 +3,14 @@ package com.example.walkapp.models
 data class User(
     var id: String = "",
     val nickname: String = "",
-    val dateOfBirth: String = "",
-    val walksRegularly: Boolean = false,
-    val walkingGoal: String = "",
+    val xp: Int = 0,
+    val walkingGoal: Int = 0,
     val avatarIndex: Int = 0
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
             "nickname" to nickname,
-            "dateOfBirth" to dateOfBirth,
-            "walksRegularly" to walksRegularly,
+            "xp" to xp,
             "walkingGoal" to walkingGoal,
             "avatarIndex" to avatarIndex
         )
@@ -23,15 +21,14 @@ data class User(
             return User(
                 id = id,
                 nickname = data["nickname"] as String,
-                dateOfBirth = data["dateOfBirth"] as String,
-                walksRegularly = data["walksRegularly"] as Boolean,
-                walkingGoal = data["walkingGoal"] as String,
+                xp = (data["xp"] as Long).toInt(),
+                walkingGoal = (data["walkingGoal"] as Long).toInt(),
                 avatarIndex = (data["avatarIndex"] as Long).toInt()
             )
         }
     }
 
     fun isEmpty(): Boolean {
-        return nickname.isBlank() && dateOfBirth.isBlank() && walkingGoal.isBlank()
+        return nickname.isBlank() && xp == 0 && walkingGoal == 0 && avatarIndex == 0
     }
 }

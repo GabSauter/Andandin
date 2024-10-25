@@ -1,5 +1,6 @@
 package com.example.walkapp.repositories
 
+import android.util.Log
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore

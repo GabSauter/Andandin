@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.walkapp.views.homescreen.HomeScreen
+import com.example.walkapp.views.homenavscreen.HomeNavScreen
 import com.example.walkapp.views.loginscreen.LoginScreen
 import com.example.walkapp.viewmodels.AuthViewModel
 import com.google.firebase.auth.FirebaseUser
@@ -39,7 +39,7 @@ fun RootNavGraph(
         }
 
         composable(Graph.Home.route) {
-            HomeScreen(
+            HomeNavScreen(
                 authUser = authUser,
                 onSignOut = { authViewModel.signOut() }
             )

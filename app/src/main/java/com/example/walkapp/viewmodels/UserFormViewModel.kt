@@ -119,10 +119,10 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         val userData = User(
             id = userId,
             nickname = _uiState.value.nickname,
-            dateOfBirth = _uiState.value.dateOfBirth,
-            walksRegularly = _uiState.value.walksRegularly,
-            walkingGoal = _uiState.value.walkingGoal,
-            avatarIndex = 1
+//            dateOfBirth = _uiState.value.dateOfBirth,
+//            walksRegularly = _uiState.value.walksRegularly,
+//            walkingGoal = _uiState.value.walkingGoal,
+//            avatarIndex = 1
         )
         try {
             _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)

@@ -1,4 +1,4 @@
-package com.example.walkapp.views.homescreen
+package com.example.walkapp.views.homenavscreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,11 +13,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.walkapp.navigation.Graph
 import com.example.walkapp.navigation.HomeNavGraph
 import com.example.walkapp.navigation.Screen
-import com.example.walkapp.views.homescreen.bottomnavigation.BottomNavBar
+import com.example.walkapp.views.homenavscreen.bottomnavigation.BottomNavBar
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun HomeScreen(
+fun HomeNavScreen(
     navController: NavHostController = rememberNavController(),
     authUser: FirebaseUser?,
     onSignOut: () -> Unit

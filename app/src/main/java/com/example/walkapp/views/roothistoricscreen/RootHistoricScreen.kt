@@ -21,7 +21,7 @@ import com.example.walkapp.navigation.Screen
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun RootHistoricScreen(navController: NavHostController = rememberNavController(), authUser: FirebaseUser?){
+fun RootHistoricScreen(navController: NavHostController = rememberNavController(), authUserId: String){
     val tabItems = listOf(TabNavItems.Historic, TabNavItems.Performance, TabNavItems.Badges)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
@@ -47,7 +47,7 @@ fun RootHistoricScreen(navController: NavHostController = rememberNavController(
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            HistoricNavGraph(navController = navController, authUser = authUser)
+            HistoricNavGraph(navController = navController, authUserId = authUserId)
         }
     }
 }

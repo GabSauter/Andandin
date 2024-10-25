@@ -23,7 +23,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun HistoricScreen(user: FirebaseUser?) {
+fun HistoricScreen(authUserId: String) {
     val historicViewModel = koinViewModel<HistoricViewModel>()
     val walkHistoric by historicViewModel.walkHistory.collectAsState()
 
@@ -37,8 +37,8 @@ fun HistoricScreen(user: FirebaseUser?) {
     }
 
     LaunchedEffect(walkHistoric) {
-        if (walkHistoric == null && user != null) {
-            historicViewModel.loadWalkHistory(user.uid)
+        if (walkHistoric == null) {
+            historicViewModel.loadWalkHistory(authUserId)
         }
     }
 
@@ -80,7 +80,7 @@ fun HistoricScreen(user: FirebaseUser?) {
                     WalkHistoryCard(filteredWalks[index])
 
                     if (index == walkHistoric!!.size - 1) {
-                        historicViewModel.loadWalkHistory(user?.uid ?: "")
+                        historicViewModel.loadWalkHistory(authUserId)
                     }
                 }
             }

@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
+import com.example.walkapp.navigation.Screen
 import com.google.android.gms.maps.model.LatLng
 import java.util.concurrent.TimeUnit
 
@@ -54,6 +55,7 @@ fun MapScreenContent(
         )
 
         WalkControlButton(
+            navController = navController,
             isWalking = isWalking,
             onWalkToggle = {
                 toggleWalking(
@@ -84,6 +86,7 @@ fun MapScreenContent(
 
 @Composable
 fun WalkControlButton(
+    navController: NavHostController,
     isWalking: Boolean,
     onWalkToggle: () -> Unit,
     loading: Boolean,
@@ -103,20 +106,32 @@ fun WalkControlButton(
             )
         }
     }else{
-        Button(
-            onClick = onWalkToggle,
-            modifier = modifier,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isWalking) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-                contentColor = if (isWalking) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Icon(
-                painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
-                contentDescription = if (isWalking) "Parar caminhada" else "Começar caminhada"
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+        Column (modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally){
+            if(!isWalking){
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.Historic.route)
+                    }
+                ) {
+                    Text("Ver histórico")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Button(
+                onClick = onWalkToggle,
+                modifier = modifier,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isWalking) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                    contentColor = if (isWalking) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Icon(
+                    painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
+                    contentDescription = if (isWalking) "Parar caminhada" else "Começar caminhada"
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+            }
         }
     }
 }
