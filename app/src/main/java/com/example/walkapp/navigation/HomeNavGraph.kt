@@ -1,11 +1,20 @@
 package com.example.walkapp.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
+import com.example.walkapp.viewmodels.HomeViewModel
 import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
@@ -15,6 +24,7 @@ import com.example.walkapp.views.storyscreen.StoryDetailScreen
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen
 import com.google.firebase.auth.FirebaseUser
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeNavGraph(
@@ -22,66 +32,89 @@ fun HomeNavGraph(
     authUser: FirebaseUser?,
     onSignOut: () -> Unit,
 ) {
-    NavHost(
-        navController = navController,
-        route = Graph.Home.route,
-        startDestination = Screen.Walk.route
-    ) {
-        composable(Screen.Walk.route) {
-            if (authUser != null) {
-                WalkScreen(
-                    navController = navController,
-                    authUserId = authUser.uid,
-                    onSignOut = onSignOut
+    val homeViewModel: HomeViewModel = koinViewModel()
+    val loadingUserData by homeViewModel.loadingUserData.collectAsState()
+    val userData by homeViewModel.user.collectAsState()
+    val level by homeViewModel.level.collectAsState()
+
+    LaunchedEffect(userData) {
+        if (!loadingUserData && authUser != null) {
+            homeViewModel.loadUserData(authUser.uid)
+        }
+    }
+
+    if (loadingUserData || userData == null) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(
+                    Alignment.Center
                 )
-            }
+            )
         }
-        composable(Graph.Historic.route) {
-            if (authUser != null) {
-                RootHistoricScreen(authUserId = authUser.uid)
-            }
-        }
-        composable(Screen.Historic.route) {
-            if (authUser != null) {
-                HistoricScreen(authUserId = authUser.uid)
-            }
-        }
-        composable(Screen.People.route) {
-            if (authUser != null) {
-                PeopleScreen(
-                    authUser,
-                    User(
-                        id = authUser.uid,
-                        nickname = authUser.displayName.toString(),
-                        avatarIndex = 0
+    } else {
+        NavHost(
+            navController = navController,
+            route = Graph.Home.route,
+            startDestination = Screen.Walk.route
+        ) {
+            composable(Screen.Walk.route) {
+                if (authUser != null) {
+                    WalkScreen(
+                        userData = userData!!,
+                        level = level!!,
+                        navController = navController,
+                        onSignOut = onSignOut
                     )
-                )
+                }
             }
-        }
-        composable(Screen.UserForm.route) {
-            UserFormScreen(navController, authUser)
-        }
-        composable(Screen.AvatarMaker.route) {
-            AvatarMakerScreen(navController, authUser, 0)
-        }
-        composable(Screen.StoryList.route) {
-            val stories = listOf(
-                Story("Story 1", "This is the text of story 1", 1),
-                Story("Story 2", "This is the text of story 2", 3),
-                Story("Story 3", "This is the text of story 3", 5),
-                Story("Story 4", "This is the text of story 4", 7)
-            )
-            val currentLevel = 4
-            StoryListScreen(
-                stories = stories,
-                currentLevel = currentLevel,
-                navController = navController
-            )
-        }
-        composable("storyDetail/{title}/{text}") { backStackEntry ->
-            val title = backStackEntry.arguments?.getString("title") ?: ""
-            val text = backStackEntry.arguments?.getString("text") ?: ""
-            StoryDetailScreen(title = title, text = text, navController = navController)
+            composable(Graph.Historic.route) {
+                if (authUser != null) {
+                    RootHistoricScreen(authUserId = authUser.uid)
+                }
+            }
+            composable(Screen.Historic.route) {
+                if (authUser != null) {
+                    HistoricScreen(authUserId = authUser.uid)
+                }
+            }
+            composable(Screen.People.route) {
+                if (authUser != null) {
+                    PeopleScreen(
+                        authUser,
+                        User(
+                            id = authUser.uid,
+                            nickname = userData!!.nickname,
+                            avatarIndex = userData!!.avatarIndex
+                        )
+                    )
+                }
+            }
+            composable(Screen.UserForm.route) {
+                UserFormScreen(navController, authUser, userData!!)
+            }
+            composable(Screen.AvatarMaker.route) {
+                AvatarMakerScreen(navController, authUser, userData!!.avatarIndex)
+            }
+            composable(Screen.StoryList.route) {
+                val stories = listOf(
+                    Story("Story 1", "This is the text of story 1", 1),
+                    Story("Story 2", "This is the text of story 2", 3),
+                    Story("Story 3", "This is the text of story 3", 5),
+                    Story("Story 4", "This is the text of story 4", 7)
+                )
+                if (level != null) {
+                    StoryListScreen(
+                        stories = stories,
+                        currentLevel = level!!.level,
+                        navController = navController
+                    )
+                }
+            }
+            composable("storyDetail/{title}/{text}") { backStackEntry ->
+                val title = backStackEntry.arguments?.getString("title") ?: ""
+                val text = backStackEntry.arguments?.getString("text") ?: ""
+                StoryDetailScreen(title = title, text = text, navController = navController)
+            }
         }
     }
 }

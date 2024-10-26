@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.common.avatarOptions
+import com.example.walkapp.models.Level
+import com.example.walkapp.models.User
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.HomeViewModel
 import com.example.walkapp.viewmodels.WalkViewModel
@@ -52,13 +52,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: () -> Unit) {
-    val homeViewModel: HomeViewModel = koinViewModel()
-    val loadingUserData by homeViewModel.loadingUserData.collectAsState()
-    val userData by homeViewModel.user.collectAsState()
-    val level by homeViewModel.level.collectAsState()
-    val loadingLevel by homeViewModel.loadingLevel.collectAsState()
-
+fun WalkScreen(
+    navController: NavHostController,
+    onSignOut: () -> Unit,
+    userData: User,
+    level: Level
+) {
     val walkViewModel: WalkViewModel = koinViewModel()
     val userLocation by walkViewModel.userLocation.collectAsState()
 
@@ -71,14 +70,6 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
 
     var showRecommendation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(userData) {
-        if (!loadingUserData) {
-            if (userData == null) {
-                homeViewModel.loadUserData(authUserId)
-            }
-        }
-    }
-
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
     LaunchedEffect(locationPermissionState) {
@@ -88,7 +79,7 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (loadingUserData || userData == null || userLocation == null) {
+        if (userLocation == null) {
             CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center
@@ -98,7 +89,7 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
             MapScreenContent(
                 navController = navController,
                 userLocation = userLocation,
-                avatarIndex = userData!!.avatarIndex,
+                avatarIndex = userData.avatarIndex,
                 pathPoints = pathPoints,
                 isWalking = isWalking,
                 totalDistance = totalDistance,
@@ -106,14 +97,14 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
                 startWalkingService = { context ->
                     locationViewModel.startWalkingService(
                         context,
-                        userData!!.id
+                        userData.id
                     )
                 },
                 stopWalkingService = { context ->
                     run {
                         locationViewModel.stopWalkingService(
                             context,
-                            userData!!.id
+                            userData.id
                         )
                     }
                 },
@@ -141,21 +132,20 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        if (!loadingLevel && level != null) {
-                            Text(text = "Nv: ${level!!.level}")
-                            LinearProgressIndicator(
-                                progress = { level!!.progressPercentage.toFloat() / 100 },
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .height(8.dp)
-                                    .clickable {
-                                        navController.navigate(Screen.StoryList.route)
-                                    }
-                                    .weight(1f),
-                                color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                        }
+                        Text(text = "Nv: ${level.level}")
+                        LinearProgressIndicator(
+                            progress = { level.progressPercentage.toFloat() / 100 },
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .height(8.dp)
+                                .clickable {
+                                    navController.navigate(Screen.StoryList.route)
+                                }
+                                .weight(1f),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+
                         HamburgerMenuButton(
                             onEditClick = {
                                 navController.navigate(Screen.UserForm.route) {
@@ -168,7 +158,7 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    if(!isWalking){
+                    if (!isWalking) {
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
@@ -186,10 +176,10 @@ fun WalkScreen(navController: NavHostController, authUserId: String, onSignOut: 
                             )
                             Column() {
                                 Text(
-                                    text = userData!!.nickname,
+                                    text = userData.nickname,
                                     style = MaterialTheme.typography.titleSmall
                                 )
-                                Text(text = "Meta: ${userData!!.walkingGoal} min/sem.")
+                                Text(text = "Meta: ${userData.walkingGoal} min/sem.")
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 IconButton(onClick = {

@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
+import com.example.walkapp.models.User
 import com.example.walkapp.views.components.ErrorSnackbar
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.UserFormViewModel
@@ -44,6 +45,7 @@ import org.koin.androidx.compose.koinViewModel
 fun UserFormScreen(
     navController: NavHostController,
     authUser: FirebaseUser?,
+    userData: User
 ) {
     val userFormViewModel: UserFormViewModel = koinViewModel()
 
@@ -191,13 +193,4 @@ fun UserFormScreen(
             }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserFormScreenPreview() {
-//    UserFormScreen(
-//        navController = rememberNavController(),
-//        authUser = null,
-//    )
 }

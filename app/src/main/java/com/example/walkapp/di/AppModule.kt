@@ -6,7 +6,6 @@ import com.example.walkapp.repositories.AuthRepository
 import com.example.walkapp.repositories.BadgeRepository
 import com.example.walkapp.repositories.GroupRepository
 import com.example.walkapp.repositories.LeaderboardRepository
-import com.example.walkapp.repositories.LevelRepository
 import com.example.walkapp.repositories.PerformanceRepository
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.repositories.WalkRepository
@@ -34,8 +33,7 @@ val appModule = module {
 
         viewModel { AvatarMakerViewModel(get()) }
 
-        single { LevelRepository(get()) }
-        viewModel { HomeViewModel(get(), get()) }
+        viewModel { HomeViewModel(get()) }
 
         viewModel { WalkViewModel(get()) }
 
