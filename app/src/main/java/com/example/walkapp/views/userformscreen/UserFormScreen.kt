@@ -45,7 +45,8 @@ import org.koin.androidx.compose.koinViewModel
 fun UserFormScreen(
     navController: NavHostController,
     authUser: FirebaseUser?,
-    userData: User
+    userData: User,
+    setUserChanged: (Boolean) -> Unit
 ) {
     val userFormViewModel: UserFormViewModel = koinViewModel()
 
@@ -54,7 +55,6 @@ fun UserFormScreen(
     val onSubmit = {
         userFormViewModel.onSubmit(authUser!!.uid)
         if (uiState.errorNickname == null &&
-            uiState.errorDateOfBirth == null &&
             uiState.errorWalkingGoal == null &&
             uiState.errorSubmit == null
         ) {
@@ -113,43 +113,43 @@ fun UserFormScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    DateTextField(
-                        date = uiState.dateOfBirth,
-                        onDateChange = { userFormViewModel.updateDateOfBirth(it) },
-                        label = "Data de Nascimento",
-                        isError = uiState.errorDateOfBirth != null,
-                        errorMessage = uiState.errorDateOfBirth,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+//                    DateTextField(
+//                        date = uiState.dateOfBirth,
+//                        onDateChange = { userFormViewModel.updateDateOfBirth(it) },
+//                        label = "Data de Nascimento",
+//                        isError = uiState.errorDateOfBirth != null,
+//                        errorMessage = uiState.errorDateOfBirth,
+//                        modifier = Modifier.fillMaxWidth()
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+//                    Text("Você caminha regularmente?")
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.Center,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        Checkbox(
+//                            checked = uiState.walksRegularly,
+//                            onCheckedChange = { userFormViewModel.updateWalksRegularly(true) }
+//                        )
+//                        Text("Sim")
+//
+//                        Spacer(modifier = Modifier.width(32.dp))
+//
+//                        Checkbox(
+//                            checked = !uiState.walksRegularly,
+//                            onCheckedChange = { userFormViewModel.updateWalksRegularly(false) }
+//                        )
+//                        Text("Não")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Text("Você caminha regularmente?")
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Checkbox(
-                            checked = uiState.walksRegularly,
-                            onCheckedChange = { userFormViewModel.updateWalksRegularly(true) }
-                        )
-                        Text("Sim")
-
-                        Spacer(modifier = Modifier.width(32.dp))
-
-                        Checkbox(
-                            checked = !uiState.walksRegularly,
-                            onCheckedChange = { userFormViewModel.updateWalksRegularly(false) }
-                        )
-                        Text("Não")
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text("Recomendação da OMS: ${uiState.recommendation}")
-
-                    Spacer(modifier = Modifier.height(8.dp))
+//                    Text("Recomendação da OMS: ${uiState.recommendation}")
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
 
                     NumberTextField(
                         value = uiState.walkingGoal,
@@ -171,6 +171,7 @@ fun UserFormScreen(
                     Button(
                         onClick = {
                             onSubmit()
+                            setUserChanged(true)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {

@@ -38,7 +38,6 @@ import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.Level
 import com.example.walkapp.models.User
 import com.example.walkapp.navigation.Screen
-import com.example.walkapp.viewmodels.HomeViewModel
 import com.example.walkapp.viewmodels.WalkViewModel
 import com.example.walkapp.viewmodels.LocationViewModel
 import com.example.walkapp.views.walkscreen.components.RecommendationDialog
@@ -116,49 +115,49 @@ fun WalkScreen(
                     locationPermissionState = locationPermissionState
                 )
             } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                if (!isWalking) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Nv: ${level.level}")
-                        LinearProgressIndicator(
-                            progress = { level.progressPercentage.toFloat() / 100 },
+                        Row(
                             modifier = Modifier
-                                .padding(8.dp)
-                                .height(8.dp)
-                                .clickable {
-                                    navController.navigate(Screen.StoryList.route)
-                                }
-                                .weight(1f),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(text = "Nv: ${level.level}")
+                            LinearProgressIndicator(
+                                progress = { level.progressPercentage.toFloat() / 100 },
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .height(8.dp)
+                                    .clickable {
+                                        navController.navigate(Screen.StoryList.route)
+                                    }
+                                    .weight(1f),
+                                color = MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
 
-                        HamburgerMenuButton(
-                            onEditClick = {
-                                navController.navigate(Screen.UserForm.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onSignOut = onSignOut
-                        )
-                    }
+                            HamburgerMenuButton(
+                                onEditClick = {
+                                    navController.navigate(Screen.UserForm.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                onSignOut = onSignOut
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                    if (!isWalking) {
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)

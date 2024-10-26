@@ -16,10 +16,6 @@ import java.util.Locale
 data class UserFormUiState(
     val nickname: String = "",
     val errorNickname: String? = null,
-    val dateOfBirth: String = "01/01/2000",
-    val errorDateOfBirth: String? = null,
-    val walksRegularly: Boolean = true,
-    val recommendation: String = "150 minutos por semana.",
     val walkingGoal: String = "",
     val errorWalkingGoal: String? = null,
     val loading: Boolean = false,
@@ -36,43 +32,6 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
             _uiState.update {
                 it.copy(nickname = newNickname, errorNickname = null)
             }
-        }
-    }
-
-    fun updateDateOfBirth(newDateOfBirth: String) {
-        _uiState.update {
-            it.copy(dateOfBirth = newDateOfBirth, errorDateOfBirth = null)
-        }
-        val age = calculateAge(newDateOfBirth)
-
-        if (age != null) {
-            updateRecommendation(age, _uiState.value.walksRegularly)
-        }
-    }
-
-    fun updateWalksRegularly(regular: Boolean) {
-        _uiState.update {
-            it.copy(walksRegularly = regular)
-        }
-
-        if (_uiState.value.dateOfBirth != "") {
-            val age = calculateAge(_uiState.value.dateOfBirth)
-            updateRecommendation(age!!, _uiState.value.walksRegularly)
-        }
-    }
-
-    private fun updateRecommendation(age: Int, walksRegularly: Boolean) {
-        var recommendation: String = if (age < 65) {
-            "150 minutos por semana."
-        } else {
-            "120 minutos por semana."
-        }
-
-        if (!walksRegularly) {
-            recommendation += " Para pessoas que não caminham regularmente, começar mais devagar e ir aumentando o ritmo é recomendavel."
-        }
-        _uiState.update {
-            it.copy(recommendation = recommendation)
         }
     }
 
@@ -99,10 +58,9 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
                 validateForm()
                 if (
                     _uiState.value.errorNickname == null &&
-                    _uiState.value.errorDateOfBirth == null &&
                     _uiState.value.errorWalkingGoal == null
                 ) {
-                    saveUserData(userId)
+                    updateUserData(userId)
                 }
                 _uiState.update {
                     it.copy(loading = false)
@@ -115,18 +73,16 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         }
     }
 
-    private suspend fun saveUserData(userId: String) {
+    private suspend fun updateUserData(userId: String) {
         val userData = User(
             id = userId,
             nickname = _uiState.value.nickname,
-//            dateOfBirth = _uiState.value.dateOfBirth,
-//            walksRegularly = _uiState.value.walksRegularly,
-//            walkingGoal = _uiState.value.walkingGoal,
-//            avatarIndex = 1
+            walkingGoal = _uiState.value.walkingGoal.toInt(),
+            avatarIndex = 1
         )
         try {
             _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)
-            userRepository.saveUserData(userData)
+            userRepository.updateUserData(userId, userData)
             _uiState.value = _uiState.value.copy(loading = false)
         } catch (e: Exception) {
             _uiState.value = _uiState.value.copy(loading = false, errorSubmit = e.message)
@@ -140,7 +96,6 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
 
         val currentState = _uiState.value
         validateNickname(currentState.nickname)
-        validateDateOfBirth(currentState.dateOfBirth)
         validateWalkingGoal(currentState.walkingGoal)
 
         _uiState.update {
@@ -158,14 +113,6 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
         if (!isUnique) {
             _uiState.update {
                 it.copy(errorNickname = "Este apelido já está em uso.")
-            }
-        }
-    }
-
-    private fun validateDateOfBirth(dateOfBirth: String) {
-        if (dateOfBirth.isBlank()) {
-            _uiState.update {
-                it.copy(errorDateOfBirth = "Preencha o campo data de nascimento.")
             }
         }
     }
@@ -192,21 +139,5 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
                 }
             }
         }
-    }
-
-    private fun calculateAge(dateOfBirth: String): Int? {
-
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val birthDate = dateFormat.parse(dateOfBirth) ?: return null
-
-        val today = Calendar.getInstance()
-        val birthCalendar = Calendar.getInstance().apply { time = birthDate }
-
-        var age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
-        if (today.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
-            age--
-        }
-
-        return age
     }
 }

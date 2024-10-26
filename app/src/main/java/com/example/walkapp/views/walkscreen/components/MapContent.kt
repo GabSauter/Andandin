@@ -3,6 +3,7 @@ package com.example.walkapp.views.walkscreen.components
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -106,14 +107,20 @@ fun WalkControlButton(
             )
         }
     }else{
-        Column (modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally){
+        Row (modifier = modifier, verticalAlignment = Alignment.CenterVertically){
             if(!isWalking){
                 Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                     onClick = {
                         navController.navigate(Screen.Historic.route)
                     }
                 ) {
-                    Text("Ver histórico")
+                    Icon(
+                        painter = painterResource(R.drawable.ic_book),
+                        contentDescription = "Histórico"
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Histórico")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -127,10 +134,10 @@ fun WalkControlButton(
             ) {
                 Icon(
                     painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
-                    contentDescription = if (isWalking) "Parar caminhada" else "Começar caminhada"
+                    contentDescription = if (isWalking) "Parar caminhada" else "Caminhar"
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = if (isWalking) "Parar caminhada" else "Começar caminhada")
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = if (isWalking) "Parar caminhada" else "Caminhar")
             }
         }
     }

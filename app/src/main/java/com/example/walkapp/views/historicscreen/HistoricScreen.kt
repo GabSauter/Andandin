@@ -3,6 +3,8 @@ package com.example.walkapp.views.historicscreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel
@@ -23,7 +26,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun HistoricScreen(authUserId: String) {
+fun HistoricScreen(authUserId: String, navController: NavHostController) {
     val historicViewModel = koinViewModel<HistoricViewModel>()
     val walkHistoric by historicViewModel.walkHistory.collectAsState()
 
@@ -50,42 +53,74 @@ fun HistoricScreen(authUserId: String) {
             CircularProgressIndicator()
         }
     } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth()
+        Column(modifier = Modifier.fillMaxSize()){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.primaryContainer),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .weight(.4f)
                 ) {
-                    TopButtons(selectedIndex = selectedFilter, onSelectionChanged = { selectedFilter = it })
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            if(filteredWalks.isNullOrEmpty()){
-                item{
-                    Text(
-                        text = "Nenhuma caminhada encontrada.",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
                     )
                 }
-            }else{
-                items(filteredWalks.size) { index ->
-                    WalkHistoryCard(filteredWalks[index])
 
-                    if (index == walkHistoric!!.size - 1) {
-                        historicViewModel.loadWalkHistory(authUserId)
+                Spacer(modifier = Modifier.weight(.6f))
+
+                Text(
+                    text = "Histórico",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TopButtons(selectedIndex = selectedFilter, onSelectionChanged = { selectedFilter = it })
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                if(filteredWalks.isNullOrEmpty()){
+                    item{
+                        Text(
+                            text = "Nenhuma caminhada encontrada.",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }else{
+                    items(filteredWalks.size) { index ->
+                        WalkHistoryCard(filteredWalks[index])
+
+                        if (index == walkHistoric!!.size - 1) {
+                            historicViewModel.loadWalkHistory(authUserId)
+                        }
                     }
                 }
             }
         }
-    }
+        }
 }
 
 @Composable

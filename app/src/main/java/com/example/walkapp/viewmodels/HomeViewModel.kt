@@ -29,6 +29,9 @@ class HomeViewModel(
     private val _loadingUserData = MutableStateFlow(false)
     val loadingUserData: StateFlow<Boolean> = _loadingUserData
 
+    private val _userChanged = MutableStateFlow(false)
+    val userChanged: StateFlow<Boolean> = _userChanged
+
     fun loadUserData(userId: String) {
         viewModelScope.launch {
             _loadingUserData.value = true
@@ -40,6 +43,17 @@ class HomeViewModel(
                 _error.value = "Houve um erro ao tentar carregar os dados do usuário."
             } finally {
                 _loadingUserData.value = false
+            }
+        }
+    }
+
+    fun updateUserData(userId: String, userData: User){
+        viewModelScope.launch {
+            try {
+                userRepository.updateUserData(userId, userData)
+                _userChanged.value = true
+            } catch (e: Exception) {
+                _error.value = "Houve um erro ao tentar atualizar os dados do usuário."
             }
         }
     }
@@ -57,5 +71,9 @@ class HomeViewModel(
                 (nextLevelDistance - currentLevelDistance)) * 100
 
         return Level(currentLevel, progressPercentage)
+    }
+
+    fun setUserChanged(value: Boolean){
+        _userChanged.value = value
     }
 }

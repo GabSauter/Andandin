@@ -37,6 +37,18 @@ class UserRepository {
         }
     }
 
+    suspend fun updateUserData(userId: String, userData: User) {
+        try{
+            db.collection("users")
+                .document(userId)
+                .update(userData.toMap())
+                .await()
+        }catch (e: Exception){
+            throw e
+        }
+    }
+
+
     suspend fun isNicknameUnique(nickname: String): Boolean {
         return try {
             val querySnapshot = db.collection("users")
