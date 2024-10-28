@@ -6,7 +6,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.Transaction
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -14,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class WalkRepository(private val performanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
+class WalkRepository(private val userRepository: UserRepository, private val performanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
     private val db = Firebase.firestore
 
     suspend fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
@@ -48,8 +47,9 @@ class WalkRepository(private val performanceRepository: PerformanceRepository, p
             )
             setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayString)
             badgeRepository.setBadgesBatch(batch, badgesRef, distance, newDistanceTotal, badgeData)
-            batch.commit().await()
+            userRepository.updateUserXp(batch, userId, newDistanceTotal)
 
+            batch.commit().await()
         } catch (e: Exception) {
             Log.e("WalkRepository", "Error: ${e.message}", e)
             throw e

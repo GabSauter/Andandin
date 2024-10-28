@@ -35,14 +35,14 @@ fun HomeNavScreen(
     val userData by homeViewModel.user.collectAsState()
     val userDataChanged by homeViewModel.userChanged.collectAsState()
     val level by homeViewModel.level.collectAsState()
+    val needToLoadXp by homeViewModel.needToLoadXp.collectAsState()
 
-    LaunchedEffect(userData, userDataChanged) {
+    LaunchedEffect(userDataChanged, needToLoadXp) {
         if(authUser != null && !loadingUserData){
-            Log.d("HomeNavScreen", "entrou 1")
-            if (userData == null || userDataChanged) { //|| quando ele completou a caminhada e mudou o xp
-                Log.d("HomeNavScreen", "entrou 2")
+            if (userData == null || userDataChanged || needToLoadXp) {
                 homeViewModel.loadUserData(authUser.uid)
                 homeViewModel.setUserChanged(false)
+                homeViewModel.setNeedToLoadXp(false)
             }
         }
     }

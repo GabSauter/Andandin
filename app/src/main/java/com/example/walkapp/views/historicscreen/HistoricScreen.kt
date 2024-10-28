@@ -8,7 +8,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -18,18 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.walkapp.viewmodels.HistoricViewModel
-import com.google.firebase.auth.FirebaseUser
-import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun HistoricScreen(authUserId: String, navController: NavHostController) {
-    val historicViewModel = koinViewModel<HistoricViewModel>()
-    val walkHistoric by historicViewModel.walkHistory.collectAsState()
-
+fun HistoricScreen(
+    authUserId: String,
+    navController: NavHostController,
+    walkHistoric: List<WalkHistoryItem>?,
+    needToLoadHistoric: Boolean,
+    loadWalkHistory: (String) -> Unit,
+    setNeedToLoadHistoric: (Boolean) -> Unit,
+) {
     var selectedFilter by remember { mutableIntStateOf(0) }
     val filteredWalks = remember(walkHistoric, selectedFilter) {
         when (selectedFilter) {
@@ -39,9 +39,10 @@ fun HistoricScreen(authUserId: String, navController: NavHostController) {
         }
     }
 
-    LaunchedEffect(walkHistoric) {
-        if (walkHistoric == null) {
-            historicViewModel.loadWalkHistory(authUserId)
+    LaunchedEffect(needToLoadHistoric) {
+        if (walkHistoric == null || needToLoadHistoric) {
+            loadWalkHistory(authUserId)
+            setNeedToLoadHistoric(false)
         }
     }
 
@@ -53,7 +54,7 @@ fun HistoricScreen(authUserId: String, navController: NavHostController) {
             CircularProgressIndicator()
         }
     } else {
-        Column(modifier = Modifier.fillMaxSize()){
+        Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,8 +79,7 @@ fun HistoricScreen(authUserId: String, navController: NavHostController) {
                 Text(
                     text = "Histórico",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier.padding(16.dp)
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -95,13 +95,15 @@ fun HistoricScreen(authUserId: String, navController: NavHostController) {
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        TopButtons(selectedIndex = selectedFilter, onSelectionChanged = { selectedFilter = it })
+                        TopButtons(
+                            selectedIndex = selectedFilter,
+                            onSelectionChanged = { selectedFilter = it })
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                if(filteredWalks.isNullOrEmpty()){
-                    item{
+                if (filteredWalks.isNullOrEmpty()) {
+                    item {
                         Text(
                             text = "Nenhuma caminhada encontrada.",
                             textAlign = TextAlign.Center,
@@ -109,18 +111,18 @@ fun HistoricScreen(authUserId: String, navController: NavHostController) {
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }else{
+                } else {
                     items(filteredWalks.size) { index ->
                         WalkHistoryCard(filteredWalks[index])
 
-                        if (index == walkHistoric!!.size - 1) {
-                            historicViewModel.loadWalkHistory(authUserId)
+                        if (index == walkHistoric.size - 1) {
+                            loadWalkHistory(authUserId)
                         }
                     }
                 }
             }
         }
-        }
+    }
 }
 
 @Composable
@@ -186,7 +188,8 @@ fun formatElapsedTime(elapsedTimeMs: Long): String {
 }
 
 fun isToday(dateString: String): Boolean {
-    val today = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
+    val today =
+        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
     return dateString == today
 }
 

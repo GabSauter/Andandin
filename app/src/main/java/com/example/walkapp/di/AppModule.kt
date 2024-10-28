@@ -53,7 +53,7 @@ val appModule = module {
         single { BadgeRepository() }
         viewModel { BadgeViewModel(get()) }
 
-        single { WalkRepository(get(), get()) }
+        single { WalkRepository(get(), get(), get()) }
 
         single { LeaderboardRepository() }
         viewModel { LeaderboardViewModel(get()) }

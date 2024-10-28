@@ -1,12 +1,15 @@
 package com.example.walkapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.models.Level
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
+import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
@@ -16,6 +19,7 @@ import com.example.walkapp.views.storyscreen.StoryDetailScreen
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen
 import com.google.firebase.auth.FirebaseUser
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeNavGraph(
@@ -24,8 +28,12 @@ fun HomeNavGraph(
     onSignOut: () -> Unit,
     userData: User,
     setUserChanged: (Boolean) -> Unit,
-    level: Level
+    level: Level,
 ) {
+    val historicViewModel = koinViewModel<HistoricViewModel>()
+    val walkHistoric by historicViewModel.walkHistory.collectAsState()
+    val needToLoadHistoric by historicViewModel.needToLoadHistoric.collectAsState()
+
     NavHost(
         navController = navController,
         route = Graph.Home.route,
@@ -35,6 +43,7 @@ fun HomeNavGraph(
             if (authUser != null) {
                 WalkScreen(
                     userData = userData,
+                    setUserChanged = setUserChanged,
                     level = level,
                     navController = navController,
                     onSignOut = onSignOut
@@ -48,7 +57,14 @@ fun HomeNavGraph(
         }
         composable(Screen.Historic.route) {
             if (authUser != null) {
-                HistoricScreen(authUserId = authUser.uid, navController = navController)
+                HistoricScreen(
+                    authUserId = authUser.uid,
+                    navController = navController,
+                    walkHistoric = walkHistoric,
+                    needToLoadHistoric = needToLoadHistoric,
+                    loadWalkHistory = { historicViewModel.loadWalkHistory(authUser.uid) },
+                    setNeedToLoadHistoric = { historicViewModel.setNeedToLoadHistoric(false) }
+                )
             }
         }
         composable(Screen.People.route) {

@@ -1,8 +1,9 @@
 package com.example.walkapp.repositories
 
-import android.util.Log
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
@@ -48,28 +49,40 @@ class UserRepository {
         }
     }
 
-
-    suspend fun isNicknameUnique(nickname: String): Boolean {
-        return try {
-            val querySnapshot = db.collection("users")
-                .whereEqualTo("nickname", nickname)
-                .get()
-                .await()
-
-            querySnapshot.isEmpty
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    suspend fun updateAvatarIndex(userId: String, avatarIndex: Int) {
-        try {
-            db.collection("users")
-                .document(userId)
-                .update("avatarIndex", avatarIndex)
-                .await()
-        } catch (e: Exception) {
+    fun updateUserXp(batch: WriteBatch, userId: String, newDistanceTotal: Int){
+        try{
+            batch.update(
+                db.collection("users").document(userId),
+                "xp",
+                FieldValue.increment(newDistanceTotal.toLong())
+            )
+        }catch (e: Exception){
             throw e
         }
     }
+
+
+//    suspend fun isNicknameUnique(nickname: String): Boolean {
+//        return try {
+//            val querySnapshot = db.collection("users")
+//                .whereEqualTo("nickname", nickname)
+//                .get()
+//                .await()
+//
+//            querySnapshot.isEmpty
+//        } catch (e: Exception) {
+//            false
+//        }
+//    }
+//
+//    suspend fun updateAvatarIndex(userId: String, avatarIndex: Int) {
+//        try {
+//            db.collection("users")
+//                .document(userId)
+//                .update("avatarIndex", avatarIndex)
+//                .await()
+//        } catch (e: Exception) {
+//            throw e
+//        }
+//    }
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.services.WalkingService
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale

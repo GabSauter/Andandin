@@ -30,7 +30,7 @@ class AvatarMakerViewModel(private val userRepository: UserRepository) : ViewMod
         viewModelScope.launch {
             _loading.value = true
             try {
-                userRepository.updateAvatarIndex(userId, _avatarIndex.value)
+                //userRepository.updateAvatarIndex(userId, _avatarIndex.value)
             } catch (e: Exception) {
                 _error.value = "Erro ao salvar o avatar."
             }

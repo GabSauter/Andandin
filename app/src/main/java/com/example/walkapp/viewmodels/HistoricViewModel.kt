@@ -1,8 +1,10 @@
 package com.example.walkapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.walkapp.repositories.WalkRepository
+import com.example.walkapp.services.WalkingService
 import com.example.walkapp.views.historicscreen.WalkHistoryItem
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,17 +21,22 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    val needToLoadHistoric: StateFlow<Boolean> = WalkingService.needToLoadHistoric
+
     private var lastDocument: DocumentSnapshot? = null
     private var isFetching = false
     private var isEndReached = false
 
     fun loadWalkHistory(userId: String) {
+        Log.d("HistoricViewModel", "is end reached: $isEndReached")
         if (isFetching || isEndReached) return
         isFetching = true
 
         viewModelScope.launch {
             try {
                 val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 8, lastDocument)
+
+                Log.d("HistoricViewModel", "Loaded ${history.size} items")
 
                 if (history.isNotEmpty()) {
                     lastDocument = newLastDocument
@@ -50,6 +57,11 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
                 isFetching = false
             }
         }
+    }
+
+    fun setNeedToLoadHistoric(value: Boolean) {
+        WalkingService.setNeedToLoadHistoric(value)
+        isEndReached = false
     }
 
     fun clearError() {

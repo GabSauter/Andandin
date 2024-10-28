@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.walkapp.models.Level
 import com.example.walkapp.models.User
 import com.example.walkapp.repositories.UserRepository
+import com.example.walkapp.services.WalkingService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,6 +33,8 @@ class HomeViewModel(
     private val _userChanged = MutableStateFlow(false)
     val userChanged: StateFlow<Boolean> = _userChanged
 
+    val needToLoadXp: StateFlow<Boolean> = WalkingService.needToLoadXp
+
     fun loadUserData(userId: String) {
         viewModelScope.launch {
             _loadingUserData.value = true
@@ -43,17 +46,6 @@ class HomeViewModel(
                 _error.value = "Houve um erro ao tentar carregar os dados do usuário."
             } finally {
                 _loadingUserData.value = false
-            }
-        }
-    }
-
-    fun updateUserData(userId: String, userData: User){
-        viewModelScope.launch {
-            try {
-                userRepository.updateUserData(userId, userData)
-                _userChanged.value = true
-            } catch (e: Exception) {
-                _error.value = "Houve um erro ao tentar atualizar os dados do usuário."
             }
         }
     }
@@ -75,5 +67,9 @@ class HomeViewModel(
 
     fun setUserChanged(value: Boolean){
         _userChanged.value = value
+    }
+
+    fun setNeedToLoadXp(value: Boolean) {
+        WalkingService.setNeedToLoadXp(value)
     }
 }

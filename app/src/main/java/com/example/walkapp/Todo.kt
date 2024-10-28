@@ -10,3 +10,5 @@ package com.example.walkapp
 //[] Adicionar as histórias
 //[] Mudar o editar dados do usuário, adicionar avatar e remover data de nascimento etc.
 //[] Na tela de ranking precisa mostrar algo quando a lista está vazia
+
+//[] Fazer com que não precise dar load quando o usuário não caminha nas telas: historico, performance, badge

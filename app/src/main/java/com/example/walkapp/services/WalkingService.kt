@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -48,6 +49,24 @@ class WalkingService : Service() {
         val totalDistance = MutableStateFlow(0)
         val elapsedTime = MutableStateFlow(0L)
         val loading = MutableStateFlow(false)
+        private val _needToLoadXp = MutableStateFlow(false)
+        val needToLoadXp: StateFlow<Boolean> = _needToLoadXp
+        private val _needToLoadHistoric = MutableStateFlow(false)
+        val needToLoadHistoric: StateFlow<Boolean> = _needToLoadHistoric
+        private val _needToLoadPerformance = MutableStateFlow(false)
+        val needToLoadPerformance: StateFlow<Boolean> = _needToLoadPerformance
+
+        fun setNeedToLoadXp(value: Boolean) {
+            _needToLoadXp.value = value
+        }
+
+        fun setNeedToLoadHistoric(value: Boolean) {
+            _needToLoadHistoric.value = value
+        }
+
+        fun setNeedToLoadPerformance(value: Boolean) {
+            _needToLoadPerformance.value = value
+        }
 
         fun addPathPoint(location: LatLng) {
             val points = pathPoints.value.toMutableList()
@@ -87,11 +106,13 @@ class WalkingService : Service() {
         if (intent?.action == ACTION_STOP) {
             stopForeground(STOP_FOREGROUND_REMOVE)
             userId?.let {
-                saveWalkingData(it, totalDistance.value, elapsedTime.value) {
-                    stopSelf()
-                }
-            } ?: stopSelf()
+                saveWalkingData(it, totalDistance.value, elapsedTime.value)
+            }
             stopTimer()
+            isTracking.value = false
+            pathPoints.value = emptyList()
+            totalDistance.value = 0
+            stopSelf()
             return START_NOT_STICKY
         } else {
             startForeground(NOTIFICATION_ID, createNotification(0, 0L))
@@ -102,10 +123,6 @@ class WalkingService : Service() {
     }
 
     override fun onDestroy() {
-        isTracking.value = false
-        pathPoints.value = emptyList()
-        totalDistance.value = 0
-
         super.onDestroy()
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -118,7 +135,7 @@ class WalkingService : Service() {
         userId: String,
         distance: Int,
         elapsedTime: Long,
-        onComplete: () -> Unit
+        //onComplete: () -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -129,6 +146,9 @@ class WalkingService : Service() {
                     distance = distance,
                     elapsedTime = elapsedTime,
                 )
+                _needToLoadXp.value = true
+                _needToLoadHistoric.value = true
+                _needToLoadPerformance.value = true
 //                }else{
                 //colocar alguma coisa dizendo que não salvou, pois precisa caminhar pelo menos 10m e 10s
 //                }
@@ -137,7 +157,7 @@ class WalkingService : Service() {
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
                 loading.value = false
-                onComplete()
+                //onComplete()
             }
         }
     }

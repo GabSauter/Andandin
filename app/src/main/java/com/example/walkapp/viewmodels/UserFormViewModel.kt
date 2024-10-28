@@ -109,12 +109,12 @@ class UserFormViewModel(private val userRepository: UserRepository) : ViewModel(
                 it.copy(errorNickname = "Preencha o campo apelido.")
             }
         }
-        val isUnique = userRepository.isNicknameUnique(nickname)
-        if (!isUnique) {
-            _uiState.update {
-                it.copy(errorNickname = "Este apelido já está em uso.")
-            }
-        }
+//        val isUnique = userRepository.isNicknameUnique(nickname)
+//        if (!isUnique) {
+//            _uiState.update {
+//                it.copy(errorNickname = "Este apelido já está em uso.")
+//            }
+//        }
     }
 
     private fun validateWalkingGoal(walkingGoal: String) {

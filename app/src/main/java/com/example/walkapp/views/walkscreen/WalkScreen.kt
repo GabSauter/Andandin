@@ -55,6 +55,7 @@ fun WalkScreen(
     navController: NavHostController,
     onSignOut: () -> Unit,
     userData: User,
+    setUserChanged: (Boolean) -> Unit,
     level: Level
 ) {
     val walkViewModel: WalkViewModel = koinViewModel()
