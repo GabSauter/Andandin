@@ -22,10 +22,16 @@ data class UserFormUiState(
     val errorSubmit: String? = null
 )
 
-class UserFormViewModel(private val userRepository: UserRepository) : ViewModel() {
+class UserFormViewModel(private val userRepository: UserRepository, private val nickname: String, private val walkingGoal: String, private val avatarIndex: Int) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserFormUiState())
     val uiState: StateFlow<UserFormUiState> = _uiState.asStateFlow()
+
+    init{
+        _uiState.update {
+            it.copy(nickname = nickname, walkingGoal = walkingGoal)
+        }
+    }
 
     fun updateNickname(newNickname: String) {
         if (newNickname.length <= 20) {

@@ -40,6 +40,7 @@ import com.example.walkapp.views.userformscreen.components.DateTextField
 import com.example.walkapp.views.userformscreen.components.NumberTextField
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun UserFormScreen(
@@ -48,7 +49,7 @@ fun UserFormScreen(
     userData: User,
     setUserChanged: (Boolean) -> Unit
 ) {
-    val userFormViewModel: UserFormViewModel = koinViewModel()
+    val userFormViewModel: UserFormViewModel = koinViewModel {parametersOf(userData.nickname, userData.walkingGoal.toString(), userData.avatarIndex)}
 
     val uiState by userFormViewModel.uiState.collectAsState()
     val onErrorDismiss = { userFormViewModel.clearErrorSubmit() }

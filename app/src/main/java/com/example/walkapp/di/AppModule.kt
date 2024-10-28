@@ -28,7 +28,9 @@ val appModule = module {
         viewModel { AuthViewModel(get()) }
 
         single { UserRepository() }
-        viewModel { UserFormViewModel(get()) }
+        viewModel { (nickname: String, walkingGoal: String, avatarIndex: Int) ->
+                UserFormViewModel(get(), nickname, walkingGoal, avatarIndex)
+        }
 
         viewModel { AvatarMakerViewModel(get()) }
 
