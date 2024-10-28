@@ -45,7 +45,6 @@ fun HomeNavGraph(
             if (authUser != null) {
                 WalkScreen(
                     userData = userData,
-                    setUserChanged = setUserChanged,
                     level = level,
                     navController = navController,
                     onSignOut = onSignOut

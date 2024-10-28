@@ -35,18 +35,17 @@ fun HomeNavScreen(
     val userDataChanged by homeViewModel.userChanged.collectAsState()
     val level by homeViewModel.level.collectAsState()
     val needToLoadXp by homeViewModel.needToLoadXp.collectAsState()
+    val savingWalk by homeViewModel.savingWalk.collectAsState()
 
     LaunchedEffect(userDataChanged, needToLoadXp) {
         if(authUser != null && !loadingUserData){
             if (userData == null || userDataChanged || needToLoadXp) {
                 homeViewModel.loadUserData(authUser.uid)
-                homeViewModel.setUserChanged(false)
-                homeViewModel.setNeedToLoadXp(false)
             }
         }
     }
 
-    if (loadingUserData || userData == null) {
+    if (savingWalk || loadingUserData || userData == null) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
                 modifier = Modifier.align(

@@ -17,7 +17,6 @@ import com.example.walkapp.viewmodels.GroupViewModel
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.viewmodels.HomeViewModel
 import com.example.walkapp.viewmodels.LeaderboardViewModel
-import com.example.walkapp.viewmodels.WalkViewModel
 import com.example.walkapp.viewmodels.LocationViewModel
 import com.example.walkapp.viewmodels.PerformanceViewModel
 import com.example.walkapp.viewmodels.UserFormViewModel
@@ -35,15 +34,13 @@ val appModule = module {
 
         viewModel { HomeViewModel(get()) }
 
-        viewModel { WalkViewModel(get()) }
-
         single {
                 val context = get<Context>()
                 LocationManager.initialize(context)
                 LocationManager
         }
 
-        viewModel { LocationViewModel() }
+        viewModel { LocationViewModel(get()) }
 
         viewModel { HistoricViewModel(get()) }
 

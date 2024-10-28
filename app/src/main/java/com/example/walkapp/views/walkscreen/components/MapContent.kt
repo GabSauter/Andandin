@@ -76,6 +76,9 @@ fun MapScreenContent(
                 .padding(16.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
             )

@@ -32,34 +32,30 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
     val isEndReached: StateFlow<Boolean> = _isEndReached
 
     fun loadWalkHistory(userId: String) {
-        Log.d("HistoricViewModel", "loadWalkHistory 1")
         if(needToLoadHistoric.value) _isEndReached.value = false
-        if (isFetching.value || isEndReached.value) return
-        _isFetching.value = true
-
-        Log.d("HistoricViewModel", "loadWalkHistory 2")
+        if (_isFetching.value || _isEndReached.value) return
 
         viewModelScope.launch {
+            _isFetching.value = true
+            _loading.value = true
+            _error.value = null
+
             try {
-                val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 8, lastDocument)
+                val (historyItems, lastVisibleDocument) = walkRepository.getWalkHistory(userId, limit = 4, lastDocument)
 
-                if (history.isNotEmpty()) {
-                    lastDocument = newLastDocument
-                }
-
-                if (_walkHistory.value == null) {
-                    _walkHistory.value = history
+                if (historyItems.isNotEmpty()) {
+                    val updatedHistory = (_walkHistory.value ?: emptyList()) + historyItems
+                    _walkHistory.value = updatedHistory
+                    lastDocument = lastVisibleDocument
                 } else {
-                    _walkHistory.value = _walkHistory.value?.plus(history)
-                }
-                if (newLastDocument == null || history.isEmpty()) {
                     _isEndReached.value = true
                 }
             } catch (e: Exception) {
-                _error.value = e.message
-                _walkHistory.value = emptyList()
+                _error.value = "Failed to load walk history: ${e.message}"
+                Log.e("HistoricViewModel", "Error loading walk history", e)
             } finally {
                 _isFetching.value = false
+                _loading.value = false
             }
         }
     }

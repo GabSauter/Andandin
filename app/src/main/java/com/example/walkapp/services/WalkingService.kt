@@ -106,13 +106,14 @@ class WalkingService : Service() {
         if (intent?.action == ACTION_STOP) {
             stopForeground(STOP_FOREGROUND_REMOVE)
             userId?.let {
-                saveWalkingData(it, totalDistance.value, elapsedTime.value)
+                saveWalkingData(it, totalDistance.value, elapsedTime.value){
+                    stopTimer()
+                    isTracking.value = false
+                    pathPoints.value = emptyList()
+                    totalDistance.value = 0
+                    stopSelf()
+                }
             }
-            stopTimer()
-            isTracking.value = false
-            pathPoints.value = emptyList()
-            totalDistance.value = 0
-            stopSelf()
             return START_NOT_STICKY
         } else {
             startForeground(NOTIFICATION_ID, createNotification(0, 0L))
@@ -135,7 +136,7 @@ class WalkingService : Service() {
         userId: String,
         distance: Int,
         elapsedTime: Long,
-        //onComplete: () -> Unit
+        onComplete: () -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -157,7 +158,7 @@ class WalkingService : Service() {
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
                 loading.value = false
-                //onComplete()
+                onComplete()
             }
         }
     }
@@ -186,7 +187,7 @@ class WalkingService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Andandin")
-            .setContentText("Distancia: $formattedDistance meters\nTempo: $formattedTime")
+            .setContentText("Distancia: $formattedDistance metros\nTempo: $formattedTime")
             .setSmallIcon(R.drawable.ic_walk)
             .setContentIntent(pendingNotificationIntent)
             .addAction(R.drawable.ic_walk, "Parar caminhada", pendingStopIntent)

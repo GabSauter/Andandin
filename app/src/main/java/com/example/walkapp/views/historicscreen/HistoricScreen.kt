@@ -49,7 +49,7 @@ fun HistoricScreen(
         }
     }
 
-    if (walkHistoric == null || isFetching) {
+    if (isFetching) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
