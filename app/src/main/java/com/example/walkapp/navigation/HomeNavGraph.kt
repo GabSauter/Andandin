@@ -33,6 +33,8 @@ fun HomeNavGraph(
     val historicViewModel = koinViewModel<HistoricViewModel>()
     val walkHistoric by historicViewModel.walkHistory.collectAsState()
     val needToLoadHistoric by historicViewModel.needToLoadHistoric.collectAsState()
+    val isFetching by historicViewModel.isFetching.collectAsState()
+    val isEndReached by historicViewModel.isEndReached.collectAsState()
 
     NavHost(
         navController = navController,
@@ -63,7 +65,9 @@ fun HomeNavGraph(
                     walkHistoric = walkHistoric,
                     needToLoadHistoric = needToLoadHistoric,
                     loadWalkHistory = { historicViewModel.loadWalkHistory(authUser.uid) },
-                    setNeedToLoadHistoric = { historicViewModel.setNeedToLoadHistoric(false) }
+                    setNeedToLoadHistoric = { historicViewModel.setNeedToLoadHistoric(false) },
+                    isEndReached = isEndReached,
+                    isFetching = isFetching
                 )
             }
         }

@@ -24,19 +24,24 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
     val needToLoadHistoric: StateFlow<Boolean> = WalkingService.needToLoadHistoric
 
     private var lastDocument: DocumentSnapshot? = null
-    private var isFetching = false
-    private var isEndReached = false
+
+    private val _isFetching = MutableStateFlow(false)
+    val isFetching: StateFlow<Boolean> = _isFetching
+
+    private val _isEndReached = MutableStateFlow(false)
+    val isEndReached: StateFlow<Boolean> = _isEndReached
 
     fun loadWalkHistory(userId: String) {
-        Log.d("HistoricViewModel", "is end reached: $isEndReached")
-        if (isFetching || isEndReached) return
-        isFetching = true
+        Log.d("HistoricViewModel", "loadWalkHistory 1")
+        if(needToLoadHistoric.value) _isEndReached.value = false
+        if (isFetching.value || isEndReached.value) return
+        _isFetching.value = true
+
+        Log.d("HistoricViewModel", "loadWalkHistory 2")
 
         viewModelScope.launch {
             try {
                 val (history, newLastDocument) = walkRepository.getWalkHistory(userId, 8, lastDocument)
-
-                Log.d("HistoricViewModel", "Loaded ${history.size} items")
 
                 if (history.isNotEmpty()) {
                     lastDocument = newLastDocument
@@ -48,20 +53,19 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
                     _walkHistory.value = _walkHistory.value?.plus(history)
                 }
                 if (newLastDocument == null || history.isEmpty()) {
-                    isEndReached = true
+                    _isEndReached.value = true
                 }
             } catch (e: Exception) {
                 _error.value = e.message
                 _walkHistory.value = emptyList()
             } finally {
-                isFetching = false
+                _isFetching.value = false
             }
         }
     }
 
     fun setNeedToLoadHistoric(value: Boolean) {
         WalkingService.setNeedToLoadHistoric(value)
-        isEndReached = false
     }
 
     fun clearError() {

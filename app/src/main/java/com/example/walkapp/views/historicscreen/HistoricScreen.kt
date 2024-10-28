@@ -1,5 +1,6 @@
 package com.example.walkapp.views.historicscreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +30,8 @@ fun HistoricScreen(
     needToLoadHistoric: Boolean,
     loadWalkHistory: (String) -> Unit,
     setNeedToLoadHistoric: (Boolean) -> Unit,
+    isEndReached: Boolean,
+    isFetching: Boolean
 ) {
     var selectedFilter by remember { mutableIntStateOf(0) }
     val filteredWalks = remember(walkHistoric, selectedFilter) {
@@ -46,7 +49,7 @@ fun HistoricScreen(
         }
     }
 
-    if (walkHistoric == null) {
+    if (walkHistoric == null || isFetching) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -115,8 +118,21 @@ fun HistoricScreen(
                     items(filteredWalks.size) { index ->
                         WalkHistoryCard(filteredWalks[index])
 
-                        if (index == walkHistoric.size - 1) {
+                        if (index == filteredWalks.size - 1 && !isEndReached && !isFetching) {
                             loadWalkHistory(authUserId)
+                        }
+                    }
+
+                    if (isFetching) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
                 }
