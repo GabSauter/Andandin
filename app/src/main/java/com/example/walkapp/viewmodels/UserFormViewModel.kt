@@ -17,6 +17,7 @@ data class UserFormUiState(
     val nickname: String = "",
     val errorNickname: String? = null,
     val walkingGoal: String = "",
+    val avatarIndex: Int = 0,
     val errorWalkingGoal: String? = null,
     val loading: Boolean = false,
     val errorSubmit: String? = null
@@ -29,7 +30,7 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
 
     init{
         _uiState.update {
-            it.copy(nickname = nickname, walkingGoal = walkingGoal)
+            it.copy(nickname = nickname, walkingGoal = walkingGoal, avatarIndex = avatarIndex)
         }
     }
 
@@ -46,6 +47,12 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
             _uiState.update {
                 it.copy(walkingGoal = newGoal, errorWalkingGoal = null)
             }
+        }
+    }
+
+    fun updateAvatarIndex(newAvatarIndex: Int) {
+        _uiState.update {
+            it.copy(avatarIndex = newAvatarIndex)
         }
     }
 
@@ -84,7 +91,7 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
             id = userId,
             nickname = _uiState.value.nickname,
             walkingGoal = _uiState.value.walkingGoal.toInt(),
-            avatarIndex = 1
+            avatarIndex = _uiState.value.avatarIndex
         )
         try {
             _uiState.value = _uiState.value.copy(loading = true, errorSubmit = null)

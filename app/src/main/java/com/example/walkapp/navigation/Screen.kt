@@ -17,7 +17,6 @@ sealed class Screen(val route: String) {
     data object People: Screen(route = "people_screen")
 
     data object UserForm: Screen(route = "userForm_screen")
-    data object AvatarMaker: Screen(route = "avatarMaker_screen")
 
     data object StoryList: Screen(route = "storyList_screen")
     data object StoryDetail : Screen("storyDetail/{title}/{text}") {

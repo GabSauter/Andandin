@@ -10,7 +10,6 @@ import com.example.walkapp.repositories.PerformanceRepository
 import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.repositories.WalkRepository
 import com.example.walkapp.viewmodels.AuthViewModel
-import com.example.walkapp.viewmodels.AvatarMakerViewModel
 import com.example.walkapp.viewmodels.BadgeViewModel
 import com.example.walkapp.viewmodels.EnterGroupViewModel
 import com.example.walkapp.viewmodels.GroupViewModel
@@ -31,8 +30,6 @@ val appModule = module {
         viewModel { (nickname: String, walkingGoal: String, avatarIndex: Int) ->
                 UserFormViewModel(get(), nickname, walkingGoal, avatarIndex)
         }
-
-        viewModel { AvatarMakerViewModel(get()) }
 
         viewModel { HomeViewModel(get()) }
 

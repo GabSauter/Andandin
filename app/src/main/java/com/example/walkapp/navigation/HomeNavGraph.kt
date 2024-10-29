@@ -10,7 +10,6 @@ import com.example.walkapp.models.Level
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
 import com.example.walkapp.viewmodels.HistoricViewModel
-import com.example.walkapp.views.avatarmakerscreen.AvatarMakerScreen
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
@@ -84,9 +83,6 @@ fun HomeNavGraph(
         }
         composable(Screen.UserForm.route) {
             UserFormScreen(navController, authUser, userData, setUserChanged)
-        }
-        composable(Screen.AvatarMaker.route) {
-            AvatarMakerScreen(navController, authUser, userData.avatarIndex)
         }
         composable(Screen.StoryList.route) {
             val stories = listOf(

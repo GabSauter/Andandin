@@ -14,30 +14,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
+import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.User
 import com.example.walkapp.views.components.ErrorSnackbar
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.UserFormViewModel
 import com.example.walkapp.views.userformscreen.components.CustomOutlinedTextField
-import com.example.walkapp.views.userformscreen.components.DateTextField
 import com.example.walkapp.views.userformscreen.components.NumberTextField
+import com.example.walkapp.views.walkscreen.components.RecommendationDialog
 import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -49,7 +55,13 @@ fun UserFormScreen(
     userData: User,
     setUserChanged: (Boolean) -> Unit
 ) {
-    val userFormViewModel: UserFormViewModel = koinViewModel {parametersOf(userData.nickname, userData.walkingGoal.toString(), userData.avatarIndex)}
+    val userFormViewModel: UserFormViewModel = koinViewModel {
+        parametersOf(
+            userData.nickname,
+            userData.walkingGoal.toString(),
+            userData.avatarIndex
+        )
+    }
 
     val uiState by userFormViewModel.uiState.collectAsState()
     val onErrorDismiss = { userFormViewModel.clearErrorSubmit() }
@@ -59,11 +71,12 @@ fun UserFormScreen(
             uiState.errorWalkingGoal == null &&
             uiState.errorSubmit == null
         ) {
-            navController.navigate(Screen.AvatarMaker.route) {
-                popUpTo(Screen.AvatarMaker.route) { inclusive = true }
-            }
+            setUserChanged(true)
+            navController.popBackStack()
         }
     }
+
+    var showRecommendation by remember { mutableStateOf(false) }
 
     Box {
         Image(
@@ -114,54 +127,50 @@ fun UserFormScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-//                    DateTextField(
-//                        date = uiState.dateOfBirth,
-//                        onDateChange = { userFormViewModel.updateDateOfBirth(it) },
-//                        label = "Data de Nascimento",
-//                        isError = uiState.errorDateOfBirth != null,
-//                        errorMessage = uiState.errorDateOfBirth,
-//                        modifier = Modifier.fillMaxWidth()
-//                    )
-//
-//                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        NumberTextField(
+                            value = uiState.walkingGoal,
+                            onValueChange = { userFormViewModel.updateWalkingGoal(it) },
+                            label = "Meta (min/semana)",
+                            isError = uiState.errorWalkingGoal != null,
+                            errorMessage = uiState.errorWalkingGoal,
+                            modifier = Modifier.weight(1f)
+                        )
 
-//                    Text("Você caminha regularmente?")
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center,
-//                        modifier = Modifier.fillMaxWidth()
-//                    ) {
-//                        Checkbox(
-//                            checked = uiState.walksRegularly,
-//                            onCheckedChange = { userFormViewModel.updateWalksRegularly(true) }
-//                        )
-//                        Text("Sim")
-//
-//                        Spacer(modifier = Modifier.width(32.dp))
-//
-//                        Checkbox(
-//                            checked = !uiState.walksRegularly,
-//                            onCheckedChange = { userFormViewModel.updateWalksRegularly(false) }
-//                        )
-//                        Text("Não")
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
-//                    Text("Recomendação da OMS: ${uiState.recommendation}")
-//
-//                    Spacer(modifier = Modifier.height(8.dp))
-
-                    NumberTextField(
-                        value = uiState.walkingGoal,
-                        onValueChange = { userFormViewModel.updateWalkingGoal(it) },
-                        label = "Meta (min/semana)",
-                        isError = uiState.errorWalkingGoal != null,
-                        errorMessage = uiState.errorWalkingGoal,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        IconButton(
+                            onClick = {
+                                showRecommendation = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Info",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    Box {
+                        Image(
+                            painter = painterResource(id = avatarOptions[uiState.avatarIndex]),
+                            contentDescription = "Body"
+                        )
+                    }
+
+                    AvatarControlRow(
+                        "Avatar",
+                        avatarOptions.size,
+                        uiState.avatarIndex,
+                        { userFormViewModel.updateAvatarIndex((uiState.avatarIndex - 1 + avatarOptions.size) % avatarOptions.size) },
+                        { userFormViewModel.updateAvatarIndex((uiState.avatarIndex + 1) % avatarOptions.size) }
+                    )
                 }
             }
 
@@ -172,7 +181,6 @@ fun UserFormScreen(
                     Button(
                         onClick = {
                             onSubmit()
-                            setUserChanged(true)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -182,7 +190,7 @@ fun UserFormScreen(
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
-                            Text("Continuar")
+                            Text("Salvar")
                         }
                     }
                 }
@@ -194,5 +202,32 @@ fun UserFormScreen(
                 onErrorDismiss()
             }
         )
+
+        RecommendationDialog(showRecommendation) { showRecommendation = false }
+    }
+}
+
+@Composable
+fun AvatarControlRow(
+    label: String,
+    total: Int,
+    currentIndex: Int,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = onPrevious) {
+            Text("<")
+        }
+        Text(
+            text = "$label ${currentIndex + 1} / $total",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Button(onClick = onNext) {
+            Text(">")
+        }
     }
 }

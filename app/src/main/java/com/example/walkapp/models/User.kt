@@ -16,6 +16,20 @@ data class User(
         )
     }
 
+    fun toMapUpdateUser(): Map<String, Any> {
+        return mapOf(
+            "nickname" to nickname,
+            "walkingGoal" to walkingGoal,
+            "avatarIndex" to avatarIndex
+        )
+    }
+
+    fun toMapUpdateXp(): Map<String, Any> {
+        return mapOf(
+            "xp" to xp
+        )
+    }
+
     companion object {
         fun mapToUser(id: String, data: Map<String, Any>): User {
             return User(

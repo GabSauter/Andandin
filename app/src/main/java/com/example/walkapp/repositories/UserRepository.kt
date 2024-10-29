@@ -27,22 +27,11 @@ class UserRepository {
         }
     }
 
-    suspend fun saveUserData(userData: User) {
-        try {
-            db.collection("users")
-                .document(userData.id)
-                .set(userData.toMap())
-                .await()
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     suspend fun updateUserData(userId: String, userData: User) {
         try{
             db.collection("users")
                 .document(userId)
-                .update(userData.toMap())
+                .update(userData.toMapUpdateUser())
                 .await()
         }catch (e: Exception){
             throw e
@@ -60,29 +49,4 @@ class UserRepository {
             throw e
         }
     }
-
-
-//    suspend fun isNicknameUnique(nickname: String): Boolean {
-//        return try {
-//            val querySnapshot = db.collection("users")
-//                .whereEqualTo("nickname", nickname)
-//                .get()
-//                .await()
-//
-//            querySnapshot.isEmpty
-//        } catch (e: Exception) {
-//            false
-//        }
-//    }
-//
-//    suspend fun updateAvatarIndex(userId: String, avatarIndex: Int) {
-//        try {
-//            db.collection("users")
-//                .document(userId)
-//                .update("avatarIndex", avatarIndex)
-//                .await()
-//        } catch (e: Exception) {
-//            throw e
-//        }
-//    }
 }

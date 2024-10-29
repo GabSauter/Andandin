@@ -48,7 +48,6 @@ fun MapScreenContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Map(
-            navController = navController,
             userLocation = userLocation,
             avatarIndex = avatarIndex,
             pathPoints = pathPoints,

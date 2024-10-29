@@ -32,7 +32,10 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
     val isEndReached: StateFlow<Boolean> = _isEndReached
 
     fun loadWalkHistory(userId: String) {
-        if(needToLoadHistoric.value) _isEndReached.value = false
+        if(needToLoadHistoric.value) {
+            _walkHistory.value = null
+            _isEndReached.value = false
+        }
         if (_isFetching.value || _isEndReached.value) return
 
         viewModelScope.launch {
