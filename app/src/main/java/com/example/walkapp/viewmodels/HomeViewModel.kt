@@ -27,7 +27,6 @@ class HomeViewModel(
     private val _userChanged = MutableStateFlow(false)
     val userChanged: StateFlow<Boolean> = _userChanged
 
-
     private val _level = MutableStateFlow<Level?>(null)
     val level: StateFlow<Level?> = _level
 
@@ -56,8 +55,9 @@ class HomeViewModel(
     }
 
     private fun calculateLevel(xp: Int): Level {
-        val currentLevel = xp/1000
-        val progressPercentage = (xp - (currentLevel * 1000)).toDouble()
+        val currentLevel = xp / 500
+        val progressInLevel = xp % 500
+        val progressPercentage = (progressInLevel / 500.0) * 100
 
         return Level(currentLevel, progressPercentage)
     }

@@ -25,9 +25,6 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
 
     private var lastDocument: DocumentSnapshot? = null
 
-    private val _isFetching = MutableStateFlow(false)
-    val isFetching: StateFlow<Boolean> = _isFetching
-
     private val _isEndReached = MutableStateFlow(false)
     val isEndReached: StateFlow<Boolean> = _isEndReached
 
@@ -35,11 +32,11 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
         if(needToLoadHistoric.value) {
             _walkHistory.value = null
             _isEndReached.value = false
+            lastDocument = null
         }
-        if (_isFetching.value || _isEndReached.value) return
+        if (_loading.value || _isEndReached.value) return
 
         viewModelScope.launch {
-            _isFetching.value = true
             _loading.value = true
             _error.value = null
 
@@ -57,7 +54,6 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
                 _error.value = "Failed to load walk history: ${e.message}"
                 Log.e("HistoricViewModel", "Error loading walk history", e)
             } finally {
-                _isFetching.value = false
                 _loading.value = false
             }
         }

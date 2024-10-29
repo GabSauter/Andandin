@@ -54,90 +54,90 @@ fun WalkScreen(
     LaunchedEffect(locationPermissionState) {
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()
+        } else{
+            locationViewModel.startLocationUpdates()
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (userLocation == null) {
+        if (!locationPermissionState.status.isGranted) {
+            PermissionRequestUI(
+                locationPermissionState = locationPermissionState
+            )
+        } else if (userLocation == null) {
             CircularProgressIndicator(
                 modifier = Modifier.align(
                     Alignment.Center
                 )
             )
         } else {
-            if (!locationPermissionState.status.isGranted) {
-                PermissionRequestUI(
-                    locationPermissionState = locationPermissionState
-                )
-            } else {
-                MapScreenContent(
-                    navController = navController,
-                    userLocation = userLocation,
-                    avatarIndex = userData.avatarIndex,
-                    pathPoints = pathPoints,
-                    isWalking = isWalking,
-                    totalDistance = totalDistance,
-                    elapsedTime = elapsedTime,
-                    startWalkingService = { context ->
-                        locationViewModel.startWalkingService(
+            MapScreenContent(
+                navController = navController,
+                userLocation = userLocation,
+                avatarIndex = userData.avatarIndex,
+                pathPoints = pathPoints,
+                isWalking = isWalking,
+                totalDistance = totalDistance,
+                elapsedTime = elapsedTime,
+                startWalkingService = { context ->
+                    locationViewModel.startWalkingService(
+                        context,
+                        userData.id
+                    )
+                },
+                stopWalkingService = { context ->
+                    run {
+                        locationViewModel.stopWalkingService(
                             context,
                             userData.id
                         )
-                    },
-                    stopWalkingService = { context ->
-                        run {
-                            locationViewModel.stopWalkingService(
-                                context,
-                                userData.id
-                            )
-                        }
-                    },
-                    loading = loading
-                )
-                if (!isWalking) {
-                    TopWalkScreen(level, navController, onSignOut)
-                }
+                    }
+                },
+                loading = loading
+            )
+            if (!isWalking) {
+                TopWalkScreen(level, navController, onSignOut)
             }
         }
     }
 }
 
-@Composable
-fun TopWalkScreen(level: Level, navController: NavHostController, onSignOut: () -> Unit){
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = MaterialTheme.shapes.medium
-            )
-            .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(text = "Nv: ${level.level}")
-        LinearProgressIndicator(
-            progress = { level.progressPercentage.toFloat() / 100 },
+    @Composable
+    fun TopWalkScreen(level: Level, navController: NavHostController, onSignOut: () -> Unit) {
+        Row(
             modifier = Modifier
-                .padding(8.dp)
-                .height(8.dp)
-                .clickable {
-                    navController.navigate(Screen.StoryList.route)
-                }
-                .weight(1f),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = MaterialTheme.shapes.medium
+                )
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = "Nv: ${level.level}")
+            LinearProgressIndicator(
+                progress = { level.progressPercentage.toFloat() / 100 },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(8.dp)
+                    .clickable {
+                        navController.navigate(Screen.StoryList.route)
+                    }
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
 
-        HamburgerMenuButton(
-            onEditClick = {
-                navController.navigate(Screen.UserForm.route) {
-                    launchSingleTop = true
-                }
-            },
-            onSignOut = onSignOut
-        )
+            HamburgerMenuButton(
+                onEditClick = {
+                    navController.navigate(Screen.UserForm.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onSignOut = onSignOut
+            )
+        }
     }
-}

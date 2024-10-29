@@ -26,7 +26,7 @@ object LocationManager {
     private val locationRequest = LocationRequest.Builder(
         Priority.PRIORITY_HIGH_ACCURACY, 3000
     ).apply {
-        setMinUpdateIntervalMillis(3000)
+        setMinUpdateIntervalMillis(1000)
         setMaxUpdateDelayMillis(12000)
         setWaitForAccurateLocation(false)
     }.build()
