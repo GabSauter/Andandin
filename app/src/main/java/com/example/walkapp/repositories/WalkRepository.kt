@@ -19,8 +19,9 @@ class WalkRepository(private val userRepository: UserRepository, private val per
     suspend fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
         try {
             val calendar = Calendar.getInstance()
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val todayString = dateFormat.format(calendar.time)
+            val dateAndTimeFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+            val todayWithTime = dateAndTimeFormat.format(calendar.time)
+            val today = todayWithTime.split(" ")[0]
             val monthFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
             val currentMonth = monthFormat.format(calendar.time)
 
@@ -42,10 +43,10 @@ class WalkRepository(private val userRepository: UserRepository, private val per
                 performance,
                 distance,
                 newDistanceTotal,
-                todayString,
+                today,
                 currentMonth
             )
-            setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayString)
+            setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayWithTime)
             badgeRepository.setBadgesBatch(batch, badgesRef, distance, newDistanceTotal, badgeData)
             userRepository.updateUserXp(batch, userId, newDistanceTotal)
 

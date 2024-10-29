@@ -36,7 +36,7 @@ fun HistoricScreen(
     val filteredWalks = remember(walkHistoric, selectedFilter) {
         when (selectedFilter) {
             0 -> walkHistoric
-            1 -> walkHistoric?.filter { isToday(it.date) }
+            1 -> walkHistoric?.filter { isToday(it.date.split(" ")[0]) }
             else -> walkHistoric
         }
     }
@@ -159,11 +159,13 @@ fun WalkHistoryCard(item: WalkHistoryItem) {
     val distanceInKm = item.distance / 1000
     val elapsedTimeInHours = convertElapsedTimeToHours(item.time)
     val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
+
+    val day = item.date.split(" ")[0]
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
         Text(
-            text = "  ${item.date}  ",
+            text = "  $day  ",
             color = MaterialTheme.colorScheme.onTertiaryContainer,
             modifier = Modifier
                 .background(
