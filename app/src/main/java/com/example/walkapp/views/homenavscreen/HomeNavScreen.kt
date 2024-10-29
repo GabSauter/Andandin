@@ -94,7 +94,7 @@ private fun shouldShowBottomBar(
     navController: NavHostController
 ): Boolean {
     val bottomBarScreens = listOf(
-        Graph.Historic.route,
+        Graph.Performance.route,
         Screen.Walk.route,
         Screen.People.route
     )

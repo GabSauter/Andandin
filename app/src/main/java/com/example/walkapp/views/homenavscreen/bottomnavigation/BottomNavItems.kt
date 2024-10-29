@@ -10,8 +10,8 @@ sealed class BottomNavItems(
     val icon: Int
 ) {
     data object Historic : BottomNavItems(
-        route = Graph.Historic.route,
-        title = "Histórico",
+        route = Graph.Performance.route,
+        title = "Performance",
         icon = R.drawable.ic_book
     )
 

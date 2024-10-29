@@ -13,7 +13,7 @@ import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
-import com.example.walkapp.views.roothistoricscreen.RootHistoricScreen
+import com.example.walkapp.views.roothistoricscreen.RootPerformanceScreen
 import com.example.walkapp.views.storyscreen.StoryDetailScreen
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen
@@ -50,9 +50,9 @@ fun HomeNavGraph(
                 )
             }
         }
-        composable(Graph.Historic.route) {
+        composable(Graph.Performance.route) {
             if (authUser != null) {
-                RootHistoricScreen(authUserId = authUser.uid)
+                RootPerformanceScreen(authUserId = authUser.uid)
             }
         }
         composable(Screen.Historic.route) {

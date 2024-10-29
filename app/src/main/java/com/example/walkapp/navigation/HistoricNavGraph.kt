@@ -14,8 +14,8 @@ fun HistoricNavGraph(
 ) {
     NavHost(
         navController = navController,
-        route = Graph.Historic.route,
-        startDestination = Screen.Historic.route
+        route = Graph.Performance.route,
+        startDestination = Screen.Performance.route
     ) {
         composable(Screen.Performance.route) {
             PerformanceScreen(authUserId)

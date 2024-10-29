@@ -3,7 +3,7 @@ package com.example.walkapp.navigation
 sealed class Graph(val route: String) {
     data object Root: Graph(route = "root_graph")
     data object Home: Graph(route = "home_graph")
-    data object Historic: Graph(route = "historic_graph")
+    data object Performance: Graph(route = "performance_graph")
     data object People: Graph(route = "people_graph")
 }
 

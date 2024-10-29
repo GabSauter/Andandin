@@ -18,11 +18,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.walkapp.navigation.HistoricNavGraph
 import com.example.walkapp.navigation.Screen
-import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun RootHistoricScreen(navController: NavHostController = rememberNavController(), authUserId: String){
-    val tabItems = listOf(TabNavItems.Historic, TabNavItems.Performance, TabNavItems.Badges)
+fun RootPerformanceScreen(navController: NavHostController = rememberNavController(), authUserId: String){
+    val tabItems = listOf(TabNavItems.Performance, TabNavItems.Badges)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     Column {
@@ -56,11 +55,6 @@ sealed class TabNavItems(
     val route: String,
     val title: String
 ) {
-    data object Historic : TabNavItems(
-        route = Screen.Historic.route,
-        title = "Histórico"
-    )
-
     data object Performance : TabNavItems(
         route = Screen.Performance.route,
         title = "Performance"
