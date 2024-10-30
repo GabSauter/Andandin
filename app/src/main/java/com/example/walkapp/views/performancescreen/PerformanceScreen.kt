@@ -122,7 +122,7 @@ fun PerformanceContent(
         item {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Distâncias de Caminhadas (metros/dia)",
+                    text = "Distâncias de Caminhadas dos Últimos 7 Dias (metros/dia)",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.align(Alignment.Center)
@@ -142,7 +142,7 @@ fun PerformanceContent(
         item {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Distâncias de Caminhadas (metros/mês)",
+                    text = "Distâncias de Caminhadas dos Últimos 12 Meses (metros/mês)",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.align(Alignment.Center)

@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.models.Level
@@ -109,6 +110,11 @@ fun WalkScreen(
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
                 .fillMaxWidth()
+                .shadow(
+                    elevation = 4.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    clip = false
+                )
                 .background(
                     color = MaterialTheme.colorScheme.background,
                     shape = MaterialTheme.shapes.medium

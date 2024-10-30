@@ -1,6 +1,7 @@
 package com.example.walkapp.views.walkscreen.components
 
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,7 +67,9 @@ fun MapScreenContent(
                 )
             },
             loading = loading,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp)
         )
 
         Card(
@@ -95,22 +98,26 @@ fun WalkControlButton(
     loading: Boolean,
     modifier: Modifier
 ) {
-    if(isWalking && loading){
+    if (isWalking && loading) {
         Button(
             onClick = {},
             modifier = modifier,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary
             )
-        ){
+        ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
                 color = MaterialTheme.colorScheme.onTertiary,
             )
         }
-    }else{
-        Row (modifier = modifier, verticalAlignment = Alignment.CenterVertically){
-            if(!isWalking){
+    } else {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (!isWalking) {
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                     onClick = {
@@ -128,14 +135,15 @@ fun WalkControlButton(
             }
             Button(
                 onClick = onWalkToggle,
-                modifier = modifier,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isWalking) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
                     contentColor = if (isWalking) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(
-                    painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(R.drawable.ic_play),
+                    painter = if (isWalking) painterResource(R.drawable.ic_stop) else painterResource(
+                        R.drawable.ic_play
+                    ),
                     contentDescription = if (isWalking) "Parar caminhada" else "Caminhar"
                 )
                 Spacer(modifier = Modifier.width(4.dp))

@@ -22,7 +22,6 @@ import com.google.accompanist.permissions.shouldShowRationale
 fun PermissionRequestUI(
     locationPermissionState: PermissionState
 ) {
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
