@@ -48,6 +48,9 @@ class HistoricViewModel(private val walkRepository: WalkRepository): ViewModel()
                     _walkHistory.value = updatedHistory
                     lastDocument = lastVisibleDocument
                 } else {
+                    if(lastDocument == null) {
+                        _walkHistory.value = emptyList()
+                    }
                     _isEndReached.value = true
                 }
             } catch (e: Exception) {

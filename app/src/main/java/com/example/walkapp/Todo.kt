@@ -7,4 +7,6 @@ package com.example.walkapp
 //[] Dar mais xp para quem ganhar na tabela de ranking (cloud function)
 //[] Adicionar as histórias
 //[] Na tela de ranking precisa mostrar algo quando a lista está vazia ou quando não connseguir carregar
-//[] Parece que quando está sem internet fica num loading grande
+//[] Parece que quando está sem internet fica num loading grande, verificar se ele salva caminhada quando está offline
+
+//[] quando o histórico está vazio fica no loading infinito, talvez pq o walkhistoric sempre fica null, preciso retornar emptyList quando é nulo

@@ -48,7 +48,7 @@ fun HistoricScreen(
         }
     }
 
-    if (walkHistoric == null) {
+    if (walkHistoric == null || needToLoadHistoric) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
