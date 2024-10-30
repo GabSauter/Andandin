@@ -60,8 +60,8 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        locationManager.stopLocationUpdates()
-    }
+//    override fun onCleared() {
+//        super.onCleared()
+//        locationManager.stopLocationUpdates() // Demora muito para pegar localização denovo
+//    }
 }
