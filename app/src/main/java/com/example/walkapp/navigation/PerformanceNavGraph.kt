@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.walkapp.models.Badges
 import com.example.walkapp.viewmodels.PerformanceUiState
 import com.example.walkapp.views.badgesscreen.BadgesScreen
 import com.example.walkapp.views.performancescreen.PerformanceScreen
@@ -18,7 +19,12 @@ fun PerformanceNavGraph(
     getLast7Days: () -> List<String>,
     getLast12Months: () -> List<String>,
     loadPerformanceData: (String) -> Unit,
-    needToLoadPerformance: Boolean
+    needToLoadPerformance: Boolean,
+    badges: Badges?,
+    loadingBadges: Boolean,
+    errorBadges: String?,
+    getBadges: (String) -> Unit,
+    needToLoadBadges: Boolean
 ) {
     NavHost(
         navController = navController,
@@ -38,7 +44,7 @@ fun PerformanceNavGraph(
             )
         }
         composable(Screen.Badges.route) {
-            BadgesScreen(authUserId)
+            BadgesScreen(authUserId, badges, loadingBadges, errorBadges, getBadges, needToLoadBadges)
         }
     }
 }

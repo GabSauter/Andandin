@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.example.walkapp.models.Level
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
+import com.example.walkapp.viewmodels.BadgeViewModel
 import com.example.walkapp.viewmodels.HistoricViewModel
 import com.example.walkapp.viewmodels.PerformanceViewModel
 import com.example.walkapp.views.historicscreen.HistoricScreen
@@ -42,6 +43,12 @@ fun HomeNavGraph(
     val loadingPerformance by performanceViewModel.loading.collectAsState()
     val needToLoadPerformance by performanceViewModel.needToLoadPerformance.collectAsState()
 
+    val badgesViewModel = koinViewModel<BadgeViewModel>()
+    val badges by badgesViewModel.badges.collectAsState()
+    val loadingBadges by badgesViewModel.loading.collectAsState()
+    val errorBadges by badgesViewModel.error.collectAsState()
+    val needToLoadBadges by badgesViewModel.needToLoadBadges.collectAsState()
+
     NavHost(
         navController = navController,
         route = Graph.Home.route,
@@ -67,7 +74,12 @@ fun HomeNavGraph(
                     getLast7Days = { performanceViewModel.getLast7Days() },
                     getLast12Months = { performanceViewModel.getLast12Months() },
                     loadPerformanceData = { performanceViewModel.loadPerformanceData(authUser.uid) },
-                    needToLoadPerformance = needToLoadPerformance
+                    needToLoadPerformance = needToLoadPerformance,
+                    badges = badges,
+                    loadingBadges = loadingBadges,
+                    errorBadges = errorBadges,
+                    getBadges = { badgesViewModel.getBadges(authUser.uid) },
+                    needToLoadBadges = needToLoadBadges
                 )
             }
         }

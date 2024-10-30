@@ -1,6 +1,5 @@
 package com.example.walkapp.views.performancescreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +12,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.walkapp.viewmodels.PerformanceUiState
-import com.example.walkapp.viewmodels.PerformanceViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -34,7 +30,6 @@ import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PerformanceScreen(
@@ -50,7 +45,6 @@ fun PerformanceScreen(
 
     LaunchedEffect(needToLoadPerformance) {
         if(needToLoadPerformance){
-            Log.d("PerformanceScreen", "Loading performance data")
             loadPerformanceData(userId)
         }
     }

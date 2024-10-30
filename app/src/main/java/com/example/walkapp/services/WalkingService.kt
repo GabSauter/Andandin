@@ -55,6 +55,8 @@ class WalkingService : Service() {
         val needToLoadHistoric: StateFlow<Boolean> = _needToLoadHistoric
         private val _needToLoadPerformance = MutableStateFlow(false)
         val needToLoadPerformance: StateFlow<Boolean> = _needToLoadPerformance
+        private val _needToLoadBadges = MutableStateFlow(false)
+        val needToLoadBadges: StateFlow<Boolean> = _needToLoadBadges
 
         fun setNeedToLoadXp(value: Boolean) {
             _needToLoadXp.value = value
@@ -66,6 +68,10 @@ class WalkingService : Service() {
 
         fun setNeedToLoadPerformance(value: Boolean) {
             _needToLoadPerformance.value = value
+        }
+
+        fun setNeedToLoadBadges(value: Boolean) {
+            _needToLoadBadges.value = value
         }
 
         fun addPathPoint(location: LatLng) {
@@ -150,6 +156,7 @@ class WalkingService : Service() {
                 _needToLoadXp.value = true
                 _needToLoadHistoric.value = true
                 _needToLoadPerformance.value = true
+                _needToLoadBadges.value = true
 //                }else{
                 //colocar alguma coisa dizendo que não salvou, pois precisa caminhar pelo menos 10m e 10s
 //                }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.walkapp.models.Badges
 import com.example.walkapp.navigation.PerformanceNavGraph
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.PerformanceUiState
@@ -30,7 +31,12 @@ fun RootPerformanceScreen(
     getLast7Days: () -> List<String>,
     getLast12Months: () -> List<String>,
     loadPerformanceData: (String) -> Unit,
-    needToLoadPerformance: Boolean
+    needToLoadPerformance: Boolean,
+    badges: Badges?,
+    loadingBadges: Boolean,
+    errorBadges: String?,
+    getBadges: (String) -> Unit,
+    needToLoadBadges: Boolean
 ) {
     val tabItems = listOf(TabNavItems.Performance, TabNavItems.Badges)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -66,7 +72,12 @@ fun RootPerformanceScreen(
                 getLast7Days = getLast7Days,
                 getLast12Months = getLast12Months,
                 loadPerformanceData = loadPerformanceData,
-                needToLoadPerformance = needToLoadPerformance
+                needToLoadPerformance = needToLoadPerformance,
+                badges = badges,
+                loadingBadges = loadingBadges,
+                errorBadges = errorBadges,
+                getBadges = getBadges,
+                needToLoadBadges = needToLoadBadges
             )
         }
     }
