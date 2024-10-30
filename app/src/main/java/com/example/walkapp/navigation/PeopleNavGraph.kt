@@ -1,13 +1,11 @@
 package com.example.walkapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.walkapp.views.entergroupscreen.EnterGroupScreen
 import com.example.walkapp.views.groupscreen.GroupScreen
-import com.example.walkapp.views.leaderboardscreen.LeaderboardScreen
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
@@ -19,13 +17,8 @@ fun PeopleNavGraph(
     NavHost(
         navController = navController,
         route = Graph.People.route,
-        startDestination = Screen.Leaderboard.route
+        startDestination = Screen.EnterGroup.route
     ) {
-        composable(Screen.Leaderboard.route) {
-            if (authUser != null) {
-                LeaderboardScreen(authUser.uid)
-            }
-        }
         composable(Screen.EnterGroup.route) {
             if (authUser != null) {
                 EnterGroupScreen(navController, authUser.uid, userData)
