@@ -10,6 +10,7 @@ import com.example.walkapp.models.Level
 import com.example.walkapp.models.Story
 import com.example.walkapp.models.User
 import com.example.walkapp.viewmodels.HistoricViewModel
+import com.example.walkapp.viewmodels.PerformanceViewModel
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
@@ -32,8 +33,14 @@ fun HomeNavGraph(
     val historicViewModel = koinViewModel<HistoricViewModel>()
     val walkHistoric by historicViewModel.walkHistory.collectAsState()
     val needToLoadHistoric by historicViewModel.needToLoadHistoric.collectAsState()
-    val loading by historicViewModel.loading.collectAsState()
+    val loadingHistoric by historicViewModel.loading.collectAsState()
     val isEndReached by historicViewModel.isEndReached.collectAsState()
+
+    val performanceViewModel = koinViewModel<PerformanceViewModel>()
+    val performanceUiState by performanceViewModel.performanceUiState.collectAsState()
+    val error by performanceViewModel.error.collectAsState()
+    val loadingPerformance by performanceViewModel.loading.collectAsState()
+    val needToLoadPerformance by performanceViewModel.needToLoadPerformance.collectAsState()
 
     NavHost(
         navController = navController,
@@ -52,7 +59,16 @@ fun HomeNavGraph(
         }
         composable(Graph.Performance.route) {
             if (authUser != null) {
-                RootPerformanceScreen(authUserId = authUser.uid)
+                RootPerformanceScreen(
+                    authUserId = authUser.uid,
+                    performanceUiState = performanceUiState,
+                    error = error,
+                    loading = loadingPerformance,
+                    getLast7Days = { performanceViewModel.getLast7Days() },
+                    getLast12Months = { performanceViewModel.getLast12Months() },
+                    loadPerformanceData = { performanceViewModel.loadPerformanceData(authUser.uid) },
+                    needToLoadPerformance = needToLoadPerformance
+                )
             }
         }
         composable(Screen.Historic.route) {
@@ -65,7 +81,7 @@ fun HomeNavGraph(
                     loadWalkHistory = { historicViewModel.loadWalkHistory(authUser.uid) },
                     setNeedToLoadHistoric = { historicViewModel.setNeedToLoadHistoric(false) },
                     isEndReached = isEndReached,
-                    loading = loading
+                    loading = loadingHistoric
                 )
             }
         }

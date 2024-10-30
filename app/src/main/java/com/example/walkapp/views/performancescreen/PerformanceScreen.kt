@@ -1,5 +1,6 @@
 package com.example.walkapp.views.performancescreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -36,24 +37,34 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PerformanceScreen(userId: String) {
-    val performanceViewModel = koinViewModel<PerformanceViewModel>()
-    val performanceData by performanceViewModel.performanceUiState.collectAsState()
-    val error by performanceViewModel.error.collectAsState()
-    val loading by performanceViewModel.loading.collectAsState()
+fun PerformanceScreen(
+    userId: String,
+    performanceUiState: PerformanceUiState,
+    error: String?,
+    loading: Boolean,
+    getLast7Days: () -> List<String>,
+    getLast12Months: () -> List<String>,
+    loadPerformanceData: (String) -> Unit,
+    needToLoadPerformance: Boolean
+) {
 
-    LaunchedEffect(Unit) {
-        performanceViewModel.loadPerformanceData(userId)
+    LaunchedEffect(needToLoadPerformance) {
+        if(needToLoadPerformance){
+            Log.d("PerformanceScreen", "Loading performance data")
+            loadPerformanceData(userId)
+        }
     }
 
-    if(loading){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    if (loading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-    }else{
-        if(error != null) {
+    } else {
+        if (error != null) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -63,9 +74,11 @@ fun PerformanceScreen(userId: String) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-        }else if(performanceData.distanceTotal == 0){
+        } else if (performanceUiState.distanceTotal == 0) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -75,23 +88,27 @@ fun PerformanceScreen(userId: String) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-        }else{
-            val last7Days = performanceViewModel.getLast7Days()
-            val last12Months = performanceViewModel.getLast12Months()
-            PerformanceContent(performanceData, last7Days, last12Months)
+        } else {
+            val last7Days = getLast7Days()
+            val last12Months = getLast12Months()
+            PerformanceContent(performanceUiState, last7Days, last12Months)
         }
     }
 }
 
 @Composable
-fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<String>, last12Months: List<String>){
+fun PerformanceContent(
+    performanceData: PerformanceUiState,
+    last7Days: List<String>,
+    last12Months: List<String>
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item{
+        item {
             Spacer(modifier = Modifier.padding(8.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -108,7 +125,7 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
             Text(text = "Este mês: ${performanceData.distancesOfLast12Months[0].distance}m")
         }
 
-        item{
+        item {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Distâncias de Caminhadas (metros/dia)",
@@ -118,7 +135,7 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
                 )
             }
 
-            if(performanceData.distancesOfLast7Days.isNotEmpty()){
+            if (performanceData.distancesOfLast7Days.isNotEmpty()) {
                 BarChartWithStaticData(
                     y = performanceData.distancesOfLast7Days.map { it.distance },
                     x = { _, x, _ ->
@@ -137,7 +154,7 @@ fun PerformanceContent(performanceData: PerformanceUiState, last7Days: List<Stri
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            if(performanceData.distancesOfLast7Days.isNotEmpty()){
+            if (performanceData.distancesOfLast7Days.isNotEmpty()) {
                 BarChartWithStaticData(
                     y = performanceData.distancesOfLast12Months.map { it.distance },
                     x = { _, x, _ ->
@@ -160,7 +177,7 @@ fun BarChartWithStaticData(y: List<Number>, x: CartesianValueFormatter) {
             }
         }
     }
-    ProvideVicoTheme(rememberM3VicoTheme()){
+    ProvideVicoTheme(rememberM3VicoTheme()) {
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberColumnCartesianLayer(),
@@ -171,7 +188,10 @@ fun BarChartWithStaticData(y: List<Number>, x: CartesianValueFormatter) {
                 bottomAxis = HorizontalAxis.rememberBottom(
                     valueFormatter = x,
                     itemPlacer = remember {
-                        HorizontalAxis.ItemPlacer.aligned(spacing = 2, addExtremeLabelPadding = true)
+                        HorizontalAxis.ItemPlacer.aligned(
+                            spacing = 2,
+                            addExtremeLabelPadding = true
+                        )
                     },
                 ),
             ),

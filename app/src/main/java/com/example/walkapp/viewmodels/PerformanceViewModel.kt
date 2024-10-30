@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.walkapp.models.DistanceDay
 import com.example.walkapp.models.DistanceMonth
 import com.example.walkapp.repositories.PerformanceRepository
+import com.example.walkapp.services.WalkingService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,30 +34,35 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
+    val needToLoadPerformance = WalkingService.needToLoadPerformance
+
+    init{
+        setNeedToLoadPerformance(true)
+    }
+
     fun loadPerformanceData(userId: String) {
         viewModelScope.launch {
             try {
                 _loading.value = true
                 val performanceData = performanceRepository.getPerformanceData(userId)
                 Log.d("PerformanceViewModel", "loadPerformanceData: $performanceData")
-                if (performanceData != null) {
-                    _performanceUiState.update {
-                        it.copy(
-                            distanceTotal = performanceData.distanceTotal,
-                        )
-                    }
-                    val performance7LastDays = mergeDataWithLast7Days(performanceData.distanceLast7Days)
-                    val performance12LastMonths = mergeDataWithLast12Months(performanceData.distanceLast12Months)
-                    _performanceUiState.update {
-                        it.copy(
-                            sumOfDistanceToday = performance7LastDays.firstOrNull()?.distance ?: 0,
-                            sumOfDistanceLast7Days = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
-                            distancesOfLast7Days = performance7LastDays,
-                            distancesOfLast12Months = performance12LastMonths
-                        )
-                    }
+                _performanceUiState.update {
+                    it.copy(
+                        distanceTotal = performanceData.distanceTotal,
+                    )
+                }
+                val performance7LastDays = mergeDataWithLast7Days(performanceData.distanceLast7Days)
+                val performance12LastMonths = mergeDataWithLast12Months(performanceData.distanceLast12Months)
+                _performanceUiState.update {
+                    it.copy(
+                        sumOfDistanceToday = performance7LastDays.firstOrNull()?.distance ?: 0,
+                        sumOfDistanceLast7Days = performance7LastDays.sumOf { distanceLast7Days -> distanceLast7Days.distance},
+                        distancesOfLast7Days = performance7LastDays,
+                        distancesOfLast12Months = performance12LastMonths
+                    )
                 }
                 _error.value = null
+                setNeedToLoadPerformance(false)
             } catch (e: Exception) {
                 Log.e("PerformanceViewModel", "Error loading performance data", e)
                 _error.value = "Houve um erro ao tentar carregar os dados de performance."
@@ -152,5 +158,9 @@ class PerformanceViewModel(private val performanceRepository: PerformanceReposit
         return last7Days.map { day ->
             originalDataMap[day] ?: DistanceDay(0, day)
         }
+    }
+
+    fun setNeedToLoadPerformance(value: Boolean) {
+        WalkingService.setNeedToLoadPerformance(value)
     }
 }

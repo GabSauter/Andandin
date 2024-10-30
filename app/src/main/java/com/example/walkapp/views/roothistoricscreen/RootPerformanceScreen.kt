@@ -16,11 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.walkapp.navigation.HistoricNavGraph
+import com.example.walkapp.navigation.PerformanceNavGraph
 import com.example.walkapp.navigation.Screen
+import com.example.walkapp.viewmodels.PerformanceUiState
 
 @Composable
-fun RootPerformanceScreen(navController: NavHostController = rememberNavController(), authUserId: String){
+fun RootPerformanceScreen(
+    navController: NavHostController = rememberNavController(),
+    authUserId: String,
+    performanceUiState: PerformanceUiState,
+    error: String?,
+    loading: Boolean,
+    getLast7Days: () -> List<String>,
+    getLast12Months: () -> List<String>,
+    loadPerformanceData: (String) -> Unit,
+    needToLoadPerformance: Boolean
+) {
     val tabItems = listOf(TabNavItems.Performance, TabNavItems.Badges)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
@@ -46,7 +57,17 @@ fun RootPerformanceScreen(navController: NavHostController = rememberNavControll
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            HistoricNavGraph(navController = navController, authUserId = authUserId)
+            PerformanceNavGraph(
+                navController = navController,
+                authUserId = authUserId,
+                performanceUiState = performanceUiState,
+                error = error,
+                loading = loading,
+                getLast7Days = getLast7Days,
+                getLast12Months = getLast12Months,
+                loadPerformanceData = loadPerformanceData,
+                needToLoadPerformance = needToLoadPerformance
+            )
         }
     }
 }

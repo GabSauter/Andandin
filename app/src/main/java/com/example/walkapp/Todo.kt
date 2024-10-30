@@ -10,3 +10,6 @@ package com.example.walkapp
 //[] Parece que quando está sem internet fica num loading grande, verificar se ele salva caminhada quando está offline
 
 //[] quando o histórico está vazio fica no loading infinito, talvez pq o walkhistoric sempre fica null, preciso retornar emptyList quando é nulo
+
+
+//[] em performance fazer as barras mais grossas e quando clicar aparecer o valor de metros
