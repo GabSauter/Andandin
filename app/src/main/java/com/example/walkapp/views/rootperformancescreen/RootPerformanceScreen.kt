@@ -1,4 +1,4 @@
-package com.example.walkapp.views.roothistoricscreen
+package com.example.walkapp.views.rootperformancescreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +38,7 @@ fun RootPerformanceScreen(
     getBadges: (String) -> Unit,
     needToLoadBadges: Boolean
 ) {
-    val tabItems = listOf(TabNavItems.Performance, TabNavItems.Badges)
+    val tabItems = listOf(TabNavItems.Performance, TabNavItems.Leaderboard, TabNavItems.Badges)
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     Column {
@@ -50,10 +50,12 @@ fun RootPerformanceScreen(
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = {
-                        selectedTabIndex = index
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                inclusive = true
+                        if(selectedTabIndex != index){
+                            selectedTabIndex = index
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
                             }
                         }
                     },
@@ -90,6 +92,11 @@ sealed class TabNavItems(
     data object Performance : TabNavItems(
         route = Screen.Performance.route,
         title = "Performance"
+    )
+
+    data object Leaderboard : TabNavItems(
+        route = Screen.Leaderboard.route,
+        title = "Ranking"
     )
 
     data object Badges : TabNavItems(

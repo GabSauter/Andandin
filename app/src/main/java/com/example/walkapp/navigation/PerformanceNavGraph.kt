@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.walkapp.models.Badges
 import com.example.walkapp.viewmodels.PerformanceUiState
 import com.example.walkapp.views.badgesscreen.BadgesScreen
+import com.example.walkapp.views.leaderboardscreen.LeaderboardScreen
 import com.example.walkapp.views.performancescreen.PerformanceScreen
 
 @Composable
@@ -42,6 +43,9 @@ fun PerformanceNavGraph(
                 loadPerformanceData,
                 needToLoadPerformance
             )
+        }
+        composable(Screen.Leaderboard.route) {
+            LeaderboardScreen(authUserId)
         }
         composable(Screen.Badges.route) {
             BadgesScreen(authUserId, badges, loadingBadges, errorBadges, getBadges, needToLoadBadges)

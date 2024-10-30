@@ -15,7 +15,7 @@ import com.example.walkapp.viewmodels.PerformanceViewModel
 import com.example.walkapp.views.historicscreen.HistoricScreen
 import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
-import com.example.walkapp.views.roothistoricscreen.RootPerformanceScreen
+import com.example.walkapp.views.rootperformancescreen.RootPerformanceScreen
 import com.example.walkapp.views.storyscreen.StoryDetailScreen
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen

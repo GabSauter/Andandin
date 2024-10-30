@@ -61,9 +61,11 @@ fun HomeNavScreen(
                     BottomNavBar(
                         navController = navController,
                         onItemClick = {
-                            navController.navigate(it.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = true
+                            if(navController.currentBackStackEntry?.destination?.route != it.route){
+                                navController.navigate(it.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         }

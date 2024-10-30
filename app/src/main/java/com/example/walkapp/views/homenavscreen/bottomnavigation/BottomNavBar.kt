@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -24,14 +25,14 @@ fun BottomNavBar(
     )
 
     NavigationBar(
-        modifier = modifier,
+        modifier = modifier
     ) {
         items.forEach { item ->
             NavigationBarItem(
                 icon = { Icon(painter = painterResource(item.icon), contentDescription = item.title) },
-                label = { Text(item.title) },
+                label = { Text(item.title, fontSize = 11.5.sp) },
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == item.route,
-                onClick = { onItemClick(item) }
+                onClick = { onItemClick(item) },
             )
         }
     }
