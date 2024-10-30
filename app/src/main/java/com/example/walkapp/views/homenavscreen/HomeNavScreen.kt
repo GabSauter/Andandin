@@ -96,7 +96,8 @@ private fun shouldShowBottomBar(
     val bottomBarScreens = listOf(
         Graph.Performance.route,
         Screen.Walk.route,
-        Screen.People.route
+        Screen.People.route,
+        Screen.StoryList.route
     )
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
     return bottomBarScreens.any { it == currentDestination?.route }

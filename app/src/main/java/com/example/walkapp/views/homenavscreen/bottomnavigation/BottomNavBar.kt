@@ -17,7 +17,8 @@ fun BottomNavBar(
     onItemClick: (BottomNavItems) -> Unit
 ) {
     val items = listOf(
-        BottomNavItems.Historic,
+        BottomNavItems.Story,
+        BottomNavItems.Performance,
         BottomNavItems.Walk,
         BottomNavItems.People
     )

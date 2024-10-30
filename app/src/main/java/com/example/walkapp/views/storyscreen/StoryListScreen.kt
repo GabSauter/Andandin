@@ -13,22 +13,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.walkapp.models.Story
 import com.example.walkapp.navigation.Screen
 
@@ -39,37 +35,21 @@ fun StoryListScreen(stories: List<Story>, currentLevel: Int, navController: NavC
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        Row(
+
+        Text(
+            text = "Histórias",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .weight(.4f)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
 
-            Spacer(modifier = Modifier.weight(.6f))
-
-            Text(
-                text = "Histórias",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-        }
-
-        Text("Nível atual: $currentLevel", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Text(
+            "Nível atual: $currentLevel",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
 
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -79,7 +59,12 @@ fun StoryListScreen(stories: List<Story>, currentLevel: Int, navController: NavC
             items(stories) { story ->
                 StoryCard(story = story, currentLevel = currentLevel) {
                     if (currentLevel >= story.requiredLevel) {
-                        navController.navigate(Screen.StoryDetail.createRoute(story.title, story.text))
+                        navController.navigate(
+                            Screen.StoryDetail.createRoute(
+                                story.title,
+                                story.text
+                            )
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(2.dp))
@@ -137,17 +122,4 @@ fun StoryCard(story: Story, currentLevel: Int, onClick: () -> Unit) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StoryListScreenPreview(){
-    val stories = listOf(
-        Story("Story 1", "This is the text of story 1", 1),
-        Story("Story 2", "This is the text of story 2", 3),
-        Story("Story 3", "This is the text of story 3", 5),
-        Story("Story 4", "This is the text of story 4", 7)
-    )
-    val currentLevel = 4
-    StoryListScreen(stories = stories, currentLevel = currentLevel, navController = rememberNavController())
 }

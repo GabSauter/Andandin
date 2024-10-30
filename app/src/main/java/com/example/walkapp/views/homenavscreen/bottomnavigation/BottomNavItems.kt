@@ -9,10 +9,16 @@ sealed class BottomNavItems(
     val title: String,
     val icon: Int
 ) {
-    data object Historic : BottomNavItems(
-        route = Graph.Performance.route,
-        title = "Performance",
+    data object Story : BottomNavItems(
+        route = Screen.StoryList.route,
+        title = "História",
         icon = R.drawable.ic_book
+    )
+
+    data object Performance : BottomNavItems(
+        route = Graph.Performance.route,
+        title = "Desempenho",
+        icon = R.drawable.ic_chart
     )
 
     data object Walk : BottomNavItems(
@@ -23,7 +29,7 @@ sealed class BottomNavItems(
 
     data object People : BottomNavItems(
         route = Screen.People.route,
-        title = "Pessoas",
+        title = "Grupo",
         icon = R.drawable.ic_people
     )
 }
