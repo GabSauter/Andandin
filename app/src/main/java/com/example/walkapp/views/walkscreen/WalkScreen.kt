@@ -52,10 +52,11 @@ fun WalkScreen(
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    LaunchedEffect(locationPermissionState) {
+
+    LaunchedEffect(locationPermissionState.status.isGranted) {
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()
-        } else{
+        }else{
             locationViewModel.startLocationUpdates()
         }
     }
