@@ -17,6 +17,9 @@ import com.example.walkapp.views.storyscreen.StoryListScreen
 import com.example.walkapp.views.peoplescreen.PeopleScreen
 import com.example.walkapp.views.rootperformancescreen.RootPerformanceScreen
 import com.example.walkapp.views.storyscreen.StoryDetailScreen
+import com.example.walkapp.views.storyscreen.story1
+import com.example.walkapp.views.storyscreen.story2
+import com.example.walkapp.views.storyscreen.story3
 import com.example.walkapp.views.userformscreen.UserFormScreen
 import com.example.walkapp.views.walkscreen.WalkScreen
 import com.google.firebase.auth.FirebaseUser
@@ -114,10 +117,9 @@ fun HomeNavGraph(
         }
         composable(Screen.StoryList.route) {
             val stories = listOf(
-                Story("Story 1", "This is the text of story 1", 1),
-                Story("Story 2", "This is the text of story 2", 3),
-                Story("Story 3", "This is the text of story 3", 5),
-                Story("Story 4", "This is the text of story 4", 7)
+                story1,
+                story2,
+                story3,
             )
             StoryListScreen(
                 stories = stories,

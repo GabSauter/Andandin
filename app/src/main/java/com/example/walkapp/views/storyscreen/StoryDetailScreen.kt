@@ -3,6 +3,7 @@ package com.example.walkapp.views.storyscreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,26 +15,28 @@ import androidx.navigation.NavController
 
 @Composable
 fun StoryDetailScreen(title: String, text: String, navController: NavController) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = title,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        item{
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        Button(onClick = { navController.popBackStack() }) {
-            Text(text = "Fechar")
+            Button(onClick = { navController.popBackStack() }) {
+                Text(text = "Fechar")
+            }
         }
     }
 }
