@@ -9,6 +9,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.firestore
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
@@ -68,9 +69,12 @@ class AuthRepository {
             )
 
         try {
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            user.fcmToken = fcmToken
+
             db.runBatch { batch ->
                 val userRef = db.collection("users").document(userId)
-                batch.set(userRef, user.toMap())
+                batch.set(userRef, user.createUser())
 
                 val leaderboardRef = db.collection("leaderboards").document(userId)
                 batch.set(leaderboardRef, leaderboardUser.toMap())

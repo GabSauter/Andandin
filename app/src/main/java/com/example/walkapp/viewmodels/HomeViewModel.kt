@@ -9,10 +9,6 @@ import com.example.walkapp.services.WalkingService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.exp
-import kotlin.math.floor
-import kotlin.math.ln
-import kotlin.math.pow
 
 class HomeViewModel(
     private val userRepository: UserRepository
@@ -55,9 +51,9 @@ class HomeViewModel(
     }
 
     private fun calculateLevel(xp: Int): Level {
-        val currentLevel = xp / 500
-        val progressInLevel = xp % 500
-        val progressPercentage = (progressInLevel / 500.0) * 100
+        val currentLevel = xp / 100
+        val progressInLevel = xp % 100
+        val progressPercentage = (progressInLevel / 100.0) * 100
 
         return Level(currentLevel, progressPercentage)
     }

@@ -5,8 +5,19 @@ data class User(
     val nickname: String = "",
     val xp: Int = 0,
     val walkingGoal: Int = 0,
-    val avatarIndex: Int = 0
+    val avatarIndex: Int = 0,
+    var fcmToken: String = ""
 ) {
+    fun createUser(): Map<String, Any> {
+        return mapOf(
+            "nickname" to nickname,
+            "xp" to xp,
+            "walkingGoal" to walkingGoal,
+            "avatarIndex" to avatarIndex,
+            "fcmToken" to fcmToken
+        )
+    }
+
     fun toMap(): Map<String, Any> {
         return mapOf(
             "nickname" to nickname,
