@@ -20,13 +20,24 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _leaderboardInGroup = MutableStateFlow<List<LeaderboardUser>>(emptyList())
-    val leaderboardInGroup: StateFlow<List<LeaderboardUser>> = _leaderboardInGroup
+    private val _leaderboardInGroup = MutableStateFlow<List<LeaderboardUser>?>(null)
+    val leaderboardInGroup: StateFlow<List<LeaderboardUser>?> = _leaderboardInGroup
 
-    private val _leaderboard = MutableStateFlow<List<LeaderboardUser>>(emptyList())
-    val leaderboard: StateFlow<List<LeaderboardUser>> = _leaderboard
+    private val _leaderboard = MutableStateFlow<List<LeaderboardUser>?>(null)
+    val leaderboard: StateFlow<List<LeaderboardUser>?> = _leaderboard
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _selectedFilter = MutableStateFlow(0)
+    val selectedFilter: StateFlow<Int> = _selectedFilter
+
+    fun setSelectedFilter(filter: Int) {
+        _selectedFilter.value = filter
+    }
 
     suspend fun getLeaderboardForMonth() {
+        _loading.value = true
         val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
         val monthAndYear = dateFormat.format(calendar.time)
@@ -38,6 +49,8 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
                 _leaderboard.value = leaderboardUser
             } catch (e: Exception) {
                 _error.value = "Houve um erro ao obter o ranking do mês."
+            }finally {
+                _loading.value = false
             }
         }
     }
@@ -46,6 +59,7 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
         monthAndYear: String,
         userId: String
     ) {
+        _loading.value = true
         viewModelScope.launch {
             try {
                 val leaderboardUser =
@@ -53,6 +67,8 @@ class LeaderboardViewModel(private val leaderboardRepository: LeaderboardReposit
                 _leaderboardInGroup.value = leaderboardUser
             } catch (e: Exception) {
                 _error.value = "Houve um erro ao obter o ranking do mês."
+            } finally {
+                _loading.value = false
             }
         }
     }

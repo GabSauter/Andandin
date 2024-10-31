@@ -2,6 +2,7 @@ package com.example.walkapp.repositories
 
 import androidx.credentials.GetCredentialRequest
 import com.example.walkapp.Secrets
+import com.example.walkapp.models.LeaderboardUser
 import com.example.walkapp.models.User
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.Firebase
@@ -29,16 +30,16 @@ class AuthRepository {
     }
 
     suspend fun signInWithGoogle(googleIdToken: String): FirebaseAuth {
-        try{
+        try {
             val firebaseCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
             auth.signInWithCredential(firebaseCredential).await()
 
-            if(!userExists(auth.currentUser!!.uid)) {
+            if (!userExists(auth.currentUser!!.uid)) {
                 createUser(auth.currentUser!!.uid, auth.currentUser!!.displayName!!)
             }
 
             return auth
-        }catch(e: Exception) {
+        } catch (e: Exception) {
             throw e
         }
     }
@@ -59,12 +60,21 @@ class AuthRepository {
     private suspend fun createUser(userId: String, nickname: String) {
         val user =
             User(id = userId, nickname = nickname, xp = 0, walkingGoal = 150, avatarIndex = 0)
+        val leaderboardUser = LeaderboardUser(
+                nickname = "",
+                distance = 0.0,
+                avatarIndex = 0,
+                monthAndYear = ""
+            )
 
         try {
-            db.collection("users")
-                .document(userId)
-                .set(user.toMap())
-                .await()
+            db.runBatch { batch ->
+                val userRef = db.collection("users").document(userId)
+                batch.set(userRef, user.toMap())
+
+                val leaderboardRef = db.collection("leaderboards").document(userId)
+                batch.set(leaderboardRef, leaderboardUser.toMap())
+            }.await()
         } catch (e: Exception) {
             throw e
         }
