@@ -13,7 +13,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class WalkRepository(private val userRepository: UserRepository, private val performanceRepository: PerformanceRepository, private val badgeRepository: BadgeRepository) {
+class WalkRepository(
+    private val userRepository: UserRepository,
+    private val performanceRepository: PerformanceRepository,
+    private val badgeRepository: BadgeRepository
+) {
     private val db = Firebase.firestore
 
     suspend fun completeWalk(userId: String, distance: Int, elapsedTime: Long) {
@@ -64,20 +68,24 @@ class WalkRepository(private val userRepository: UserRepository, private val per
         elapsedTime: Long,
         todayString: String
     ) {
-        try{
+        try {
             val walkingData = mapOf(
                 "distance" to distance, // Metros
                 "time" to elapsedTime, // Milliseconds
                 "date" to todayString
             )
             batch.set(walkingDataRef, walkingData)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("WalkRepository", "Error: ${e.message}", e)
             throw e
         }
     }
 
-    suspend fun getWalkHistory(userId: String, limit: Long, lastDocument: DocumentSnapshot? = null): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
+    suspend fun getWalkHistory(
+        userId: String,
+        limit: Long,
+        lastDocument: DocumentSnapshot? = null
+    ): Pair<List<WalkHistoryItem>, DocumentSnapshot?> {
         try {
             var query = db.collection("users")
                 .document(userId)

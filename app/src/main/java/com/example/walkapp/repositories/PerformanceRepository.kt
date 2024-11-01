@@ -53,7 +53,7 @@ class PerformanceRepository {
         }
     }
 
-    fun setPerformanceDataBatch(batch: WriteBatch, performanceDataRef: DocumentReference, performance: Performance, distance: Int, newDistance: Int, todayString: String, currentMonth: String){
+    suspend fun setPerformanceDataBatch(batch: WriteBatch, performanceDataRef: DocumentReference, performance: Performance, distance: Int, newDistance: Int, todayString: String, currentMonth: String){
         val updatedDistanceLast7Days = updateDistanceLast7Days(performance, distance, todayString)
         val updatedDistanceLast12Months = updateDistanceLast12Months(performance, distance, currentMonth)
 

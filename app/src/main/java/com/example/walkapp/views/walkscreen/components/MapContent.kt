@@ -162,7 +162,7 @@ fun WalkInfo(totalDistance: Int, elapsedTime: Long, isWalking: Boolean) {
         val hours = TimeUnit.MILLISECONDS.toHours(elapsedTime)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60
         val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
-        val distanceInKm = totalDistance / 1000
+        val distanceInKm = totalDistance / 1000.0
         val elapsedTimeInHours = convertElapsedTimeToHours(elapsedTime)
         val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
 

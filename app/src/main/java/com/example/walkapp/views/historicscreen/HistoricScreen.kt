@@ -156,7 +156,7 @@ fun TopButtons(selectedIndex: Int, onSelectionChanged: (Int) -> Unit) {
 
 @Composable
 fun WalkHistoryCard(item: WalkHistoryItem) {
-    val distanceInKm = item.distance / 1000
+    val distanceInKm = item.distance / 1000.0
     val elapsedTimeInHours = convertElapsedTimeToHours(item.time)
     val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
 

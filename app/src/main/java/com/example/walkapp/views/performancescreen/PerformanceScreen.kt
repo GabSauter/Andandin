@@ -115,7 +115,7 @@ fun PerformanceContent(
             Spacer(modifier = Modifier.padding(8.dp))
             Text(text = "Total: ${performanceData.distanceTotal}m")
             Text(text = "Hoje: ${performanceData.sumOfDistanceToday}m")
-            Text(text = "Esta semana: ${performanceData.sumOfDistanceLast7Days}m")
+            Text(text = "Últimos 7 dias: ${performanceData.sumOfDistanceLast7Days}m")
             Text(text = "Este mês: ${performanceData.distancesOfLast12Months[0].distance}m")
         }
 

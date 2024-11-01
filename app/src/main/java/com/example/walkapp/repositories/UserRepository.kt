@@ -2,6 +2,7 @@ package com.example.walkapp.repositories
 
 import com.example.walkapp.models.User
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.firestore
