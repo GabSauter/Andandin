@@ -55,7 +55,7 @@ class BadgeRepository {
         }
     }
 
-    fun setBadgesBatch(batch: WriteBatch, badgeRef: DocumentReference, distance: Int, newDistanceTotal: Int, badgeData: Badges) {
+    suspend fun setBadgesBatch(batch: WriteBatch, badgeRef: DocumentReference, distance: Int, newDistanceTotal: Int, badgeData: Badges) {
         //Total distance Badges:
         if(newDistanceTotal >= 1000) { //distancia de 1 km
             badgeData.badge1 = true

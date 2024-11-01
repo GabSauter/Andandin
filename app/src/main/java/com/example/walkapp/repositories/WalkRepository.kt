@@ -53,8 +53,7 @@ class WalkRepository(
             setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayWithTime)
             badgeRepository.setBadgesBatch(batch, badgesRef, distance, newDistanceTotal, badgeData)
             userRepository.updateUserXp(batch, userId, distance)
-
-            batch.commit().await()
+            batch.commit()
         } catch (e: Exception) {
             Log.e("WalkRepository", "Error: ${e.message}", e)
             throw e
