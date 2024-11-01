@@ -210,6 +210,6 @@ fun isToday(dateString: String): Boolean {
 
 data class WalkHistoryItem(
     val date: String,
-    val distance: Double,
+    val distance: Int,
     val time: Long
 )

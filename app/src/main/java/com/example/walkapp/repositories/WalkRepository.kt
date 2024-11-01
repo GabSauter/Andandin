@@ -95,7 +95,7 @@ class WalkRepository(private val userRepository: UserRepository, private val per
             }
 
             val walkHistoryItems = querySnapshot.documents.mapNotNull { document ->
-                val distance = document.getDouble("distance") ?: 0.0
+                val distance = document.getLong("distance")?.toInt() ?: 0
                 val elapsedTime = document.getLong("time") ?: 0L
                 val date = document.getString("date").toString()
 

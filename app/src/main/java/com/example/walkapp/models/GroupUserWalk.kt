@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 class GroupUserWalk(
     val avatarIndex: Int,
     val nickname: String,
-    val distanceWalked: Double,
+    val distanceWalked: Int,
     val date: String
 ) {
     fun toMap(): Map<String, Any> {
@@ -22,7 +22,7 @@ class GroupUserWalk(
             return GroupUserWalk(
                 avatarIndex = (data["avatarIndex"] as Long).toInt(),
                 nickname = data["nickname"] as String,
-                distanceWalked = data["distanceWalked"] as Double,
+                distanceWalked = (data["distanceWalked"] as Long).toInt(),
                 date = data["date"] as String
             )
         }

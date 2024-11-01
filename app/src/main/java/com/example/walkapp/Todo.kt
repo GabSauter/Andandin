@@ -9,3 +9,4 @@ package com.example.walkapp
 //[] As vezes quando aperto em caminhar ele aparece que já andou km e pathpoints
 //[] Parece que quando está sem internet fica num loading grande, verificar se ele salva caminhada quando está offline
 //[] Verificar se está certo a configuração do firebase
+//[] Verificar velocidade no walk screen

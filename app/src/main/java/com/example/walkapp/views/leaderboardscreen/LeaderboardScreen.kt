@@ -178,7 +178,7 @@ fun LeaderboardItem(leaderboardUser: LeaderboardUser, modifier: Modifier = Modif
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = "${leaderboardUser.distance} km",
+            text = "${leaderboardUser.distance/1000} km",
             style = MaterialTheme.typography.bodyLarge
         )
     }

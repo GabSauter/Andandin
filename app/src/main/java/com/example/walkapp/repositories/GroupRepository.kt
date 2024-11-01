@@ -151,7 +151,7 @@ class GroupRepository {
             }
 
             val userWalksItems = querySnapshot.documents.mapNotNull { document ->
-                val distanceWalked = document.getDouble("distanceWalked") ?: 0.0
+                val distanceWalked = document.getLong("distanceWalked")?.toInt() ?: 0
                 val date = document.getString("date").toString()
                 val avatarIndex = document.getLong("avatarIndex")?.toInt() ?: 0
                 val nickname = document.getString("nickname").toString()
