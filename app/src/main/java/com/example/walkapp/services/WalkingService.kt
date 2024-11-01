@@ -60,8 +60,22 @@ class WalkingService : Service() {
         private val _walkSavedSuccessfully = MutableStateFlow(false)
         val walkSavedSuccessfully: StateFlow<Boolean> = _walkSavedSuccessfully
 
+        private val _haveExceptionOnSaveWalk = MutableStateFlow(false)
+        val haveExceptionOnSaveWalk: StateFlow<Boolean> = _haveExceptionOnSaveWalk
+
+        private val _walkDontSavedSuccessfully = MutableStateFlow(false)
+        val walkDontSavedSuccessfully: StateFlow<Boolean> = _walkDontSavedSuccessfully
+
         fun setWalkSavedSuccessfully(value: Boolean) {
             _walkSavedSuccessfully.value = value
+        }
+
+        fun setWalkDontSavedSuccessfully(value: Boolean) {
+            _walkDontSavedSuccessfully.value = value
+        }
+
+        fun setHaveExceptionOnSaveWalk(value: Boolean) {
+            _haveExceptionOnSaveWalk.value = value
         }
 
         fun setNeedToLoadXp(value: Boolean) {
@@ -118,7 +132,17 @@ class WalkingService : Service() {
         if (intent?.action == ACTION_STOP) {
             stopForeground(STOP_FOREGROUND_REMOVE)
             userId?.let {
-                saveWalkingData(it, totalDistance.value, elapsedTime.value){
+                try {
+                    saveWalkingData(it, totalDistance.value, elapsedTime.value) {
+                        stopTimer()
+                        isTracking.value = false
+                        pathPoints.value = emptyList()
+                        totalDistance.value = 0
+                        elapsedTime.value = 0
+                        stopSelf()
+                    }
+                } catch (e: Exception) {
+                    _haveExceptionOnSaveWalk.value = true
                     stopTimer()
                     isTracking.value = false
                     pathPoints.value = emptyList()
@@ -154,22 +178,21 @@ class WalkingService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 loading.value = true
-//                if(distance > 10 && elapsedTime > 10000) {
-                walkRepository.completeWalk(
-                    userId = userId,
-                    distance = distance,
-                    elapsedTime = elapsedTime,
-                )
-                _walkSavedSuccessfully.value = true
-                _needToLoadXp.value = true
-                _needToLoadHistoric.value = true
-                _needToLoadPerformance.value = true
-                _needToLoadBadges.value = true
-//                }else{
-                //colocar alguma coisa dizendo que não salvou, pois precisa caminhar pelo menos 10m e 10s
+//                if (distance > 10 && elapsedTime > 10000) {
+                    walkRepository.completeWalk(
+                        userId = userId,
+                        distance = distance,
+                        elapsedTime = elapsedTime,
+                    )
+                    _walkSavedSuccessfully.value = true
+                    _needToLoadXp.value = true
+                    _needToLoadHistoric.value = true
+                    _needToLoadPerformance.value = true
+                    _needToLoadBadges.value = true
+//                } else {
+//                    _walkDontSavedSuccessfully.value = true
 //                }
             } catch (e: Exception) {
-                //colocar alguma coisa dizendo que não salvou, pois houve um erro
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
                 loading.value = false

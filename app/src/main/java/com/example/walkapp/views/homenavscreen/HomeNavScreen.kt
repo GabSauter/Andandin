@@ -84,7 +84,7 @@ fun HomeNavScreen(
                     onSignOut = onSignOut,
                     userData = userData!!,
                     setUserChanged = { homeViewModel.setUserChanged(it) },
-                    level = level!!
+                    level = level!!,
                 )
             }
         }

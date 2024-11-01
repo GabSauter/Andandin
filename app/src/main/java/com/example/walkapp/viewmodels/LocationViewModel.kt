@@ -19,6 +19,8 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
     val elapsedTime: StateFlow<Long> = WalkingService.elapsedTime
     val loading: StateFlow<Boolean> = WalkingService.loading
     val walkSavedSuccessfully: StateFlow<Boolean> = WalkingService.walkSavedSuccessfully
+    val haveExceptionOnSaveWalk: StateFlow<Boolean> = WalkingService.haveExceptionOnSaveWalk
+    val walkDontSavedSuccessfully: StateFlow<Boolean> = WalkingService.walkDontSavedSuccessfully
 
     private val _userLocation = MutableStateFlow<LatLng?>(null)
     val userLocation: StateFlow<LatLng?> = _userLocation
@@ -61,6 +63,18 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
     fun dismissSuccessMessage(){
         viewModelScope.launch {
             WalkingService.setWalkSavedSuccessfully(false)
+        }
+    }
+
+    fun dismissExceptionMessage(){
+        viewModelScope.launch {
+            WalkingService.setHaveExceptionOnSaveWalk(false)
+        }
+    }
+
+    fun dismissFailedMessage(){
+        viewModelScope.launch {
+            WalkingService.setWalkDontSavedSuccessfully(false)
         }
     }
 

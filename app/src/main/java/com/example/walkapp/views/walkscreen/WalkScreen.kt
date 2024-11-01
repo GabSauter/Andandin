@@ -51,6 +51,8 @@ fun WalkScreen(
     val elapsedTime by locationViewModel.elapsedTime.collectAsState()
     val loading by locationViewModel.loading.collectAsState()
     val walkSavedSuccessfully by locationViewModel.walkSavedSuccessfully.collectAsState()
+    val haveExceptionOnSaveWalk by locationViewModel.haveExceptionOnSaveWalk.collectAsState()
+    val walkDontSavedSuccessfully by locationViewModel.walkDontSavedSuccessfully.collectAsState()
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -104,7 +106,14 @@ fun WalkScreen(
                 if (walkSavedSuccessfully) {
                     SuccessMessage { locationViewModel.dismissSuccessMessage() }
                 }
+                if (haveExceptionOnSaveWalk) {
+                    ExceptionMessage { locationViewModel.dismissExceptionMessage() }
+                }
+                if (walkDontSavedSuccessfully) {
+                    FailedMessage { locationViewModel.dismissFailedMessage() }
+                }
             }
+
         }
     }
 }
@@ -163,6 +172,40 @@ fun SuccessMessage(onDismiss: () -> Unit) {
             Text(
                 text = "Parabéns! Você deu mais um passo rumo aos seus objetivos. Continue caminhando, cada metro conta!",
                 color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun ExceptionMessage(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Houve um erro ao salvar a caminhada.",
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun FailedMessage(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "É necessário caminhar pelo menos 10 metros e estar por pelo menos 10 segundos para salvar a caminhada.",
+                color = MaterialTheme.colorScheme.onErrorContainer,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
