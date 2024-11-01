@@ -48,7 +48,7 @@ class WalkRepository(private val userRepository: UserRepository, private val per
             )
             setWalkingDataBatch(batch, walkingDataRef, distance, elapsedTime, todayWithTime)
             badgeRepository.setBadgesBatch(batch, badgesRef, distance, newDistanceTotal, badgeData)
-            userRepository.updateUserXp(batch, userId, newDistanceTotal)
+            userRepository.updateUserXp(batch, userId, distance)
 
             batch.commit().await()
         } catch (e: Exception) {

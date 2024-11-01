@@ -15,7 +15,6 @@ import androidx.core.app.NotificationCompat
 import com.example.walkapp.MainActivity
 import com.example.walkapp.R
 import com.example.walkapp.helpers.LocationManager
-import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.repositories.WalkRepository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +56,13 @@ class WalkingService : Service() {
         val needToLoadPerformance: StateFlow<Boolean> = _needToLoadPerformance
         private val _needToLoadBadges = MutableStateFlow(false)
         val needToLoadBadges: StateFlow<Boolean> = _needToLoadBadges
+
+        private val _walkSavedSuccessfully = MutableStateFlow(false)
+        val walkSavedSuccessfully: StateFlow<Boolean> = _walkSavedSuccessfully
+
+        fun setWalkSavedSuccessfully(value: Boolean) {
+            _walkSavedSuccessfully.value = value
+        }
 
         fun setNeedToLoadXp(value: Boolean) {
             _needToLoadXp.value = value
@@ -117,6 +123,7 @@ class WalkingService : Service() {
                     isTracking.value = false
                     pathPoints.value = emptyList()
                     totalDistance.value = 0
+                    elapsedTime.value = 0
                     stopSelf()
                 }
             }
@@ -153,6 +160,7 @@ class WalkingService : Service() {
                     distance = distance,
                     elapsedTime = elapsedTime,
                 )
+                _walkSavedSuccessfully.value = true
                 _needToLoadXp.value = true
                 _needToLoadHistoric.value = true
                 _needToLoadPerformance.value = true
@@ -246,8 +254,8 @@ class WalkingService : Service() {
     }
 
     private fun stopTimer() {
-        timerJob?.cancel()
         elapsedTime.value = 0L
+        timerJob?.cancel()
     }
 
     private fun observeTrackingData() {

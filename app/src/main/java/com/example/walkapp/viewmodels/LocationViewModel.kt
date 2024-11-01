@@ -3,17 +3,14 @@ package com.example.walkapp.viewmodels
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.walkapp.helpers.LocationManager
-import com.example.walkapp.repositories.UserRepository
 import com.example.walkapp.services.WalkingService
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class LocationViewModel(private val locationManager: LocationManager) : ViewModel() {
     val isTracking: StateFlow<Boolean> = WalkingService.isTracking
@@ -21,6 +18,7 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
     val totalDistance: StateFlow<Int> = WalkingService.totalDistance
     val elapsedTime: StateFlow<Long> = WalkingService.elapsedTime
     val loading: StateFlow<Boolean> = WalkingService.loading
+    val walkSavedSuccessfully: StateFlow<Boolean> = WalkingService.walkSavedSuccessfully
 
     private val _userLocation = MutableStateFlow<LatLng?>(null)
     val userLocation: StateFlow<LatLng?> = _userLocation
@@ -57,6 +55,12 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
             context.startForegroundService(intent)
         } else {
             context.startService(intent)
+        }
+    }
+
+    fun dismissSuccessMessage(){
+        viewModelScope.launch {
+            WalkingService.setWalkSavedSuccessfully(false)
         }
     }
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.walkapp.models.Level
 import com.example.walkapp.models.User
@@ -49,6 +50,7 @@ fun WalkScreen(
     val totalDistance by locationViewModel.totalDistance.collectAsState()
     val elapsedTime by locationViewModel.elapsedTime.collectAsState()
     val loading by locationViewModel.loading.collectAsState()
+    val walkSavedSuccessfully by locationViewModel.walkSavedSuccessfully.collectAsState()
 
     val locationPermissionState =
         rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -56,7 +58,7 @@ fun WalkScreen(
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()
-        }else{
+        } else {
             locationViewModel.startLocationUpdates()
         }
     }
@@ -99,50 +101,70 @@ fun WalkScreen(
             )
             if (!isWalking) {
                 TopWalkScreen(level, navController, onSignOut)
+                if (walkSavedSuccessfully) {
+                    SuccessMessage { locationViewModel.dismissSuccessMessage() }
+                }
             }
         }
     }
 }
 
-    @Composable
-    fun TopWalkScreen(level: Level, navController: NavHostController, onSignOut: () -> Unit) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp)
-                .fillMaxWidth()
-                .shadow(
-                    elevation = 4.dp,
-                    shape = MaterialTheme.shapes.medium,
-                    clip = false
-                )
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = MaterialTheme.shapes.medium
-                )
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = "Nv: ${level.level}")
-            LinearProgressIndicator(
-                progress = { level.progressPercentage.toFloat() / 100 },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(8.dp)
-                    .clickable {}
-                    .weight(1f),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+@Composable
+fun TopWalkScreen(level: Level, navController: NavHostController, onSignOut: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = MaterialTheme.shapes.medium,
+                clip = false
             )
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(text = "Nv: ${level.level}")
+        LinearProgressIndicator(
+            progress = { level.progressPercentage.toFloat() / 100 },
+            modifier = Modifier
+                .padding(8.dp)
+                .height(8.dp)
+                .clickable {}
+                .weight(1f),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
 
-            HamburgerMenuButton(
-                onEditClick = {
-                    navController.navigate(Screen.UserForm.route) {
-                        launchSingleTop = true
-                    }
-                },
-                onSignOut = onSignOut
+        HamburgerMenuButton(
+            onEditClick = {
+                navController.navigate(Screen.UserForm.route) {
+                    launchSingleTop = true
+                }
+            },
+            onSignOut = onSignOut
+        )
+    }
+}
+
+@Composable
+fun SuccessMessage(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Parabéns! Você deu mais um passo rumo aos seus objetivos. Continue caminhando, cada metro conta!",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
+}
