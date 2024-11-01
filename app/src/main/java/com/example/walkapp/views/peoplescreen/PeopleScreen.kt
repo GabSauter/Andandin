@@ -15,32 +15,11 @@ fun PeopleScreen(
     userData: User,
     navController: NavHostController = rememberNavController()
 ) {
-//        if (no internet) {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center,
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Warning,
-//                    contentDescription = "Sem conexão com a internet",
-//                    tint = MaterialTheme.colorScheme.error
-//                )
-//                Text(
-//                    text = "Sem conexão com a internet",
-//                    color = MaterialTheme.colorScheme.onTertiaryContainer
-//                )
-//            }
-//
-//        } else {
-            Box(modifier = Modifier.fillMaxSize()) {
-                PeopleNavGraph(
-                    navController = navController,
-                    authUser = authUser,
-                    userData = userData
-                )
-//            }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        PeopleNavGraph(
+            navController = navController,
+            authUser = authUser,
+            userData = userData
+        )
+    }
 }

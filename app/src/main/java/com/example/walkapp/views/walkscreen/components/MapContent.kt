@@ -1,6 +1,8 @@
 package com.example.walkapp.views.walkscreen.components
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.walkapp.R
 import com.example.walkapp.navigation.Screen
+import com.example.walkapp.views.historicscreen.convertElapsedTimeToHours
 import com.google.android.gms.maps.model.LatLng
 import java.util.concurrent.TimeUnit
 
@@ -79,7 +82,7 @@ fun MapScreenContent(
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.background
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
@@ -159,10 +162,14 @@ fun WalkInfo(totalDistance: Int, elapsedTime: Long, isWalking: Boolean) {
         val hours = TimeUnit.MILLISECONDS.toHours(elapsedTime)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60
         val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
+        val distanceInKm = totalDistance / 1000
+        val elapsedTimeInHours = convertElapsedTimeToHours(elapsedTime)
+        val velocity = if (elapsedTimeInHours > 0) distanceInKm / elapsedTimeInHours else 0.0
 
-        val velocity = if (elapsedTime > 0) (totalDistance / elapsedTime) * 3.6 else 0.0
-
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier =
+            Modifier.padding(16.dp)
+        ) {
             Text(text = "Distância: $totalDistance m")
             Text(text = "Tempo: %02d:%02d:%02d".format(hours, minutes, seconds))
             Text(text = "Velocidade: %.2f km/h".format(velocity))

@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.EnterGroupViewModel
@@ -44,9 +45,15 @@ fun EnterGroupScreen(
     val groupPassword by enterGroupViewModel.groupPassword.collectAsState()
 
     LaunchedEffect(userPartOfGroup){
-        enterGroupViewModel.isUserPartOfGroup(userId)
-        if(userPartOfGroup){
-            navController.navigate(Screen.Group.route)
+        if(!loadingUserPartOfGroup){
+            enterGroupViewModel.isUserPartOfGroup(userId)
+            if(userPartOfGroup){
+                navController.navigate(Screen.Group.route){
+                    popUpTo(navController.graph.findStartDestination().id){
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
 
@@ -86,9 +93,6 @@ fun EnterGroupScreen(
                     onClick = {
                         if(!loadingJoinOrCreateGroup){
                             enterGroupViewModel.joinGroup(groupName, groupPassword, userId, userData = userData)
-                            if(userPartOfGroup){
-                                navController.navigate(Screen.Group.route)
-                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.GroupUser
 import com.example.walkapp.models.GroupUserWalk
@@ -62,6 +64,18 @@ fun GroupScreen(userId: String, navController: NavController) {
     val userPartOfGroup by groupViewModel.userPartOfGroup.collectAsState()
     val loading by groupViewModel.loading.collectAsState()
     val error by groupViewModel.error.collectAsState()
+
+    LaunchedEffect(userPartOfGroup){
+        if(!loading){
+            if(!userPartOfGroup) {
+                navController.navigate(Screen.EnterGroup.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
 
     var showDropdown by remember { mutableStateOf(false) }
     var showUserList by remember { mutableStateOf(false) }
@@ -106,7 +120,6 @@ fun GroupScreen(userId: String, navController: NavController) {
                                 onClick = {
                                     groupViewModel.leaveGroup(userId)
                                     showDropdown = false
-                                    navController.navigate(Screen.EnterGroup.route)
                                 }
                             )
                         }

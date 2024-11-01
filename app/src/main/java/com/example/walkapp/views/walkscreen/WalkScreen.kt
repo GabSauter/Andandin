@@ -130,9 +130,7 @@ fun WalkScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .height(8.dp)
-                    .clickable {
-                        navController.navigate(Screen.StoryList.route)
-                    }
+                    .clickable {}
                     .weight(1f),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
