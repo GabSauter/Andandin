@@ -25,6 +25,11 @@ class LocationViewModel(private val locationManager: LocationManager) : ViewMode
     private val _userLocation = MutableStateFlow<LatLng?>(null)
     val userLocation: StateFlow<LatLng?> = _userLocation
 
+
+    init{
+        startLocationUpdates()
+    }
+
     fun startLocationUpdates() {
         viewModelScope.launch {
             locationManager.locationState.collect { location ->

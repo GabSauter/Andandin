@@ -24,11 +24,11 @@ object LocationManager {
     private var isLocationUpdatesStarted = false
 
     private val locationRequest = LocationRequest.Builder(
-        Priority.PRIORITY_HIGH_ACCURACY, 3000
+        Priority.PRIORITY_HIGH_ACCURACY, 2500
     ).apply {
-        setMinUpdateIntervalMillis(1000)
+        setMinUpdateIntervalMillis(1500)
         setMaxUpdateDelayMillis(12000)
-        setWaitForAccurateLocation(false)
+        setWaitForAccurateLocation(true)
     }.build()
 
     private val locationCallback = object : LocationCallback() {

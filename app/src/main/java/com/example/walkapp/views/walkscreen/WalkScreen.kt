@@ -76,6 +76,7 @@ fun WalkScreen(
                     Alignment.Center
                 )
             )
+            locationViewModel.startLocationUpdates()
         } else {
             MapScreenContent(
                 navController = navController,

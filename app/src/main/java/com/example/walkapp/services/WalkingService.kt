@@ -178,7 +178,7 @@ class WalkingService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 loading.value = true
-//                if (distance > 10 && elapsedTime > 10000) {
+                if (distance > 10 && elapsedTime > 10000) {
                     walkRepository.completeWalk(
                         userId = userId,
                         distance = distance,
@@ -189,9 +189,9 @@ class WalkingService : Service() {
                     _needToLoadHistoric.value = true
                     _needToLoadPerformance.value = true
                     _needToLoadBadges.value = true
-//                } else {
-//                    _walkDontSavedSuccessfully.value = true
-//                }
+                } else {
+                    _walkDontSavedSuccessfully.value = true
+                }
             } catch (e: Exception) {
                 Log.e("WalkingService", "Failed to save walking data", e)
             } finally {
