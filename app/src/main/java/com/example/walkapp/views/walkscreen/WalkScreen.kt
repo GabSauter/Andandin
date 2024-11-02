@@ -77,6 +77,7 @@ fun WalkScreen(
                 )
             )
             locationViewModel.startLocationUpdates()
+            TopWalkScreen(level, navController, onSignOut)
         } else {
             MapScreenContent(
                 navController = navController,
