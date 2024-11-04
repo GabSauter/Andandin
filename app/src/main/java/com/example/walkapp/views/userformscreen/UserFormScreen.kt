@@ -1,5 +1,6 @@
 package com.example.walkapp.views.userformscreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,6 @@ import com.example.walkapp.R
 import com.example.walkapp.common.avatarOptions
 import com.example.walkapp.models.User
 import com.example.walkapp.views.components.ErrorSnackbar
-import com.example.walkapp.navigation.Screen
 import com.example.walkapp.viewmodels.UserFormViewModel
 import com.example.walkapp.views.userformscreen.components.CustomOutlinedTextField
 import com.example.walkapp.views.userformscreen.components.NumberTextField
@@ -64,17 +64,6 @@ fun UserFormScreen(
     }
 
     val uiState by userFormViewModel.uiState.collectAsState()
-    val onErrorDismiss = { userFormViewModel.clearErrorSubmit() }
-    val onSubmit = {
-        userFormViewModel.onSubmit(authUser!!.uid)
-        if (uiState.errorNickname == null &&
-            uiState.errorWalkingGoal == null &&
-            uiState.errorSubmit == null
-        ) {
-            setUserChanged(true)
-            navController.popBackStack()
-        }
-    }
 
     var showRecommendation by remember { mutableStateOf(false) }
 
@@ -180,7 +169,7 @@ fun UserFormScreen(
                 ) {
                     Button(
                         onClick = {
-                            onSubmit()
+                            userFormViewModel.onSubmit(authUser!!.uid, setUserChanged, navController)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -199,7 +188,7 @@ fun UserFormScreen(
         ErrorSnackbar(
             errorMessage = uiState.errorSubmit,
             onDismiss = {
-                onErrorDismiss()
+                userFormViewModel.clearErrorSubmit()
             }
         )
 

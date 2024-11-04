@@ -2,6 +2,7 @@ package com.example.walkapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.example.walkapp.models.User
 import com.example.walkapp.repositories.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,9 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 data class UserFormUiState(
     val nickname: String = "",
@@ -62,7 +60,7 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
         }
     }
 
-    fun onSubmit(userId: String) {
+    fun onSubmit(userId: String, setUserChanged: (Boolean) -> Unit, navController: NavHostController) {
         try {
             viewModelScope.launch {
                 _uiState.update {
@@ -75,13 +73,22 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
                 ) {
                     updateUserData(userId)
                 }
-                _uiState.update {
-                    it.copy(loading = false)
+                if (
+                    uiState.value.errorNickname == null &&
+                    uiState.value.errorWalkingGoal == null &&
+                    uiState.value.errorSubmit == null
+                ) {
+                    setUserChanged(true)
+                    navController.popBackStack()
                 }
             }
         } catch (e: Exception) {
             _uiState.update {
-                it.copy(loading = false, errorSubmit = e.message)
+                it.copy(errorSubmit = e.message)
+            }
+        }finally{
+            _uiState.update {
+                it.copy(loading = false)
             }
         }
     }
@@ -102,7 +109,7 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
         }
     }
 
-    private suspend fun validateForm() {
+    private fun validateForm() {
         _uiState.update {
             it.copy(loading = true)
         }
@@ -116,18 +123,12 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
         }
     }
 
-    private suspend fun validateNickname(nickname: String) {
+    private fun validateNickname(nickname: String) {
         if (nickname.isBlank()) {
             _uiState.update {
                 it.copy(errorNickname = "Preencha o campo apelido.")
             }
         }
-//        val isUnique = userRepository.isNicknameUnique(nickname)
-//        if (!isUnique) {
-//            _uiState.update {
-//                it.copy(errorNickname = "Este apelido já está em uso.")
-//            }
-//        }
     }
 
     private fun validateWalkingGoal(walkingGoal: String) {
