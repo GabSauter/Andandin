@@ -1,6 +1,5 @@
 package com.example.walkapp.views.userformscreen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -149,7 +148,8 @@ fun UserFormScreen(
                     Box {
                         Image(
                             painter = painterResource(id = avatarOptions[uiState.avatarIndex]),
-                            contentDescription = "Body"
+                            contentDescription = "Body",
+                            modifier = Modifier.size(32.dp)
                         )
                     }
 

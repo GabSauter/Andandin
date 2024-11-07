@@ -72,14 +72,10 @@ class UserFormViewModel(private val userRepository: UserRepository, private val 
                     _uiState.value.errorWalkingGoal == null
                 ) {
                     updateUserData(userId)
-                }
-                if (
-                    uiState.value.errorNickname == null &&
-                    uiState.value.errorWalkingGoal == null &&
-                    uiState.value.errorSubmit == null
-                ) {
-                    setUserChanged(true)
-                    navController.popBackStack()
+                    if(uiState.value.errorSubmit == null){
+                        setUserChanged(true)
+                        navController.popBackStack()
+                    }
                 }
             }
         } catch (e: Exception) {

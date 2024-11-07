@@ -36,7 +36,7 @@ fun PermissionRequestUI(
             )
 
             if (locationPermissionState.status.shouldShowRationale) {
-                ButtonRationaleRequest(locationPermissionState)
+                ButtonLocationRationaleRequest(locationPermissionState)
             } else {
                 ButtonOpenAppSettings()
             }
@@ -46,7 +46,7 @@ fun PermissionRequestUI(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun ButtonRationaleRequest(locationPermissionState: PermissionState) {
+private fun ButtonLocationRationaleRequest(locationPermissionState: PermissionState) {
     Button(onClick = { locationPermissionState.launchPermissionRequest() }) {
         Text(text = "Permitir acesso a minha localização")
     }

@@ -51,9 +51,9 @@ class HomeViewModel(
     }
 
     private fun calculateLevel(xp: Int): Level {
-        val currentLevel = xp / 100
-        val progressInLevel = xp % 100
-        val progressPercentage = (progressInLevel / 100.0) * 100
+        val currentLevel = xp / 1000
+        val progressInLevel = xp % 1000
+        val progressPercentage = (progressInLevel / 1000.0) * 100
 
         return Level(currentLevel, progressPercentage)
     }

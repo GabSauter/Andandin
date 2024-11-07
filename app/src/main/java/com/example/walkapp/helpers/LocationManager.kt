@@ -1,9 +1,11 @@
 package com.example.walkapp.helpers
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -14,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 object LocationManager {
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var isInitialized = false
 
@@ -46,11 +47,28 @@ object LocationManager {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun startLocationUpdates() {
+    fun startLocationUpdates(context: Context) {
         if (isLocationUpdatesStarted) return
 
-        Log.d("LocationManager", "Starting location updates")
+        val fineLocationPermission = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val coarseLocationPermission = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        if (fineLocationPermission != PackageManager.PERMISSION_GRANTED &&
+            coarseLocationPermission != PackageManager.PERMISSION_GRANTED) {
+            Log.e("LocationManager", "Location permission not granted.")
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                _locationState.value = it
+            }
+        }
+
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
         isLocationUpdatesStarted = true
     }
@@ -58,7 +76,6 @@ object LocationManager {
     fun stopLocationUpdates() {
         if (!isLocationUpdatesStarted) return
 
-        Log.d("LocationManager", "Stopping location updates")
         fusedLocationClient.removeLocationUpdates(locationCallback)
         isLocationUpdatesStarted = false
     }
