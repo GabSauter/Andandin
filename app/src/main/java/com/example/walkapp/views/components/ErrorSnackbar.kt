@@ -7,6 +7,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,14 +53,14 @@ fun ErrorSnackbar(
                 action = {
                     TextButton(onClick = { onDismiss() }) {
                         Text(
-                            text = "Fechar", color = Color.White,
+                            text = "Fechar", color = MaterialTheme.colorScheme.onError,
                             modifier = Modifier.padding(vertical = 12.dp)
                         )
                     }
                 },
                 containerColor = Color.Red
             ) {
-                Text(text = errorMessage.orEmpty())
+                Text(text = errorMessage.orEmpty(), color = MaterialTheme.colorScheme.onError)
             }
         }
 

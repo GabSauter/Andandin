@@ -30,7 +30,7 @@ fun BottomNavBar(
         items.forEach { item ->
             NavigationBarItem(
                 icon = { Icon(painter = painterResource(item.icon), contentDescription = item.title) },
-                label = { Text(item.title, fontSize = 11.5.sp) },
+                label = { Text(item.title, fontSize = 11.sp) },
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == item.route,
                 onClick = { onItemClick(item) },
             )
