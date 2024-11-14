@@ -9,6 +9,7 @@ sealed class Graph(val route: String) {
 
 sealed class Screen(val route: String) {
     data object Login: Screen(route = "login_screen")
+    data object Welcome: Screen(route = "welcome_screen")
 
     data object Walk: Screen(route = "walk_screen")
     data object Historic: Screen(route = "historic_screen")

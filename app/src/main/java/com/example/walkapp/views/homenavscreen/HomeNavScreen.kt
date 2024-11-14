@@ -28,7 +28,7 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeNavScreen(
     navController: NavHostController = rememberNavController(),
     authUser: FirebaseUser?,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
 ) {
     val homeViewModel: HomeViewModel = koinViewModel()
     val loadingUserData by homeViewModel.loadingUserData.collectAsState()

@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 KoinContext{
                     val navController = rememberNavController()
-                    RootNavGraph(navController = navController)
+                    RootNavGraph(navController = navController, this)
                 }
             }
         }
